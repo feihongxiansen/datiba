@@ -1,0 +1,203 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{},~{})">
+	<title>注册-答题吧</title>
+</head>
+	
+<body>
+
+	<!--顶部导航栏导入-->
+	<div th:replace="home/public/top-menu::top-menu"></div>
+
+
+	<div class="container" style="margin-bottom: 5%;">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2" style="margin-top: 30px;">
+				<h2>用户注册</h2>
+				<form class="layui-form layui-form-pane" action="">
+				  <div class="layui-form-item">
+					<label class="layui-form-label">姓名</label>
+					<div class="layui-input-block">
+					  <input type="text" name="userName" required  lay-verify="required" maxlength="15" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+					</div>
+				  </div>
+				  <div class="layui-form-item">
+					<label class="layui-form-label">昵称</label>
+					<div class="layui-input-block">
+					  <input type="text" name="nickName" required  lay-verify="required" maxlength="20" placeholder="请输入昵称" autocomplete="off" class="layui-input">
+					</div>
+				  </div>
+				  <div class="layui-form-item">
+					<label class="layui-form-label">密码</label>
+					<div class="layui-input-block">
+					  <input type="password" name="password" required lay-verify="required|password" maxlength="16" placeholder="请输入密码" autocomplete="off" class="layui-input">
+					</div>
+				  </div>
+				  <div class="layui-form-item">
+					<label class="layui-form-label">身份</label>
+					<div class="layui-input-block">
+					  <input type="radio" lay-verify="required" name="userType" value="1" title="学生">
+					  <input type="radio" lay-verify="required" name="userType" value="2" title="教师" checked>
+					</div>
+				  </div>
+				  <div class="layui-form-item">
+					<label class="layui-form-label">性别</label>
+					<div class="layui-input-block">
+					  <input type="radio" lay-verify="required" name="sex" value="1" title="男">
+					  <input type="radio" lay-verify="required" name="sex" value="2" title="女" checked>
+					</div>
+				  </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">地区</label>
+                        <div class="layui-input-inline">
+                            <select name="province" id="province" lay-filter="province">
+                                <option value="">请选择省</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="city" id="city" lay-filter="city">
+                                <option value="">请选择市</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="area" id="area" lay-filter="area">
+                                <option value="">请选择县/区</option>
+                            </select>
+                        </div>
+                    </div>
+				  <div class="layui-form-item">
+					  <label class="layui-form-label">邮箱</label>
+					  <div class="layui-input-inline">
+					      <input type="text" name="email" id="email" required lay-verify="required|email" placeholder="请输入邮箱地址" autocomplete="off" class="layui-input">
+                      </div>
+                      <div class="layui-input-inline">
+                          <button onclick="checkEmail()" type="button" class="layui-btn layui-btn-normal">检测</button>
+                      </div>
+				  </div>
+
+				  <div class="layui-form-item">
+					<label class="layui-form-label">手机</label>
+					<div class="layui-input-block">
+					  <input type="text" name="phone" required  lay-verify="required|phone" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+					</div>
+				  </div>
+				 
+				  <div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">简介</label>
+					<div class="layui-input-block">
+					  <textarea name="userSummary" placeholder="请输入内容" class="layui-textarea"></textarea>
+					</div>
+				  </div>
+
+				  <div class="layui-form-item">
+					<div class="layui-input-block">
+					  <button class="layui-btn" lay-submit lay-filter="formRegister">立即提交</button>
+					  <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				  </div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- 底部导航栏 start-->
+	<footer th:replace="home/public/footer::footer"></footer>
+	<!-- 底部导航栏end -->
+
+    <script th:src="@{/static/home/plugs/address/data.js}"></script>
+    <script th:src="@{/static/home/plugs/address/province.js}"></script>
+
+	<script th:inline="javascript">
+
+
+		layui.use('form', function(){
+            var form = layui.form;
+            //省市区参数初始化
+            var defaults = {
+                s1: 'province',
+                s2: 'city',
+                s3: 'area',
+                v1: null,
+                v2: null,
+                v3: null
+            };
+
+            //自定义表单验证
+            form.verify({
+                //我们既支持上述函数式的方式，也支持下述数组的形式
+                //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+                password: [
+                    /^[\S]{6,16}$/
+                    ,'密码必须6到16位，且不能出现空格'
+                ],
+                verify_code:[
+                    /^.{4}$/
+                    ,'验证码为4位字符！'
+                ]
+            });
+
+		  //监听提交
+		  form.on('submit(formRegister)', function(data){
+              console.log(data.field);
+              var formData = data.field;
+              var load = layer.msg('发送验证邮件中...', {
+                  icon: 16,
+                  shade: 0.01,
+                  time:false
+              });
+              //提交表单，登录验证
+              $.ajax({
+                  url: "/home/user/register",
+                  type: "post",
+                  data: formData,
+                  success: function (res) {
+                      if (res.success == false){
+                          layer.msg(res.errMsg, {icon: 2,time:1500});
+                          return false;
+                      }
+                      layer.msg(res.errMsg, {icon: 1,time:1500});
+                      console.log(res);
+                  },
+                  error: function (res) {
+                      layer.msg(res, {icon: 2,time:1500});
+                  },
+                  complete:function(){
+                      //关闭加载动画
+                      layer.close(load);
+                  }
+              });
+              return false;
+		  });
+		});
+
+		/*验证邮箱地址是否正确*/
+		function isEmail(email){
+            var reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+            if(reg.test(email)){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+
+        /*后台验证邮箱地址是否可用*/
+        function checkEmail() {
+            var email = $("#email").val();
+            if (!isEmail(email)){
+                layer.msg("请输入正确的邮箱地址！", {icon: 2,time:1500});
+                return;
+            }
+            $.get("/home/user/checkEmailExist",{email:email},function (res) {
+                if (res.success == true){
+                    layer.msg(res.errMsg, {icon: 2,time:1500});
+                    return;
+                }
+                layer.msg(res.errMsg, {icon: 1,time:1500});
+            })
+        }
+	</script>
+</body>
+</html>

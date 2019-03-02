@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.home.dao.AnswersMapper">
+  <resultMap id="BaseResultMap" type="com.dtb.entity.Answers">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="question_id" jdbcType="INTEGER" property="questionId" />
+    <result column="approval_num" jdbcType="INTEGER" property="approvalNum" />
+    <result column="oppose_num" jdbcType="INTEGER" property="opposeNum" />
+    <result column="adoption_state" jdbcType="BIT" property="adoptionState" />
+    <result column="score" jdbcType="TINYINT" property="score" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.AnswersWithBLOBs">
+    <result column="answer_summary" jdbcType="LONGVARCHAR" property="answerSummary" />
+    <result column="answer_photos" jdbcType="LONGVARCHAR" property="answerPhotos" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, question_id, approval_num, oppose_num, adoption_state, score, delete_time, 
+    create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    answer_summary, answer_photos
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from as_answers
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from as_answers
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dtb.entity.AnswersWithBLOBs">
+    insert into as_answers (id, user_id, question_id, 
+      approval_num, oppose_num, adoption_state, 
+      score, delete_time, create_time, 
+      update_time, answer_summary, answer_photos
+      )
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{questionId,jdbcType=INTEGER}, 
+      #{approvalNum,jdbcType=INTEGER}, #{opposeNum,jdbcType=INTEGER}, #{adoptionState,jdbcType=BIT}, 
+      #{score,jdbcType=TINYINT}, #{deleteTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{answerSummary,jdbcType=LONGVARCHAR}, #{answerPhotos,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.dtb.entity.AnswersWithBLOBs">
+    insert into as_answers
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="questionId != null">
+        question_id,
+      </if>
+      <if test="approvalNum != null">
+        approval_num,
+      </if>
+      <if test="opposeNum != null">
+        oppose_num,
+      </if>
+      <if test="adoptionState != null">
+        adoption_state,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="deleteTime != null">
+        delete_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="answerSummary != null">
+        answer_summary,
+      </if>
+      <if test="answerPhotos != null">
+        answer_photos,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="questionId != null">
+        #{questionId,jdbcType=INTEGER},
+      </if>
+      <if test="approvalNum != null">
+        #{approvalNum,jdbcType=INTEGER},
+      </if>
+      <if test="opposeNum != null">
+        #{opposeNum,jdbcType=INTEGER},
+      </if>
+      <if test="adoptionState != null">
+        #{adoptionState,jdbcType=BIT},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=TINYINT},
+      </if>
+      <if test="deleteTime != null">
+        #{deleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="answerSummary != null">
+        #{answerSummary,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="answerPhotos != null">
+        #{answerPhotos,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.AnswersWithBLOBs">
+    update as_answers
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="questionId != null">
+        question_id = #{questionId,jdbcType=INTEGER},
+      </if>
+      <if test="approvalNum != null">
+        approval_num = #{approvalNum,jdbcType=INTEGER},
+      </if>
+      <if test="opposeNum != null">
+        oppose_num = #{opposeNum,jdbcType=INTEGER},
+      </if>
+      <if test="adoptionState != null">
+        adoption_state = #{adoptionState,jdbcType=BIT},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=TINYINT},
+      </if>
+      <if test="deleteTime != null">
+        delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="answerSummary != null">
+        answer_summary = #{answerSummary,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="answerPhotos != null">
+        answer_photos = #{answerPhotos,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.AnswersWithBLOBs">
+    update as_answers
+    set user_id = #{userId,jdbcType=INTEGER},
+      question_id = #{questionId,jdbcType=INTEGER},
+      approval_num = #{approvalNum,jdbcType=INTEGER},
+      oppose_num = #{opposeNum,jdbcType=INTEGER},
+      adoption_state = #{adoptionState,jdbcType=BIT},
+      score = #{score,jdbcType=TINYINT},
+      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      answer_summary = #{answerSummary,jdbcType=LONGVARCHAR},
+      answer_photos = #{answerPhotos,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Answers">
+    update as_answers
+    set user_id = #{userId,jdbcType=INTEGER},
+      question_id = #{questionId,jdbcType=INTEGER},
+      approval_num = #{approvalNum,jdbcType=INTEGER},
+      oppose_num = #{opposeNum,jdbcType=INTEGER},
+      adoption_state = #{adoptionState,jdbcType=BIT},
+      score = #{score,jdbcType=TINYINT},
+      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!--顶部导航栏-->
+    <ul th:fragment="top-menu" id="app" class="layui-nav" lay-filter="" style="text-align: center;margin-bottom: 0;">
+        <li class="layui-nav-item"><a th:href="@{/home/index/index}">首页</a></li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">知名师资</a>
+            <dl class="layui-nav-child">
+                <dd><a href="">知名教师</a></dd>
+                <dd><a href="">人气学霸</a></dd>
+                <dd><a href="">教师认证</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item"><a href="ques_ans.html">有问有答</a></li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">资料专区</a>
+            <dl class="layui-nav-child">
+                <dd><a href="">题目资料</a></dd>
+                <dd><a href="">复习资料</a></dd>
+                <dd><a href="">杂项资料</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item"><a href="">积分兑换</a></li>
+        <li class="layui-nav-item"><a href="">意见反馈</a></li>
+        <li class="layui-nav-item"><a th:href="@{/home/index/about}">联系我们</a></li>
+
+        <li class="layui-nav-item" th:if="${session.user} == null"><a th:href="@{/home/index/login}">登录</a></li>
+        <li class="layui-nav-item" th:if="${session.user} == null"><a th:href="@{/home/index/register}">注册</a></li>
+
+        <li class="layui-nav-item" th:if="${session.user} != null">
+            <a href="javascript:;"><img th:src="@{/static/home/images/1.jpg}" class="layui-nav-img" th:text="${session.user.userName}"></a>
+            <dl class="layui-nav-child">
+                <dd><a href="javascript:;">修改信息</a></dd>
+                <dd><a href="javascript:void(0);" id="JsSignOut">退了</a></dd>
+            </dl>
+        </li>
+        <script th:src="@{/static/home/plugs/vue/vue.js}"></script>
+        <script th:inline="javascript">
+            //安全退出
+            $('#JsSignOut').click(function(){
+                layer.confirm('确要定退出登录吗？', {
+                    title:'系统提示',
+                    btn: ['确定','取消']
+                }, function(){
+                    $.post("/home/user/logOut",function (res) {
+                        if (res.success == false){
+                            layer.msg(res.errMsg, {icon: 2,time:1500});
+                        }
+                        layer.msg(res.errMsg, {icon: 1,time:1500});
+                        setTimeout(goTo(res.data),1500);
+                    })
+                });
+            });
+
+            /*页面跳转*/
+            function goTo(url) {
+                window.location.href=url;//刷新当前界面
+            }
+        </script>
+    </ul>
+</html>

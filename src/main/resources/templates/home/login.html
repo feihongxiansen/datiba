@@ -1,0 +1,124 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>登录-答题吧</title>
+<style type="text/css">
+	body{
+		background: url("/static/home/images/login1.jpg");
+		animation-name:myfirst;
+		animation-duration:12s;
+		/*变换时间*/
+		animation-delay:2s;
+		/*动画开始时间*/
+		animation-iteration-count:infinite;
+		/*下一周期循环播放*/
+		animation-play-state:running;
+		/*动画开始运行*/
+	}
+	@keyframes myfirst
+	{
+		0%   {background:url("/static/home/images/login1.jpg");}
+		34%  {background:url("/static/home/images/login2.jpg");}
+		67%  {background:url("/static/home/images/login3.jpg");}
+		100% {background:url("/static/home/images/login1.jpg");}
+	}
+	.form{background: rgba(255,255,255,0.2);width:400px;margin:120px auto;}
+	/*阴影*/
+	.fa{display: inline-block;top: 27px;left: 6px;position: relative;color: #ccc;}
+	input[type="text"],input[type="password"]{padding-left:26px;}
+	.checkbox{padding-left:21px;}
+</style>
+
+</head>
+	
+<body>
+
+	<!--顶部导航栏-->
+	<div th:replace="home/public/top-menu::top-menu"></div>
+
+
+	<div class="container">
+        <div class="form row">
+			<form class="layui-form" id="form">
+            <div class="form-horizontal col-md-offset-3" id="login_form">
+                <h3 class="form-title">登录</h3>
+                <div class="col-md-9">
+                    <div class="form-group">
+                        <i class="fa fa-user fa-lg"></i>
+                        <input class="form-control required" lay-verify="required|email" type="text" placeholder="邮箱地址" id="email" name="email" autofocus value="tjpu_feihong@163.com"/>
+                    </div>
+                    <div class="form-group">
+						<i class="fa fa-lock fa-lg"></i>
+						<input class="form-control required" lay-verify="required|password" type="password" placeholder="登录密码" id="password" name="password" maxlength="16" th:value="123456"/>
+                    </div>
+                    <div class="form-group">
+						<i class="fa fa-lock fa-lg"></i>
+						<input class="form-control required" lay-verify="required|verifyCode" type="text" placeholder="验证码" id="verifyCode" name="verifyCode" maxlength="4"/>
+                    </div>
+                    <div class="form-group">
+                        <img id="verify" onclick="refreshVerify()" th:src="@{/home/index/getVerifyCode}"><button onclick="refreshVerify()" type="button" class="layui-btn">刷新</button>
+                    </div>
+                    <div class="form-group col-md-offset-9">
+                        <button class="btn btn-success pull-center" lay-submit lay-filter="formLogin">登录</button>
+                    </div>
+                </div>
+            </div>
+			</form>
+        </div>
+    </div>
+	<script th:src="@{/static/home/plugs/layui/layui.js}"></script>
+	<script th:inline="javascript">
+		layui.use('form', function(){
+		    var form = layui.form;
+
+		    //监听提交
+		    form.on('submit(formLogin)', function(data){
+
+			    var formData = data.field;
+
+			    //提交表单，登录验证
+                $.ajax({
+                    url: "/home/user/checkLogin",
+                    type: "post",
+                    data: formData,
+                    success: function (d) {
+                        if (d.success == false){
+                            layer.msg(d.errMsg);
+                            return false;
+                        }
+                        window.location.href = "/home/index/index";
+                    },
+                    error: function (res) {
+                        layer.msg(res);
+                    },
+                });
+			    return false;
+		    });
+
+		    //自定义表单验证
+            form.verify({
+                //我们既支持上述函数式的方式，也支持下述数组的形式
+                //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+                password: [
+                    /^[\S]{6,16}$/
+                    ,'密码必须6到16位，且不能出现空格'
+                ],
+                verify_code:[
+                    /^.{4}$/
+                    ,'验证码为4位字符！'
+                ]
+            });
+		});
+
+		/*刷新验证码*/
+        function refreshVerify() {
+            var myData = new Date();
+            var times = myData.getTime();
+            $("#verify").attr("src", "/home/index/getVerifyCode?times="+times);
+        }
+
+    </script>
+</body>
+</html>

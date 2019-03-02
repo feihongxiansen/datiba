@@ -1,0 +1,59 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{},~{})">
+	<title>激活账户-答题吧</title>
+</head>
+	
+<body>
+
+	<!--顶部导航栏导入-->
+	<div th:replace="home/public/top-menu::top-menu"></div>
+
+
+	<div class="container" style="margin-bottom: 30%;">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2" style="margin-top: 30px;">
+				<h2>账号激活</h2>
+				<blockquote class="layui-elem-quote" th:text="${data.errMsg}"></blockquote>
+				<hr class="layui-bg-red">
+				<a th:href="@{/home/index/login}" class="layui-btn" th:if="${data.success}==true">现在去登录</a>
+				<button th:onclick="'javascript:sendActivaEmail('+${data.data}+');'" class="layui-btn layui-btn-warm" th:if="${data.success}==false">重发激活邮件</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- 底部导航栏 start-->
+	<footer th:replace="home/public/footer::footer"></footer>
+	<!-- 底部导航栏end -->
+
+	<script th:inline="javascript">
+		function sendActivaEmail(id) {
+            var load = layer.msg('发送验证邮件中...', {
+                icon: 16,
+                shade: 0.01,
+                time:false
+            });
+            $.ajax({
+                url: "/home/user/resetEmailCode/"+id,
+                type: "get",
+                success: function (res) {
+                    if (res.success == false){
+                        layer.msg(res.errMsg, {icon: 2,time:1500});
+                        return;
+                    }
+                    layer.msg(res.errMsg, {icon: 1,time:1500});
+                    console.log(res);
+                },
+                error: function (res) {
+                    layer.msg(res, {icon: 2,time:1500});
+                },
+                complete:function(){
+                    //关闭加载动画
+                    layer.close(load);
+                }
+            });
+        }
+	</script>
+
+</body>
+</html>

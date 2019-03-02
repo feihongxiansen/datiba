@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!-- 底部导航栏 start-->
+<footer th:fragment="footer" class="container-fluid" style="margin-top:15px;">
+    <div class="row text-center" style="background-color:#424242;color:#E0E0E0;padding:30px;">
+        <span class="layui-breadcrumb" lay-separator="|">
+          <a th:href="@{/home/index/index}">首页</a>
+          <a href="">知名教师</a>
+          <a href="">有问有答</a>
+          <a href="">资料专区</a>
+          <a href="">积分兑换</a>
+          <a href="">意见反馈</a>
+          <a th:href="@{/home/index/about}">联系我们</a>
+        </span>
+    </div>
+    <script th:src="@{/static/home/plugs/layui/layui.js}"></script>
+    <script th:src="@{/static/home/js/public.js}"></script>
+</footer>
+<!-- 底部导航栏end -->
