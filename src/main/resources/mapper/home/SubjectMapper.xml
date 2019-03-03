@@ -11,6 +11,14 @@
   <sql id="Base_Column_List">
     id, subject_name, create_time, update_time, delete_time
   </sql>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from as_subject
+    WHERE delete_time IS NULL
+  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

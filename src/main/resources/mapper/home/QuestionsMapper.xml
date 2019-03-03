@@ -22,9 +22,20 @@
     id, user_id, invita_id, integral, solve_state, question_state, subject_id, grade_id, 
     create_time, delete_time, update_time
   </sql>
+
   <sql id="Blob_Column_List">
     question_summary, question_photos
   </sql>
+
+  <select id="selectQuestionList" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from as_questions
+    where delete_time IS NULL
+  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />

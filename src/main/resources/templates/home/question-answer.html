@@ -1,0 +1,382 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>有问有答-答题吧</title>
+    <style>
+        .label {
+            color: #746F6F;
+        }
+
+        .label-info {
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<nav class="navbar navbar-default ex-navbar">
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <form class="navbar-form navbar-left" style="text-align: center;width: 100%;">
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">年级 <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">小学</a></li>
+                        <li><a href="#">初一</a></li>
+                        <li><a href="#">初二</a></li>
+                        <li><a href="#">初三</a></li>
+                        <li><a href="#">高一</a></li>
+                        <li><a href="#">高二</a></li>
+                        <li><a href="#">高三</a></li>
+                    </ul>
+                </div><!-- /btn-group -->
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">学科 <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">语文</a></li>
+                        <li><a href="#">数学</a></li>
+                        <li><a href="#">英语</a></li>
+                        <li><a href="#">地理</a></li>
+                        <li><a href="#">历史</a></li>
+                        <li><a href="#">政治</a></li>
+                        <li><a href="#">物理</a></li>
+                        <li><a href="#">化学</a></li>
+                        <li><a href="#">生物</a></li>
+                    </ul>
+                </div><!-- /btn-group -->
+                <input type="text" class="form-control" placeholder="搜索......">
+            </div><!-- /input-group -->
+            <button type="submit" class="btn btn-default">搜索</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 col-xs-10">
+            <ul id="myTab" class="nav nav-tabs">
+                <li class="active">
+                    <a href="#home" data-toggle="tab">
+                        全部问题
+                    </a>
+                </li>
+                <li><a href="#ios" data-toggle="tab">积分悬赏</a></li>
+                <li class="dropdown">
+                    <a href="#" id="myTabDrop1" class="dropdown-toggle"
+                       data-toggle="dropdown">题目状态
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                        <li><a href="#jmeter" tabindex="-1" data-toggle="tab">有人解答</a></li>
+                        <li><a href="#ejb" tabindex="-1" data-toggle="tab">无人解答</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div id="myTabContent" class="tab-content" style="padding: 20px;">
+                <div class="tab-pane fade in active" id="home">
+                    <p>
+                        <strong>年级：</strong>
+                        <span class="label label-info">全部</span>
+                        <span class="label">小学</span>
+                        <span class="label">初一</span>
+                        <span class="label">初二</span>
+                        <span class="label">初三</span>
+                        <span class="label">高一</span>
+                        <span class="label">高二</span>
+                        <span class="label">高三</span>
+                    </p>
+                    <p>
+                        <strong>学科：</strong>
+                        <span class="label label-info">全部</span>
+                        <span class="label">语文</span>
+                        <span class="label">数学</span>
+                        <span class="label">英语</span>
+                        <span class="label">历史</span>
+                        <span class="label">地理</span>
+                        <span class="label">政治</span>
+                        <span class="label">生物</span>
+                        <span class="label">物理</span>
+                        <span class="label">化学</span>
+                    </p>
+
+                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                        <div class="col-md-2">
+                            <a href="#">
+                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
+                                <p class="text-center">用户昵称</p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="text-left">
+                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="col-md-3 text-success">[小学数学]</div>
+                                    <div class="col-md-9 text-muted">2019-02-21</div>
+                                </div>
+
+                                <div class="col-md-6 text-right">
+                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
+                                    <div class="col-md-4 text-primary">回答：（55）</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                        <div class="col-md-2">
+                            <a href="#">
+                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
+                                <p class="text-center">用户昵称</p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="text-left">
+                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="col-md-3 text-success">[小学数学]</div>
+                                    <div class="col-md-9 text-muted">2019-02-21</div>
+                                </div>
+
+                                <div class="col-md-6 text-right">
+                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
+                                    <div class="col-md-4 text-primary">回答：（55）</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                        <div class="col-md-2">
+                            <a href="#">
+                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
+                                <p class="text-center">用户昵称</p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="text-left">
+                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="col-md-3 text-success">[小学数学]</div>
+                                    <div class="col-md-9 text-muted">2019-02-21</div>
+                                </div>
+
+                                <div class="col-md-6 text-right">
+                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
+                                    <div class="col-md-4 text-primary">回答：（55）</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                        <div class="col-md-2">
+                            <a href="#">
+                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
+                                <p class="text-center">用户昵称</p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="text-left">
+                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="col-md-3 text-success">[小学数学]</div>
+                                    <div class="col-md-9 text-muted">2019-02-21</div>
+                                </div>
+
+                                <div class="col-md-6 text-right">
+                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
+                                    <div class="col-md-4 text-primary">回答：（55）</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                        <div class="col-md-2">
+                            <a href="#">
+                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
+                                <p class="text-center">用户昵称</p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="text-left">
+                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="col-md-3 text-success">[小学数学]</div>
+                                    <div class="col-md-9 text-muted">2019-02-21</div>
+                                </div>
+
+                                <div class="col-md-6 text-right">
+                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
+                                    <div class="col-md-4 text-primary">回答：（55）</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div id="page" class="col-md-8 col-md-offset-2"></div>-->
+
+                </div>
+
+
+                <div class="tab-pane fade" id="ios">
+                    <p>
+                        <strong>年级：</strong>
+                        <span class="label label-info">全部</span>
+                        <span class="label">小学</span>
+                        <span class="label">初一</span>
+                        <span class="label">初二</span>
+                        <span class="label">初三</span>
+                        <span class="label">高一</span>
+                        <span class="label">高二</span>
+                        <span class="label">高三</span>
+                    </p>
+                    <p>
+                        <strong>学科：</strong>
+                        <span class="label label-info">全部</span>
+                        <span class="label">语文</span>
+                        <span class="label">数学</span>
+                        <span class="label">英语</span>
+                        <span class="label">历史</span>
+                        <span class="label">地理</span>
+                        <span class="label">政治</span>
+                        <span class="label">生物</span>
+                        <span class="label">物理</span>
+                        <span class="label">化学</span>
+                    </p>
+                </div>
+                <div class="tab-pane fade" id="jmeter">
+                    <p>
+                        <strong>年级：</strong>
+                        <span class="label label-info">全部</span>
+                        <span class="label">小学</span>
+                        <span class="label">初一</span>
+                        <span class="label">初二</span>
+                        <span class="label">初三</span>
+                        <span class="label">高一</span>
+                        <span class="label">高二</span>
+                        <span class="label">高三</span>
+                    </p>
+                    <p>
+                        <strong>学科：</strong>
+                        <span class="label label-info">全部</span>
+                        <span class="label">语文</span>
+                        <span class="label">数学</span>
+                        <span class="label">英语</span>
+                        <span class="label">历史</span>
+                        <span class="label">地理</span>
+                        <span class="label">政治</span>
+                        <span class="label">生物</span>
+                        <span class="label">物理</span>
+                        <span class="label">化学</span>
+                    </p>
+                </div>
+                <div class="tab-pane fade" id="ejb">
+                    <p>
+                        <strong>年级：</strong>
+                        <span class="label label-info">全部</span>
+                        <span class="label">小学</span>
+                        <span class="label">初一</span>
+                        <span class="label">初二</span>
+                        <span class="label">初三</span>
+                        <span class="label">高一</span>
+                        <span class="label">高二</span>
+                        <span class="label">高三</span>
+                    </p>
+                    <p>
+                        <strong>学科：</strong>
+                        <span class="label label-info">全部</span>
+                        <span class="label">语文</span>
+                        <span class="label">数学</span>
+                        <span class="label">英语</span>
+                        <span class="label">历史</span>
+                        <span class="label">地理</span>
+                        <span class="label">政治</span>
+                        <span class="label">生物</span>
+                        <span class="label">物理</span>
+                        <span class="label">化学</span>
+                    </p>
+                    <p>Enterprise Java Beans（EJB）是一个创建高度可扩展性和强大企业级应用程序的开发架构，部署在兼容应用程序服务器（比如 JBOSS、Web Logic 等）的 J2EE 上。
+                    </p>
+                </div>
+            </div>
+            <div id="page" class="col-md-8 col-md-offset-2"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 底部导航栏 start-->
+<footer th:replace="home/public/footer::footer"></footer>
+<!-- 底部导航栏end -->
+
+
+<script th:inline="javascript">
+    layui.use('laypage', function(){
+        var laypage = layui.laypage;
+
+        //执行一个laypage实例
+        laypage.render({
+            elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+            ,count: 500 //数据总数，从服务端得到
+            ,layout: ['limit', 'prev', 'page', 'next','count']
+            ,jump:function(obj){
+                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                console.log(obj.limit); //得到每页显示的条数
+                //分页切换的回掉
+//                $.ajax({
+//                    type:'post',
+//                    dataType:'json',
+//                    data:{'curr':obj.curr,'limit':obj.limit},
+//                    url:'../../DataShow3',
+//                    success:function(data){
+//                        showData(data);
+//                    }
+//                })
+            }
+        });
+    });
+</script>
+</body>
+</html>

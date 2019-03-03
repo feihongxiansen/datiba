@@ -30,19 +30,20 @@ public class WebConfigurer implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // addPathPatterns("/**") 表示拦截所有的请求，
         // excludePathPatterns("/login", "/register") 表示除了登陆与注册之外，因为登陆注册不需要登陆也可以访问
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns("/static/home/**",
-                "/home/user/checkLogin",    //登录验证
-                "/home/user/logOut",        //退出登录
-                "/home/user/checkEmailExist",//检测邮箱地址是否可用
-                "/home/user/register",      //用户注册
-                "/home/user/activation/**",      //激活账号
-                "/home/user/resetEmailCode/**",      //重新发送验证邮件
-                "/home/index/**"     //注册页面
-//                "/home/index/register",     //注册页面
-//                "/home/index/login",        //登录页面
-//                "/home/index/about",     //联系我们页面
-//                "/home/index/getVerifyCode",//获取验证码图片
-//                "/home/index/index"
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns("/static/home/**"
+                ,"/home/user/checkLogin"    //登录验证
+                ,"/home/user/logOut"        //退出登录
+                ,"/home/user/checkEmailExist"//检测邮箱地址是否可用
+                ,"/home/user/register"      //用户注册
+                ,"/home/user/activation/**"      //激活账号
+                ,"/home/user/resetEmailCode/**"      //重新发送验证邮件
+                ,"/home/index/**"
+                ,"/home/question/getQuestionList" //获取问题列表
+//                ,"/home/index/register"     //注册页面
+//                ,"/home/index/login"        //登录页面
+//                ,"/home/index/about"     //联系我们页面
+//                ,"/home/index/getVerifyCode"//获取验证码图片
+//                ,"/home/index/index"
         );       //主页
     }
 }

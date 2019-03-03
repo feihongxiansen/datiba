@@ -92,4 +92,16 @@ public class IndexController {
     public String about(){
         return "home/about";
     }
+
+    /**
+     * @auther: lmx
+     * @date: 2019/3/3 11:24
+     * @descript: 有问有答页面渲染
+     * @param:
+     * @return: java.lang.String
+     */
+    @RequestMapping("questionAnswer")
+    public String questionAnswer(){
+        return "home/question-answer";
+    }
 }

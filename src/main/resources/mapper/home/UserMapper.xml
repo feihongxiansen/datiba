@@ -48,6 +48,7 @@
     <include refid="Blob_Column_List" />
     from as_user
     where phone = #{phone,jdbcType=VARCHAR}
+    and delete_time is null
   </select>
 
   <select id="selectByEmail" resultMap="ResultMapWithBLOBs">
@@ -57,6 +58,7 @@
       <include refid="Blob_Column_List" />
       from as_user
       where email = #{email,jdbcType=VARCHAR}
+      and delete_time is null
   </select>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
