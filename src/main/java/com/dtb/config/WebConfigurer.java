@@ -39,6 +39,9 @@ public class WebConfigurer implements WebMvcConfigurer {
                 ,"/home/user/resetEmailCode/**"      //重新发送验证邮件
                 ,"/home/index/**"
                 ,"/home/question/getQuestionList" //获取问题列表
+                ,"/home/question/getAnswerList" //获取答案列表
+                ,"/home/grade/getGradeList" //获取年级列表
+                ,"/home/subject/getSubjectList" //获取学科列表
 //                ,"/home/index/register"     //注册页面
 //                ,"/home/index/login"        //登录页面
 //                ,"/home/index/about"     //联系我们页面

@@ -1,11 +1,16 @@
 package com.dtb;
 
-import com.dtb.entity.Questions;
+import com.dtb.entity.QuestionsAssociation;
+import com.dtb.home.dao.AnswersMapper;
+import com.dtb.home.dao.QuestionsMapper;
 import com.dtb.home.service.QAService;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author：lmx
@@ -18,11 +23,17 @@ public class QAServiceTest extends DtbApplicationTests {
     @Autowired
     private QAService qaService;
 
+    @Autowired
+    private QuestionsMapper questionsMapper;
+
+    @Autowired
+    private AnswersMapper answersMapper;
+
     @Test
     public void findQuestionsListTest(){
-        PageHelper.startPage(1,1);
-        Page<Questions> questions = qaService.findQuestionList();
-        System.out.println("findQuestionListTest:"+questions);
+//        PageHelper.startPage(1,1);
+//        Page<Questions> questions = qaService.findQuestionList();
+//        System.out.println("findQuestionListTest:"+questions.getPages());
 
     }
 }

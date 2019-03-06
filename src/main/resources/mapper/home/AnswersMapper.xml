@@ -17,6 +17,10 @@
     <result column="answer_summary" jdbcType="LONGVARCHAR" property="answerSummary" />
     <result column="answer_photos" jdbcType="LONGVARCHAR" property="answerPhotos" />
   </resultMap>
+  <resultMap extends="ResultMapWithBLOBs" id="ResultMapAssociation" type="com.dtb.entity.AnswersAssociation">
+    <association column="user_id" property="user" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"></association>
+    <association column="question_id" property="question" select="com.dtb.home.dao.QuestionsMapper.selectByPrimaryKey"></association>
+  </resultMap>
   <sql id="Base_Column_List">
     id, user_id, question_id, approval_num, oppose_num, adoption_state, score, delete_time, 
     create_time, update_time
@@ -24,7 +28,26 @@
   <sql id="Blob_Column_List">
     answer_summary, answer_photos
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+
+  <select id="selectByQuestionId" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from as_answers
+    where question_id = #{questionId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAnswerList" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from as_answers
+    where question_id = #{questionId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapAssociation">
     select 
     <include refid="Base_Column_List" />
     ,

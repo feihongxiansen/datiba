@@ -18,6 +18,16 @@
     <result column="question_summary" jdbcType="LONGVARCHAR" property="questionSummary" />
     <result column="question_photos" jdbcType="LONGVARCHAR" property="questionPhotos" />
   </resultMap>
+  <resultMap extends="ResultMapWithBLOBs" id="ResultMapAssociation" type="com.dtb.entity.QuestionsAssociation">
+    <association column="user_id" property="user" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"></association>
+    <association column="invita_id" property="invita" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"></association>
+    <association column="grade_id" property="grade" select="com.dtb.home.dao.GradeMapper.selectByPrimaryKey"></association>
+    <association column="subject_id" property="subject" select="com.dtb.home.dao.SubjectMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <resultMap extends="ResultMapAssociation" id="ResultMapCollection" type="com.dtb.entity.QuestionsAssociation">
+    <collection column="id" property="answers" ofType="com.dtb.entity.AnswersWithBLOBs" select="com.dtb.home.dao.AnswersMapper.selectByQuestionId"></collection>
+  </resultMap>
+
   <sql id="Base_Column_List">
     id, user_id, invita_id, integral, solve_state, question_state, subject_id, grade_id, 
     create_time, delete_time, update_time
@@ -27,16 +37,40 @@
     question_summary, question_photos
   </sql>
 
-  <select id="selectQuestionList" resultMap="ResultMapWithBLOBs">
+  <select id="selectAnswerList" resultMap="ResultMapCollection">
+    SELECT
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    FROM as_questions
+    WHERE id=#{questionId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectQuestionList" resultMap="ResultMapAssociation">
     select
+    (SELECT COUNT(*) FROM as_answers AS a WHERE a.question_id=as_questions.id ) AS `count`,
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
     from as_questions
-    where delete_time IS NULL
+    <where>
+      <if test="gradeId != null">
+       AND grade_id = #{gradeId,jdbcType=INTEGER}
+      </if>
+      <if test="subjectId != null">
+       AND subject_id = #{subjectId,jdbcType=INTEGER}
+      </if>
+      <if test="questionSummary != null and questionSummary!=''">
+       AND match (question_summary) against(#{questionSummary,jdbcType=LONGVARCHAR} IN BOOLEAN MODE)
+      </if>
+      <if test="needIntegral == true">
+       AND integral > 0
+      </if>
+      AND delete_time IS NULL
+    </where>
   </select>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapAssociation">
     select 
     <include refid="Base_Column_List" />
     ,

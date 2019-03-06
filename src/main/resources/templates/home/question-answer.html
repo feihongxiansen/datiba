@@ -10,6 +10,9 @@
         .label-info {
             color: #FFFFFF;
         }
+        [v-cloak]{
+            display: none;
+        }
     </style>
 </head>
 
@@ -17,42 +20,26 @@
 
 <!--顶部导航栏-->
 <div th:replace="home/public/top-menu::top-menu"></div>
-
+<div id="question_container" v-cloak>
 <nav class="navbar navbar-default ex-navbar">
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <form class="navbar-form navbar-left" style="text-align: center;width: 100%;">
-            <div class="input-group">
-                <div class="input-group-btn">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">年级 <span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">小学</a></li>
-                        <li><a href="#">初一</a></li>
-                        <li><a href="#">初二</a></li>
-                        <li><a href="#">初三</a></li>
-                        <li><a href="#">高一</a></li>
-                        <li><a href="#">高二</a></li>
-                        <li><a href="#">高三</a></li>
-                    </ul>
-                </div><!-- /btn-group -->
-                <div class="input-group-btn">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">学科 <span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">语文</a></li>
-                        <li><a href="#">数学</a></li>
-                        <li><a href="#">英语</a></li>
-                        <li><a href="#">地理</a></li>
-                        <li><a href="#">历史</a></li>
-                        <li><a href="#">政治</a></li>
-                        <li><a href="#">物理</a></li>
-                        <li><a href="#">化学</a></li>
-                        <li><a href="#">生物</a></li>
-                    </ul>
-                </div><!-- /btn-group -->
-                <input type="text" class="form-control" placeholder="搜索......">
-            </div><!-- /input-group -->
-            <button type="submit" class="btn btn-default">搜索</button>
+        <form class="navbar-form navbar-left form-inline" style="text-align: center;width: 100%;">
+            <div class="form-group">
+                <select class="form-control" v-model="searchGradeId">
+                    <option selected value="">所有年级</option>
+                    <option v-for="item in gradeList" :value="item.id">{{item.gradeName}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-control" v-model="searchSubjectId">
+                    <option selected value="">所有学科</option>
+                    <option v-for="item in subjectList" :value="item.id">{{item.subjectName}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" v-model="questionSummary" class="form-control" placeholder="题目内容...">
+            </div>
+            <button type="button" @click="searchBtn()" class="btn btn-default">搜索</button>
         </form>
     </div>
 </nav>
@@ -62,321 +49,208 @@
         <div class="col-md-12 col-xs-10">
             <ul id="myTab" class="nav nav-tabs">
                 <li class="active">
-                    <a href="#home" data-toggle="tab">
+                    <a href="#home" data-toggle="tab" @click="changeIntegral('false')">
                         全部问题
                     </a>
                 </li>
-                <li><a href="#ios" data-toggle="tab">积分悬赏</a></li>
-                <li class="dropdown">
-                    <a href="#" id="myTabDrop1" class="dropdown-toggle"
-                       data-toggle="dropdown">题目状态
-                        <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
-                        <li><a href="#jmeter" tabindex="-1" data-toggle="tab">有人解答</a></li>
-                        <li><a href="#ejb" tabindex="-1" data-toggle="tab">无人解答</a></li>
-                    </ul>
-                </li>
+                <li><a href="#needintegral" @click="changeIntegral('true')" data-toggle="tab">积分悬赏</a></li>
             </ul>
 
-            <div id="myTabContent" class="tab-content" style="padding: 20px;">
-                <div class="tab-pane fade in active" id="home">
+            <div class="tab-content" style="padding: 20px;">
+                <div class="tab-pane fade in active">
                     <p>
                         <strong>年级：</strong>
-                        <span class="label label-info">全部</span>
-                        <span class="label">小学</span>
-                        <span class="label">初一</span>
-                        <span class="label">初二</span>
-                        <span class="label">初三</span>
-                        <span class="label">高一</span>
-                        <span class="label">高二</span>
-                        <span class="label">高三</span>
+                        <span class="label" :class="{'label-info':gradeId==''}" @click="changeGradeId('')">全部</span>
+                        <span v-for="item in gradeList"
+                              @click="changeGradeId(item.id)"
+                              class="label"
+                              :class="{'label-info':gradeId==item.id}">{{item.gradeName}}</span>
                     </p>
                     <p>
                         <strong>学科：</strong>
-                        <span class="label label-info">全部</span>
-                        <span class="label">语文</span>
-                        <span class="label">数学</span>
-                        <span class="label">英语</span>
-                        <span class="label">历史</span>
-                        <span class="label">地理</span>
-                        <span class="label">政治</span>
-                        <span class="label">生物</span>
-                        <span class="label">物理</span>
-                        <span class="label">化学</span>
-                    </p>
-
-                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
-                        <div class="col-md-2">
-                            <a href="#">
-                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
-                                <p class="text-center">用户昵称</p>
-                            </a>
-                        </div>
-
-                        <div class="col-md-10">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p class="text-left">
-                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="col-md-3 text-success">[小学数学]</div>
-                                    <div class="col-md-9 text-muted">2019-02-21</div>
-                                </div>
-
-                                <div class="col-md-6 text-right">
-                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
-                                    <div class="col-md-4 text-primary">回答：（55）</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
-                        <div class="col-md-2">
-                            <a href="#">
-                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
-                                <p class="text-center">用户昵称</p>
-                            </a>
-                        </div>
-
-                        <div class="col-md-10">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p class="text-left">
-                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="col-md-3 text-success">[小学数学]</div>
-                                    <div class="col-md-9 text-muted">2019-02-21</div>
-                                </div>
-
-                                <div class="col-md-6 text-right">
-                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
-                                    <div class="col-md-4 text-primary">回答：（55）</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
-                        <div class="col-md-2">
-                            <a href="#">
-                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
-                                <p class="text-center">用户昵称</p>
-                            </a>
-                        </div>
-
-                        <div class="col-md-10">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p class="text-left">
-                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="col-md-3 text-success">[小学数学]</div>
-                                    <div class="col-md-9 text-muted">2019-02-21</div>
-                                </div>
-
-                                <div class="col-md-6 text-right">
-                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
-                                    <div class="col-md-4 text-primary">回答：（55）</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
-                        <div class="col-md-2">
-                            <a href="#">
-                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
-                                <p class="text-center">用户昵称</p>
-                            </a>
-                        </div>
-
-                        <div class="col-md-10">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p class="text-left">
-                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="col-md-3 text-success">[小学数学]</div>
-                                    <div class="col-md-9 text-muted">2019-02-21</div>
-                                </div>
-
-                                <div class="col-md-6 text-right">
-                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
-                                    <div class="col-md-4 text-primary">回答：（55）</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
-                        <div class="col-md-2">
-                            <a href="#">
-                                <img th:src="@{/static/home/images/2.jpg}" style="width: 100%;" class="img-rounded">
-                                <p class="text-center">用户昵称</p>
-                            </a>
-                        </div>
-
-                        <div class="col-md-10">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p class="text-left">
-                                        甲乙两个小朋友各有一袋糖，没带糖，不到20颗，如果甲给乙一定数量的糖后，甲的糖是乙的糖的2倍，如果乙给甲，同样数量的糖后，甲的糖就是乙的糖颗数的三倍。那么甲乙两个小朋友共有多少颗糖？
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="col-md-3 text-success">[小学数学]</div>
-                                    <div class="col-md-9 text-muted">2019-02-21</div>
-                                </div>
-
-                                <div class="col-md-6 text-right">
-                                    <div class="col-md-8 text-primary">悬赏积分：60分</div>
-                                    <div class="col-md-4 text-primary">回答：（55）</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--<div id="page" class="col-md-8 col-md-offset-2"></div>-->
-
-                </div>
-
-
-                <div class="tab-pane fade" id="ios">
-                    <p>
-                        <strong>年级：</strong>
-                        <span class="label label-info">全部</span>
-                        <span class="label">小学</span>
-                        <span class="label">初一</span>
-                        <span class="label">初二</span>
-                        <span class="label">初三</span>
-                        <span class="label">高一</span>
-                        <span class="label">高二</span>
-                        <span class="label">高三</span>
-                    </p>
-                    <p>
-                        <strong>学科：</strong>
-                        <span class="label label-info">全部</span>
-                        <span class="label">语文</span>
-                        <span class="label">数学</span>
-                        <span class="label">英语</span>
-                        <span class="label">历史</span>
-                        <span class="label">地理</span>
-                        <span class="label">政治</span>
-                        <span class="label">生物</span>
-                        <span class="label">物理</span>
-                        <span class="label">化学</span>
-                    </p>
-                </div>
-                <div class="tab-pane fade" id="jmeter">
-                    <p>
-                        <strong>年级：</strong>
-                        <span class="label label-info">全部</span>
-                        <span class="label">小学</span>
-                        <span class="label">初一</span>
-                        <span class="label">初二</span>
-                        <span class="label">初三</span>
-                        <span class="label">高一</span>
-                        <span class="label">高二</span>
-                        <span class="label">高三</span>
-                    </p>
-                    <p>
-                        <strong>学科：</strong>
-                        <span class="label label-info">全部</span>
-                        <span class="label">语文</span>
-                        <span class="label">数学</span>
-                        <span class="label">英语</span>
-                        <span class="label">历史</span>
-                        <span class="label">地理</span>
-                        <span class="label">政治</span>
-                        <span class="label">生物</span>
-                        <span class="label">物理</span>
-                        <span class="label">化学</span>
-                    </p>
-                </div>
-                <div class="tab-pane fade" id="ejb">
-                    <p>
-                        <strong>年级：</strong>
-                        <span class="label label-info">全部</span>
-                        <span class="label">小学</span>
-                        <span class="label">初一</span>
-                        <span class="label">初二</span>
-                        <span class="label">初三</span>
-                        <span class="label">高一</span>
-                        <span class="label">高二</span>
-                        <span class="label">高三</span>
-                    </p>
-                    <p>
-                        <strong>学科：</strong>
-                        <span class="label label-info">全部</span>
-                        <span class="label">语文</span>
-                        <span class="label">数学</span>
-                        <span class="label">英语</span>
-                        <span class="label">历史</span>
-                        <span class="label">地理</span>
-                        <span class="label">政治</span>
-                        <span class="label">生物</span>
-                        <span class="label">物理</span>
-                        <span class="label">化学</span>
-                    </p>
-                    <p>Enterprise Java Beans（EJB）是一个创建高度可扩展性和强大企业级应用程序的开发架构，部署在兼容应用程序服务器（比如 JBOSS、Web Logic 等）的 J2EE 上。
+                        <span class="label" :class="{'label-info':subjectId==''}" @click="changeSubjectId('')">全部</span>
+                        <span v-for="item in subjectList"
+                              @click="changeSubjectId(item.id)"
+                              class="label"
+                              :class="{'label-info':subjectId==item.id}">{{item.subjectName}}</span>
                     </p>
                 </div>
             </div>
+
+            <div id="myTabContent" class="tab-content" style="padding: 20px;">
+                <div class="tab-pane fade in active" id="home">
+                    <div class="row" v-for="item in questionList" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                        <div class="col-md-2">
+                            <a href="#">
+                                <img :src="item.user.userPhoto" style="width: 100%;" class="img-rounded" />
+                                <p class="text-center">{{item.user.nickName}}</p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="text-left">
+                                        {{item.questionSummary}}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="col-md-3 text-success">[{{item.grade.gradeName}}{{item.subject.subjectName}}]</div>
+                                    <div class="col-md-9 text-muted">{{item.createTime}}</div>
+                                </div>
+
+                                <div class="col-md-6 text-right">
+                                    <div class="col-md-8 text-primary">悬赏积分：{{item.integral}}分</div>
+                                    <a :href="'/home/question/getAnswerList?questionId='+item.id" class="col-md-4 text-primary">回答：（{{item.count}}）</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <ul class="pagination">
+                <li :class="{'disabled':pageNum<=1}" @click="changePage(pageNum-1)"><a href="#">&laquo;</a></li>
+                <li :class="{'disabled':pageNum==item}" v-for="(item,index) in pages" @click="changePage(item)"><a href="#">{{item}}</a></li>
+                <li :class="{'disabled':pageNum>=pages}" @click="changePage(pageNum+1)"><a href="#">&raquo;</a></li>
+            </ul>
             <div id="page" class="col-md-8 col-md-offset-2"></div>
         </div>
     </div>
 </div>
-
+</div>
 
 <!-- 底部导航栏 start-->
 <footer th:replace="home/public/footer::footer"></footer>
 <!-- 底部导航栏end -->
 
+<script th:src="@{/static/home/plugs/vue/vue.js}"></script>
 
+<!--vue相关js-->
 <script th:inline="javascript">
-    layui.use('laypage', function(){
-        var laypage = layui.laypage;
 
-        //执行一个laypage实例
-        laypage.render({
-            elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
-            ,count: 500 //数据总数，从服务端得到
-            ,layout: ['limit', 'prev', 'page', 'next','count']
-            ,jump:function(obj){
-                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
-                console.log(obj.limit); //得到每页显示的条数
-                //分页切换的回掉
-//                $.ajax({
-//                    type:'post',
-//                    dataType:'json',
-//                    data:{'curr':obj.curr,'limit':obj.limit},
-//                    url:'../../DataShow3',
-//                    success:function(data){
-//                        showData(data);
-//                    }
-//                })
-            }
-        });
+    var layer,form;
+    layui.use(['laypage','layer', 'form'], function(){
+        laypage = layui.laypage
+            ,layer = layui.layer
+            ,form = layui.form;
     });
+
+    var app = new Vue({
+        el:"#question_container",
+        data:{
+            subjectList:"",//学科信息
+            gradeList:"",//年级信息
+            questionList:"",//问题列表
+            needIntegral:false,//是否需要积分
+            questionSummary:null,//搜索内容
+            gradeId:"",//当前年级id，默认空，为全部
+            searchGradeId:"",//搜索时的年级id，默认全部年级
+            searchSubjectId:"",//搜索时的学科id，默认全部学科
+            subjectId:"",//当前学科id，默认空，为全部
+            pageNum:1,//当前页码，默认为1
+            pageSize:10,//每页显示条数，默认显示10条数据
+            pages:0,//总页数
+            total:0,//结果总数
+            tp:"all"
+
+        },
+        methods:{
+            /**
+             * 获取年级列表
+             */
+            getGradeList:function(){
+                $.get("/home/subject/getSubjectList",function (res) {
+                    app.$data.subjectList = res.data;
+                    console.log("subjectList:",res.data);
+                })
+            },
+            /**
+             * 获取学科列表
+             */
+            getSubjectList:function () {
+                $.get("/home/grade/getGradeList",function (res) {
+                    app.$data.gradeList = res.data;
+                    console.log("gradeList:",res.data);
+                })
+            },
+            /**
+             * 获取问题列表
+             */
+            getQuestionList:function(){
+                if (app.$data.tp=="search"){
+                    app.$data.gradeId = app.$data.searchGradeId;
+                    app.$data.subjectId = app.$data.searchSubjectId;
+                }
+                var requestData = {
+                    gradeId:app.$data.gradeId,
+                    subjectId:app.$data.subjectId,
+                    needIntegral:app.$data.needIntegral,
+                    pageNum:app.$data.pageNum,
+                    pageSize:app.$data.pageSize,
+                    questionSummary:app.$data.questionSummary
+                };
+
+                console.log("请求问题列表参数：",requestData);
+                $.post("/home/question/getQuestionList",requestData,function (res) {
+                    console.log("获取到的问题列表数据：",res.data);
+                    app.$data.questionList = res.data.list;
+                    app.$data.total = res.data.pageInfo.total;
+                    app.$data.pages = res.data.pageInfo.pages;
+                });
+                app.$data.tp="all";
+            },
+            /**
+             * 修改当前查看的者年级的id值
+             * @param id
+             */
+            changeGradeId:function (id) {
+                app.$data.gradeId = id;
+                console.log("改变后的id：",app.$data.gradeId);
+                this.getQuestionList();
+            },
+            /**
+             * 修改当前查看的者年级的id值
+             * @param id
+             */
+            changeSubjectId:function (id) {
+                app.$data.subjectId = id;
+                console.log("改变后的id：",app.$data.subjectId);
+                this.getQuestionList();
+            },
+            /**
+             * 是否需要积分true or false
+             * @param d
+             */
+            changeIntegral:function (d) {
+                app.$data.needIntegral = d;
+                this.getQuestionList();
+            },
+            /**
+             * 通过按钮搜索
+             */
+            searchBtn:function () {
+                app.$data.tp = "search";
+                app.getQuestionList();
+            },
+            changePage:function (totalPage) {
+                if (totalPage>0 || totalPage<app.$data.pages){
+                    app.$data.pageNum=totalPage;
+                    app.getQuestionList();
+                }
+            }
+        }
+    });
+    //首次加载获取数据
+    app.getSubjectList();//获取学科列表
+    app.getGradeList();//获取年级列表
+    app.getQuestionList();//获取问题列表
+
+
+
 </script>
 </body>
 </html>
