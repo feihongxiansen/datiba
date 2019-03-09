@@ -2,6 +2,8 @@ package com.dtb.home.service;
 
 import com.dtb.entity.User;
 
+import java.util.List;
+
 /**
  * @Author：lmx
  * @Description：
@@ -54,4 +56,13 @@ public interface UserService {
      * @return: int 受影响行数
      */
     int updateByIdSelective(User user);
+
+    /**
+     * @auther lmx
+     * @date 2019/3/10 1:46
+     * @descript 获取用户列表
+     * @param
+     * @return java.util.List<com.dtb.entity.User>
+     */
+    List<User> findUserList();
 }

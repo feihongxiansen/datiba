@@ -1,0 +1,181 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{::link})">
+    <title>解答详情-答题吧</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/home/plugs/viewer/viewer.css}"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .row {
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        img {
+            width: 30%;
+        }
+        .img-thumbnail{
+            height: 150px;
+            width: auto;
+        }
+
+        p {
+            line-height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+<div id="question_container">
+    <nav class="navbar navbar-default ex-navbar">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="navbar-form navbar-left form-inline" style="text-align: center;width: 100%;">
+                <div class="form-group">
+                    <label>答题吧</label> >
+                    <label>全部分类</label> >
+                    <label th:text="${questionInfo?.grade?.gradeName}"></label> >
+                    <label th:text="${questionInfo?.subject?.subjectName}"></label> >
+                    <label> 问题详情 </label>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-xs-10">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row" v-for="item in questionList"
+                             style="margin-top: 15px;">
+                            <div class="col-md-2">
+                                <div>
+                                    <img th:src="@{${questionInfo?.user?.userPhoto}}" style="width: 100%;"
+                                         class="img-rounded"/>
+                                    <p class="text-center" th:text="${questionInfo?.user?.nickName}"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-10">
+                                <div class="row">
+                                    <div class="col-md-12" id="questionPhotoBox">
+                                        <p class="text-left" th:text="${questionInfo.questionSummary}"></p>
+                                        <th:block th:if="${questionInfo.questionPhotoList}!=null">
+                                            <img th:src="@{${item}}" th:each="item : ${questionInfo.questionPhotoList}" class="img-thumbnail">
+                                        </th:block>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="col-md-3 text-success"
+                                             th:text="'['+${questionInfo?.grade?.gradeName}+${questionInfo?.subject?.subjectName}+']'"></label>
+                                        <label class="col-md-9 text-muted"
+                                             th:text="${#dates.format(questionInfo.createTime, 'yyyy-MM-dd HH:mm:ss')}"></label>
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <label class="col-md-8 text-primary"
+                                               th:text="'悬赏积分：'+${questionInfo.integral}+'分'"></label>
+                                        <label class="col-md-4 text-primary"
+                                               th:text="'回答：'+${#arrays.length(questionInfo.answers)}"></label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <textarea class="form-control" rows="8" placeholder="请输入你的回答或上传图片" style="resize: none;"></textarea>
+                                        <p style="margin-top: 10px;" class="text-right" th:if="${session.user}!=null">
+                                            <button type="button" class="layui-btn" id="uploadimg">
+                                                <i class="layui-icon">&#xe67c;</i>上传图片
+                                            </button>
+                                            <button type="button" class="layui-btn layui-btn-normal">回答</button>
+                                        </p>
+                                        <p style="margin-top: 10px;" class="text-right" th:if="${session.user}==null">
+                                            <a th:href="@{'/home/index/login?pagePath=/home/index/answer/'+${questionInfo.id}}" class="layui-btn layui-btn-normal">登录答题</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="well" style="font-size: larger;">解答列表</div>
+
+                        <div id="myTabContent" class="tab-content" style="padding: 20px;">
+                            <div class="tab-pane fade in active" id="home">
+                                <div class="row" th:each="item : ${questionInfo.answers}" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                                    <div class="col-md-2">
+                                        <div>
+                                            <img th:src="@{${item?.user?.userPhoto}}" style="width: 100%;" class="img-rounded" />
+                                            <p class="text-center" th:text="${item?.user?.nickName}"></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-10">
+                                        <div class="row">
+                                            <div class="col-md-12" th:id="'answer'+${item.id}">
+                                                <p class="text-left" th:text="${item.answerSummary}"></p>
+                                                <img th:each="photo:${item.answerPhotoList}" th:src="${photo}" th:data-original="${photo}" class="img-thumbnail">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="col-md-9 text-muted" th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                                            </div>
+
+                                            <div class="col-md-6 text-right">
+                                                <button class="col-md-3 col-md-offset-5 btn btn-info"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> 999</button>
+                                                <button class="col-md-3 col-md-offset-1 btn btn-warning"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> 23</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- 底部导航栏 start-->
+<footer th:replace="home/public/footer::footer"></footer>
+<!-- 底部导航栏end -->
+
+<script th:src="@{/static/home/plugs/vue/vue.js}"></script>
+<script th:src="@{/static/home/plugs/viewer/viewer.js}"></script>
+
+<!--vue相关js-->
+<script th:inline="javascript">
+    /*初始化图片查看插件viewer*/
+    function initViewer(id) {
+        console.log("初始化了viewer");
+        $("#" + id).viewer({
+            url: "data-original"
+        });
+    }
+
+    /*初始化答案列表的viewer*/
+    function initAnswerViewer() {
+        var answerList = [[${questionInfo.answers}]];
+        for (var i=0; i<answerList.length; i++){
+            initViewer("answer"+answerList[i].id);
+        }
+    }
+    /*初始化问题图片的viewer*/
+    initViewer("questionPhotoBox");
+    /*初始化答案列表的viewer*/
+    initAnswerViewer();
+
+
+
+
+</script>
+</body>
+</html>

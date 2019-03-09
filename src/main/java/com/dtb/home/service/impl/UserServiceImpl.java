@@ -6,6 +6,8 @@ import com.dtb.home.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Author：lmx
  * @Description：
@@ -41,5 +43,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public int updateByIdSelective(User user) {
         return userMapper.updateByPrimaryKeySelective(user);
+    }
+
+    @Override
+    public List<User> findUserList() {
+        return userMapper.selectUserList();
     }
 }

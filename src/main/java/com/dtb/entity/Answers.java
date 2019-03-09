@@ -23,6 +23,9 @@ public class Answers {
 
     private Date updateTime;
 
+    //非数据库字段，用于返回图片列表
+    private String[] answerPhotoList;
+
     public Integer getId() {
         return id;
     }
@@ -101,5 +104,13 @@ public class Answers {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String[] getAnswerPhotoList() {
+        return answerPhotoList;
+    }
+
+    public void setAnswerPhotoList(String[] answerPhotoList) {
+        this.answerPhotoList = answerPhotoList;
     }
 }

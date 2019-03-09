@@ -26,7 +26,7 @@ public interface AnswersMapper {
      * @param: questionId
      * @return: java.util.List<com.dtb.entity.AnswersWithBLOBs>
      */
-    List<AnswersWithBLOBs> selectByQuestionId(@Param("questionId") Integer questionId);
+    List<AnswersAssociation> selectByQuestionId(@Param("questionId") Integer questionId);
 
     int deleteByPrimaryKey(Integer id);
 

@@ -31,9 +31,8 @@ public class QAServiceTest extends DtbApplicationTests {
 
     @Test
     public void findQuestionsListTest(){
-//        PageHelper.startPage(1,1);
-//        Page<Questions> questions = qaService.findQuestionList();
-//        System.out.println("findQuestionListTest:"+questions.getPages());
+
+        System.out.println(questionsMapper.selectAnswerList(1));
 
     }
 }

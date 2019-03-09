@@ -2,6 +2,9 @@ package com.dtb.home.dao;
 
 import com.dtb.entity.User;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 public interface UserMapper {
 
@@ -31,6 +34,16 @@ public interface UserMapper {
      * @return: int
      */
     int deleteByPrimaryKey(@Param("id") Integer id);
+
+    /**
+     * @auther lmx
+     * @date 2019/3/10 1:46
+     * @descript 获取用户列表
+     * @param
+     * @return java.util.List<com.dtb.entity.User>
+     */
+    @Select("select id,user_name,nick_name from as_user where email_verify=true and delete_time is null")
+    List<User> selectUserList();
 
     int insert(User record);
 

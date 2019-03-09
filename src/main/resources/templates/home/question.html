@@ -1,0 +1,443 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{::link})">
+    <title>有问有答-答题吧</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/home/plugs/viewer/viewer.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/home/plugs/bootstrap-select/css/bootstrap-select.css}"/>
+    <style>
+        .label {
+            color: #746F6F;
+        }
+
+        .label-info {
+            color: #FFFFFF;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .row {
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        img {
+            width: 30%;
+        }
+
+        .img-thumbnail {
+            height: 150px;
+            width: auto;
+        }
+
+        p {
+            line-height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<div id="question_container" v-cloak>
+    <!--问题搜索栏开始-->
+    <nav class="navbar navbar-default ex-navbar">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <form class="navbar-form navbar-left form-inline" style="text-align: center;width: 100%;">
+                <div class="form-group">
+                    <select class="form-control" v-model="searchGradeId">
+                        <option selected value="">所有年级</option>
+                        <option v-for="item in gradeList" :value="item.id">{{item.gradeName}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" v-model="searchSubjectId">
+                        <option selected value="">所有学科</option>
+                        <option v-for="item in subjectList" :value="item.id">{{item.subjectName}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" v-model="questionSummary" class="form-control" placeholder="题目内容...">
+                </div>
+                <button type="button" @click="searchBtn()" class="btn btn-default">搜索</button>
+            </form>
+        </div>
+    </nav>
+    <!--问题搜索栏结束-->
+
+    <!--问题列表开始-->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-xs-10">
+                <!--tab选项卡开始-->
+                <ul id="myTab" class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#home" data-toggle="tab" @click="changeIntegral('false')">
+                            全部问题
+                        </a>
+                    </li>
+                    <li><a href="#home" @click="changeIntegral('true')" data-toggle="tab">积分悬赏</a></li>
+                    <li><a href="#addquestion" @click="changeIntegral('false')" data-toggle="tab">我要提问</a></li>
+                </ul>
+                <!--tab选项卡结束-->
+
+                <!--tab选项卡内容部分开始-->
+                <div id="myTabContent" class="tab-content" style="padding: 20px;">
+                    <!--问题列表开始-->
+                    <div class="tab-pane fade in active" id="home">
+                        <p>
+                            <strong>年级：</strong>
+                            <span class="label" :class="{'label-info':gradeId==''}" @click="changeGradeId('')">全部</span>
+                            <span v-for="item in gradeList"
+                                  @click="changeGradeId(item.id)"
+                                  class="label"
+                                  :class="{'label-info':gradeId==item.id}">{{item.gradeName}}</span>
+                        </p>
+                        <p>
+                            <strong>学科：</strong>
+                            <span class="label" :class="{'label-info':subjectId==''}"
+                                  @click="changeSubjectId('')">全部</span>
+                            <span v-for="item in subjectList"
+                                  @click="changeSubjectId(item.id)"
+                                  class="label"
+                                  :class="{'label-info':subjectId==item.id}">{{item.subjectName}}</span>
+                        </p>
+
+                        <div class="row" v-for="item in questionList"
+                             style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                            <div class="col-md-2">
+                                <div>
+                                    <img :src="item.user.userPhoto" style="width: 100%;" class="img-rounded"/>
+                                    <p class="text-center">{{item.user.nickName}}</p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-10">
+                                <div class="row">
+                                    <div class="col-md-12" :id="'viewer'+item.id">
+                                        <p class="text-left">
+                                            {{item.questionSummary}}
+                                        </p>
+                                        <img v-for="photo in item.questionPhotoList" :src="photo" :data-original="photo"
+                                             v-if="item.questionPhotoList!=null" class="img-thumbnail">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="col-md-3 text-success">
+                                            [{{item.grade.gradeName}}{{item.subject.subjectName}}]
+                                        </label>
+                                        <label class="col-md-9 text-muted">{{item.createTime}}</label>
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <span class="col-md-3 col-md-offset-5 label label-success" style="color: white;">悬赏积分：{{item.integral}}分</span>
+                                        <span class="col-md-3 col-md-offset-1 label label-info"><a :href="'/home/index/answer/'+item.id" style="color: white;">回答：【{{item.count}}】</a></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rom text-right">
+                            <ul class="pagination">
+                                <li :class="{'disabled':pageNum<=1}" @click="changePage(pageNum-1)"><a href="#">&laquo;</a>
+                                </li>
+                                <li :class="{'disabled':pageNum==item}" v-for="(item,index) in pages"
+                                    @click="changePage(item)"><a href="#">{{item}}</a></li>
+                                <li :class="{'disabled':pageNum>=pages}" @click="changePage(pageNum+1)"><a
+                                        href="#">&raquo;</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--问题列表结束-->
+
+                    <!--提问部分开始-->
+                    <div class="tab-pane fade in" id="addquestion">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form class="navbar-form navbar-left form-inline"
+                                      style="text-align: center;width: 100%;">
+                                    <div class="form-group">
+                                        <select class="form-control" v-model="newGradeId">
+                                            <option selected value="">———选择年级———</option>
+                                            <option v-for="item in gradeList" :value="item.id">{{item.gradeName}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <select class="form-control" v-model="newSubjectId">
+                                            <option selected value="">———选择学科———</option>
+                                            <option v-for="(item,index) in subjectList" v-if="index<=2"
+                                                    :value="item.id">{{item.subjectName}}
+                                            </option>
+                                            <option v-for="(item,index) in subjectList" v-if="index>2&&newGradeId>1"
+                                                    :value="item.id">{{item.subjectName}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <select class="selectpicker" v-model="invitaId" data-live-search="true">
+                                            <option selected>——邀约答题人——</option>
+                                            <option v-for="item in userList" value="item.id">{{item.userName}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" class="form-control" v-model="newIntegral"
+                                               placeholder="悬赏积分">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <textarea class="form-control" rows="8" v-model="newQuestionSummary"
+                                          placeholder="请输入你的回答或上传图片" style="resize: none;"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" id="imgBox"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right" th:if="${session.user}!=null">
+                                <button type="button" class="layui-btn" id="uploadimg">
+                                    <i class="layui-icon">&#xe67c;</i>上传图片
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-normal">提问</button>
+                            </div>
+                            <div class="col-md-12 text-right" th:if="${session.user}==null">
+                                <a class="layui-btn layui-btn-normal" th:href="@{/home/index/login?pagePath=/home/index/question}">登录提问</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--提问部分结束-->
+
+                </div>
+                <!--tab选项卡内容部分结束-->
+
+            </div>
+        </div>
+    </div>
+    <!--问题列表结束-->
+
+</div>
+
+<!-- 底部导航栏 start-->
+<footer th:replace="home/public/footer::footer"></footer>
+<!-- 底部导航栏end -->
+
+<script th:src="@{/static/home/plugs/vue/vue.js}"></script>
+<script th:src="@{/static/home/plugs/viewer/viewer.js}"></script>
+<script th:src="@{/static/home/plugs/bootstrap-select/js/bootstrap-select.js}"></script>
+
+<!--vue相关js-->
+<script th:inline="javascript">
+
+    //图片上传接口地址
+    var uploadUrl = "/home/question/uploadImages";
+    /*layui插件模块加载开始*/
+    layui.use(['laypage', 'layer', 'form', 'upload'], function () {
+        laypage = layui.laypage
+            , layer = layui.layer
+            , form = layui.form
+            , upload = layui.upload;
+        var load;
+        //图片上传
+        var uploadInst = upload.render({
+            elem: '#uploadimg'
+            , url: uploadUrl
+            , multiple: true//多图上传，不支持IE8/9
+            , number: 10//允许同时上传最多图片数量
+            , field: 'files'//后台接收字段名
+            , acceptMime: 'image/*'//（只显示图片文件）
+            , before: function (obj) {
+                var load = layer.msg('图片上传中...', {
+                    icon: 16,
+                    shade: 0.01,
+                    time: false
+                });
+            }
+            , done: function (res, index, upload) { //上传后的回调
+                var img = "<img src='" + res.data + "'alt='' class='img-thumbnail'>";
+                $("#imgBox").append(img);
+                console.log("上传之后触发的：", res);
+            }
+            , error: function (index, upload) {
+                layer.closeAll(load); //关闭loading
+            }
+            , allDone: function (obj) { //当文件全部被提交后，才触发
+                console.log("全部上传后触发的：", obj);
+                console.log(obj.total); //得到总文件数
+                console.log("请求成功的文件数", obj.successful); //请求成功的文件数
+                console.log("请求失败的文件数", obj.aborted); //请求失败的文件数
+                layer.closeAll(load); //关闭loading
+            }
+        })
+    });
+    /*layui插件模块加载结束*/
+
+    /*初始化图片查看插件viewer*/
+    function initViewer() {
+        console.log("初始化了viewer");
+        for (var i = 0; i < app.$data.questionList.length; i++) {
+            var containerId = app.$data.questionList[i].id;
+            $("#viewer" + containerId).viewer({
+                url: "data-original"
+            });
+        }
+        /*延迟获取用户列表，防止首次加载失败*/
+        app.getUserList();
+    }
+
+    /*vue实例化开始*/
+    var app = new Vue({
+        el: "#question_container",
+        data: {
+            subjectList: "",//学科信息
+            gradeList: "",//年级信息
+            userList:"",//用户列表
+            questionList: "",//问题列表
+            needIntegral: false,//是否需要积分
+            questionSummary: null,//搜索内容
+            gradeId: "",//当前年级id，默认空，为全部
+            searchGradeId: "",//搜索时的年级id，默认全部年级
+            searchSubjectId: "",//搜索时的学科id，默认全部学科
+            subjectId: "",//当前学科id，默认空，为全部
+            pageNum: 1,//当前页码，默认为1
+            pageSize: 10,//每页显示条数，默认显示10条数据
+            pages: 0,//总页数
+            total: 0,//结果总数
+            tp: "all",
+
+            //提问相关请求参数
+            newGradeId: "",//提问问题年级
+            newSubjectId: "",//提问问题学科
+            newIntegral: null,//提问是否悬赏积分
+            newQuestionSummary: "",//提问详情
+            invitaId:null//提问时的邀约解答人
+        },
+        methods: {
+            /**
+             * 获取年级列表
+             */
+            getGradeList: function () {
+                $.get("/home/subject/getSubjectList", function (res) {
+                    app.$data.subjectList = res.data;
+                    console.log("subjectList:", res.data);
+                })
+            },
+            /**
+             * 获取学科列表
+             */
+            getSubjectList: function () {
+                $.get("/home/grade/getGradeList", function (res) {
+                    app.$data.gradeList = res.data;
+                    console.log("gradeList:", res.data);
+                })
+            },
+            /**
+             * 获取用户列表
+             */
+            getUserList:function () {
+                $.get("/home/user/getUserList", function (res) {
+                    app.$data.userList = res.data;
+                    console.log("userList:", res.data);
+                })
+                /*默认选中*/
+                $(".selectpicker").selectpicker('val', "——邀约答题人——");
+                $(".selectpicker").selectpicker({});
+            },
+            /**
+             * 获取问题列表
+             */
+            getQuestionList: function () {
+                if (app.$data.tp == "search") {
+                    app.$data.gradeId = app.$data.searchGradeId;
+                    app.$data.subjectId = app.$data.searchSubjectId;
+                }
+                var requestData = {
+                    gradeId: app.$data.gradeId,
+                    subjectId: app.$data.subjectId,
+                    needIntegral: app.$data.needIntegral,
+                    pageNum: app.$data.pageNum,
+                    pageSize: app.$data.pageSize,
+                    questionSummary: app.$data.questionSummary
+                };
+
+                console.log("请求问题列表参数：", requestData);
+                $.post("/home/question/getQuestionList", requestData, function (res) {
+                    console.log("获取到的问题列表数据：", res.data);
+                    app.$data.questionList = res.data.list;
+                    app.$data.total = res.data.pageInfo.total;
+                    app.$data.pages = res.data.pageInfo.pages;
+                    setTimeout(initViewer, 500);
+                });
+                app.$data.tp = "all";
+            },
+            /**
+             * 修改当前查看的者年级的id值
+             * @param id
+             */
+            changeGradeId: function (id) {
+                app.$data.gradeId = id;
+                console.log("改变后的id：", app.$data.gradeId);
+                this.getQuestionList();
+            },
+            /**
+             * 修改当前查看的者年级的id值
+             * @param id
+             */
+            changeSubjectId: function (id) {
+                app.$data.subjectId = id;
+                console.log("改变后的id：", app.$data.subjectId);
+                this.getQuestionList();
+            },
+            /**
+             * 是否需要积分true or false
+             * @param d
+             */
+            changeIntegral: function (d) {
+                app.$data.needIntegral = d;
+                this.getQuestionList();
+            },
+            /**
+             * 通过按钮搜索
+             */
+            searchBtn: function () {
+                app.$data.tp = "search";
+                app.getQuestionList();
+            },
+            /*翻页显示*/
+            changePage: function (totalPage) {
+                if (totalPage > 0 || totalPage < app.$data.pages) {
+                    app.$data.pageNum = totalPage;
+                    app.getQuestionList();
+                }
+            },
+            /**
+             * 图片观看插件初始化
+             */
+            initViewerContainer: function () {
+                for (var i = 0; i < app.$data.questionList.length; i++) {
+                    var containerId = app.$data.questionList[i].id;
+                    document.getElementById("#viewer" + containerId).viewer({
+                        url: "data-original"
+                    });
+                }
+            }
+        }
+    });
+    /*vue实例化结束*/
+
+    //首次加载获取数据
+    app.getSubjectList();//获取学科列表
+    app.getGradeList();//获取年级列表
+    app.getQuestionList();//获取问题列表
+    app.initViewerContainer();//图片查看插件初始化
+    app.getUserList();//获取用户列表
+
+
+</script>
+</body>
+</html>

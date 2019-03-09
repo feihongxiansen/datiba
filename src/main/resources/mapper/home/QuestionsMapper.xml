@@ -25,7 +25,7 @@
     <association column="subject_id" property="subject" select="com.dtb.home.dao.SubjectMapper.selectByPrimaryKey"></association>
   </resultMap>
   <resultMap extends="ResultMapAssociation" id="ResultMapCollection" type="com.dtb.entity.QuestionsAssociation">
-    <collection column="id" property="answers" ofType="com.dtb.entity.AnswersWithBLOBs" select="com.dtb.home.dao.AnswersMapper.selectByQuestionId"></collection>
+    <collection column="id" property="answers" ofType="com.dtb.entity.AnswersAssociation" select="com.dtb.home.dao.AnswersMapper.selectByQuestionId"></collection>
   </resultMap>
 
   <sql id="Base_Column_List">
@@ -62,6 +62,7 @@
       </if>
       <if test="questionSummary != null and questionSummary!=''">
        AND match (question_summary) against(#{questionSummary,jdbcType=LONGVARCHAR} IN BOOLEAN MODE)
+        OR question_summary LIKE concat('%',#{questionSummary,jdbcType=LONGVARCHAR},'%')
       </if>
       <if test="needIntegral == true">
        AND integral > 0

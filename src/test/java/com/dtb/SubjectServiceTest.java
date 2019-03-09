@@ -4,6 +4,9 @@ import com.dtb.home.service.SubjectService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @Author：lmx
  * @Description：
@@ -23,5 +26,21 @@ public class SubjectServiceTest extends DtbApplicationTests{
     @Test
     public void findByIdTest(){
         System.out.println(subjectService.findById(2).getSubjectName());
+    }
+
+    @Test
+    public void arraySerilize(){
+        Set<String> hashSet = new HashSet<>();
+        hashSet.add("AAAAAAAAAAAAAAAAAAA/AAAAAAAa/AAAAAAAAA.jpg");
+        hashSet.add("BBBBBB/BBBBB/BBBB/BB.jpg");
+        hashSet.add("CCCC/CCCC/CC.jpg");
+        System.out.println(hashSet.toString());
+
+        String str = hashSet.toString();
+
+        String[] set = str.split(",");
+        System.out.println(set[2]);
+        System.out.println(set.toString());
+
     }
 }

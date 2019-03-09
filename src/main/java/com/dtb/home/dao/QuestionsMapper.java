@@ -18,7 +18,7 @@ public interface QuestionsMapper {
      * @param: needIntegral 是否需要积分
      * @return: com.github.pagehelper.Page<com.dtb.entity.Questions>
      */
-    Page<Questions> selectQuestionList(@Param("gradeId")Integer gradeId,
+    Page<QuestionsWithBLOBs> selectQuestionList(@Param("gradeId")Integer gradeId,
                                      @Param("subjectId")Integer subjectId,
                                      @Param("questionSummary")String questionSummary,
                                      @Param("needIntegral")Boolean needIntegral);
@@ -28,9 +28,9 @@ public interface QuestionsMapper {
      * @date: 2019/3/6 23:23
      * @descript: 根据问题id获取答案信息
      * @param: questionId
-     * @return: com.github.pagehelper.Page<com.dtb.entity.AnswersAssociation>
+     * @return: com.dtb.entity.AnswersAssociation
      */
-    Page<QuestionsAssociation> selectAnswerList(@Param("questionId") Integer questionId);
+    QuestionsAssociation selectAnswerList(@Param("questionId") Integer questionId);
 
 
     int deleteByPrimaryKey(Integer id);

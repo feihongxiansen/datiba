@@ -1,7 +1,7 @@
 package com.dtb.home.service;
 
-import com.dtb.entity.Questions;
 import com.dtb.entity.QuestionsAssociation;
+import com.dtb.entity.QuestionsWithBLOBs;
 import com.github.pagehelper.Page;
 
 /**
@@ -22,18 +22,18 @@ public interface QAService {
      * @param: needIntegral 是否需要积分
      * @return: com.github.pagehelper.Page<com.dtb.entity.Questions>
      */
-    Page<Questions> findQuestionList(Integer gradeId,
-                                     Integer subjectId,
-                                     String questionSummary,
-                                     Boolean needIntegral);
+    Page<QuestionsWithBLOBs> findQuestionList(Integer gradeId,
+                                              Integer subjectId,
+                                              String questionSummary,
+                                              Boolean needIntegral);
 
     /**
      * @auther: lmx
      * @date: 2019/3/6 23:23
      * @descript: 根据问题id获取答案信息
      * @param: questionId
-     * @return: com.github.pagehelper.Page<com.dtb.entity.AnswersAssociation>
+     * @return: com.dtb.entity.AnswersAssociation
      */
-    Page<QuestionsAssociation> findAnswerList(Integer questionId);
+    QuestionsAssociation findAnswerList(Integer questionId);
 
 }

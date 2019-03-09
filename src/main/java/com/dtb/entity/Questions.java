@@ -25,6 +25,8 @@ public class Questions {
 
     private Date updateTime;
 
+    private String[] questionPhotoList;
+
     public Integer getId() {
         return id;
     }
@@ -111,5 +113,13 @@ public class Questions {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String[] getQuestionPhotoList() {
+        return questionPhotoList;
+    }
+
+    public void setQuestionPhotoList(String[] questionPhotoList) {
+        this.questionPhotoList = questionPhotoList;
     }
 }

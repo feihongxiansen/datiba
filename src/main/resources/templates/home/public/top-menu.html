@@ -11,7 +11,7 @@
                 <dd><a href="">教师认证</a></dd>
             </dl>
         </li>
-        <li class="layui-nav-item"><a th:href="@{/home/index/questionAnswer}">有问有答</a></li>
+        <li class="layui-nav-item"><a th:href="@{/home/index/question}">有问有答</a></li>
         <li class="layui-nav-item">
             <a href="javascript:;">资料专区</a>
             <dl class="layui-nav-child">
@@ -28,7 +28,7 @@
         <li class="layui-nav-item" th:if="${session.user} == null"><a th:href="@{/home/index/register}">注册</a></li>
 
         <li class="layui-nav-item" th:if="${session.user} != null">
-            <a href="javascript:;"><img th:src="@{${session.user.userPhoto}}" class="layui-nav-img" th:text="${session.user.userName}"></a>
+            <a href="javascript:;"><img th:src="@{${session.user.userPhoto}==null?'/static/home/images/user-head/1.jpg':${session.user.userPhoto}}" class="layui-nav-img" th:text="${session.user.userName}"></a>
             <dl class="layui-nav-child">
                 <dd><a href="javascript:;">修改信息</a></dd>
                 <dd><a href="javascript:void(0);" id="JsSignOut">退了</a></dd>

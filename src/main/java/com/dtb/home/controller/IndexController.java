@@ -1,9 +1,15 @@
 package com.dtb.home.controller;
 
+import com.dtb.entity.QuestionsAssociation;
+import com.dtb.home.service.QAService;
 import com.dtb.utils.VerifyUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +27,9 @@ import java.io.OutputStream;
 @Controller("indexController")
 @RequestMapping("home/index")
 public class IndexController {
+
+    @Autowired
+    private QAService qaService;
 
     /**
      * @auther: lmx
@@ -47,14 +56,17 @@ public class IndexController {
     }
 
     /**
-     * @auther: lmx
-     * @descript: 渲染登录页视图渲染
-     * @date: 2019/2/28 17:46
-     * @param: []
-     * @return: java.lang.String
+     * @auther lmx
+     * @date 2019/3/10 0:54
+     * @descript 渲染登录页视图渲染
+     * @param pagePath 登录后跳转的页面
+     * @param model 视图
+     * @return java.lang.String
      */
     @RequestMapping("login")
-    public String login(){
+    public String login(@RequestParam(value = "pagePath",required = false,defaultValue = "/home/index/index") String pagePath,
+                        Model model){
+        model.addAttribute("pagePath",pagePath);
         return "home/login";
     }
 
@@ -100,8 +112,23 @@ public class IndexController {
      * @param:
      * @return: java.lang.String
      */
-    @RequestMapping("questionAnswer")
-    public String questionAnswer(){
-        return "home/question-answer";
+    @RequestMapping("question")
+    public String question(){
+        return "home/question";
     }
+
+    /**
+     * @auther: lmx
+     * @date: 2019/3/9 1:28
+     * @descript: 问题详情和用户解答列表页面
+     * @param:
+     * @return: java.lang.String
+     */
+    @RequestMapping("answer/{questionId}")
+    public String answer(@PathVariable("questionId") Integer questionId,Model model){
+        QuestionsAssociation questionAndAnswers = qaService.findAnswerList(questionId);
+        model.addAttribute("questionInfo",questionAndAnswers);
+        return  "home/answer";
+    }
+
 }

@@ -31,7 +31,9 @@ public class WebConfigurer implements WebMvcConfigurer {
         // addPathPatterns("/**") 表示拦截所有的请求，
         // excludePathPatterns("/login", "/register") 表示除了登陆与注册之外，因为登陆注册不需要登陆也可以访问
         registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns("/static/home/**"
+                ,"/static/upload/images/**"    //上传图片路径
                 ,"/home/user/checkLogin"    //登录验证
+                ,"/home/user/getUserList"    //获取用户列表
                 ,"/home/user/logOut"        //退出登录
                 ,"/home/user/checkEmailExist"//检测邮箱地址是否可用
                 ,"/home/user/register"      //用户注册
@@ -39,7 +41,8 @@ public class WebConfigurer implements WebMvcConfigurer {
                 ,"/home/user/resetEmailCode/**"      //重新发送验证邮件
                 ,"/home/index/**"
                 ,"/home/question/getQuestionList" //获取问题列表
-                ,"/home/question/getAnswerList" //获取答案列表
+                ,"/home/question/getAnswerList/**" //获取答案列表
+                ,"/home/question/uploadImages" //上传多图
                 ,"/home/grade/getGradeList" //获取年级列表
                 ,"/home/subject/getSubjectList" //获取学科列表
 //                ,"/home/index/register"     //注册页面

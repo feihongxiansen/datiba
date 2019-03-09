@@ -1,18 +1,23 @@
 package com.dtb.home.controller;
 
-import com.dtb.entity.Questions;
 import com.dtb.entity.QuestionsAssociation;
+import com.dtb.entity.QuestionsWithBLOBs;
 import com.dtb.home.service.QAService;
+import com.dtb.utils.FileUploadUtil;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +58,7 @@ public class QAController {
 
         //启用分页查询
         PageHelper.startPage(pageNum,pageSize);
-        Page<Questions> page = qaService.findQuestionList(gradeId,subjectId,questionSummary,needIntegral);
+        Page<QuestionsWithBLOBs> page = qaService.findQuestionList(gradeId,subjectId,questionSummary,needIntegral);
 
         Map<String,Object> resultMap = new HashMap<String,Object>();
         resultMap.put("list",page);
@@ -81,26 +86,24 @@ public class QAController {
      * @param: pageSize
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("getAnswerList")
+    @RequestMapping("getAnswerList/{questionId}")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> getAnswerList(@RequestParam("questionId") Integer questionId,
-                                                       @RequestParam(value = "pageNum",required = false,defaultValue = "0") Integer pageNum,
-                                                       @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize){
+    public ResponseBean<CommonErrorEnum> getAnswerList(@PathVariable("questionId") Integer questionId){
+        QuestionsAssociation questionAndAnswers = qaService.findAnswerList(questionId);
+        return new ResponseBean(true,questionAndAnswers,CommonErrorEnum.SUCCESS_REQUEST);
+    }
 
-        PageHelper.startPage(pageNum,pageSize);
+    @RequestMapping("uploadImages")
+    @ResponseBody
+    public ResponseBean<CommonErrorEnum> uploadImages(@RequestParam("files") MultipartFile[] files)throws IOException{
 
-        Page<QuestionsAssociation> pageInfo = qaService.findAnswerList(questionId);
+        String uploadPath = "/static/upload/images/question";
+        String rootPath = ResourceUtils.getURL("classpath:").getPath()+uploadPath;
+        String res = FileUploadUtil.uploadFiles(files,rootPath,"question_");
+        //存储在数据库中的图片路径地址
+        res = uploadPath + "/" + res;
 
-        Map<String,Object> resultMap = new HashMap<String,Object>();
-        resultMap.put("list",pageInfo);
-        Map<String,Object> pageMap = new HashMap<String,Object>();
-        pageMap.put("total",pageInfo.getTotal());
-        pageMap.put("pageNum",pageInfo.getPageNum());
-        pageMap.put("pageSize",pageInfo.getPageSize());
-        pageMap.put("pages",pageInfo.getPages());
-        resultMap.put("pageInfo",pageMap);
-
-        return new ResponseBean(true,resultMap,CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean(true,res,CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 
 

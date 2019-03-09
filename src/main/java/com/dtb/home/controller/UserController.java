@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,6 +48,7 @@ public class UserController {
      * @param: phone 手机号码
      * @param: password 登录密码
      * @param: verifyCode 验证码
+     * @param: pagePath 登录后页面跳转路径
      * @param: session 会话session
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
@@ -55,6 +57,7 @@ public class UserController {
     public ResponseBean<CommonErrorEnum> checkLogin(@RequestParam(value = "email",required = true) String email,
                                                     @RequestParam(value = "password",required = true) String password,
                                                     @RequestParam(value = "verifyCode",required = true) String verifyCode,
+                                                    @RequestParam(value = "pagePath", required = false,defaultValue = "/home/index/index") String pagePath,
                                                     HttpSession session){
 
         //首先验证验证码是否存在
@@ -92,7 +95,9 @@ public class UserController {
 
         //通过所有验证
         session.setAttribute("user",user);
-        ResponseBean responseBean=new ResponseBean(true,CommonErrorEnum.LOGIN_SUCCESS);
+        Map<String,Object> resultMap = new HashMap<String,Object>();
+        resultMap.put("pagePath",pagePath);
+        ResponseBean responseBean=new ResponseBean(true,resultMap,CommonErrorEnum.LOGIN_SUCCESS);
         return responseBean;
     }
 
@@ -182,23 +187,24 @@ public class UserController {
     @RequestMapping("activation/{id}/{emailCode}")
     public String activation(@PathVariable Integer id, @PathVariable String emailCode, Model model){
         User user = userService.findById(id);
+        String page = "home/activation";
 
         //检测用户是否存在
         if (user == null){
             model.addAttribute("data",new ResponseBean(false,CommonErrorEnum.NO_USER_EXIST));
-            return "home/activation";
+            return page;
         }
 
         //检测是否已经验证过邮箱
         if (user.getEmailVerify()){
             model.addAttribute("data",new ResponseBean(true,CommonErrorEnum.VERIFYED_EMAIL));
-            return "home/activation";
+            return page;
         }
 
         //验证邮箱验证码是否正确
         if (!user.getEmailCode().equalsIgnoreCase(emailCode)){
             model.addAttribute("data",new ResponseBean<Integer>(false,id,CommonErrorEnum.ERROR_EMAILCODE));
-            return "home/activation";
+            return page;
         }
 
         //通过验证
@@ -208,11 +214,11 @@ public class UserController {
         //验证结果是否持久化
         if (res<=0){
             model.addAttribute("data",new ResponseBean<Integer>(false,id,CommonErrorEnum.FAILED_VERIFY));
-            return "home/activation";
+            return page;
         }
 
         model.addAttribute("data",new ResponseBean(true,CommonErrorEnum.SUCCESS_VERIFY_EMAIL));
-        return "home/activation";
+        return page;
     }
 
     /**
@@ -254,5 +260,12 @@ public class UserController {
         emailUtil.sendTemplateMail(user.getEmail(),"【答题吧-账号激活】",map,"email/account_activation");
 
         return new ResponseBean(true,CommonErrorEnum.SENDEMAIL_SUCCESS);
+    }
+
+    @RequestMapping("getUserList")
+    @ResponseBody
+    public ResponseBean<CommonErrorEnum> getUserList(){
+        List<User> userList = userService.findUserList();
+        return new ResponseBean(true,userList,CommonErrorEnum.SUCCESS_REQUEST);
     }
 }
