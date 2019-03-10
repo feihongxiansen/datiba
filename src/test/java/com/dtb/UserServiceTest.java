@@ -1,6 +1,7 @@
 package com.dtb;
 
 import com.dtb.home.dao.UserMapper;
+import com.dtb.home.service.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,9 +16,12 @@ public class UserServiceTest extends DtbApplicationTests{
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private UserService userService;
+
     @Test
     public void getUserListTest(){
         System.out.println(userMapper.selectByPrimaryKey(1));
-        System.out.println(userMapper.selectUserList());
+        System.out.println(userService.findUserListToLimit((byte)1));
     }
 }

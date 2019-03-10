@@ -7,6 +7,8 @@ import com.dtb.utils.VerifyUtil;
 import com.dtb.utils.email.EmailUtil;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -262,10 +264,48 @@ public class UserController {
         return new ResponseBean(true,CommonErrorEnum.SENDEMAIL_SUCCESS);
     }
 
+    /**
+     * @auther lmx
+     * @date 2019/3/10 17:43
+     * @descript 获取用户列表，返回字段仅有用户id，用户名和昵称
+     * @param
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     */
     @RequestMapping("getUserList")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> getUserList(){
         List<User> userList = userService.findUserList();
         return new ResponseBean(true,userList,CommonErrorEnum.SUCCESS_REQUEST);
+    }
+
+    /**
+     * @auther lmx
+     * @date 2019/3/10 23:02
+     * @descript 根据用户类型获取用户列表
+     * @param pageNum
+     * @param pageSize
+     * @param userType
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     */
+    @RequestMapping("getUserListToLimit/{pageNum}/{pageSize}/{userType}")
+    @ResponseBody
+    public ResponseBean<CommonErrorEnum> getUserListToLimit(@PathVariable Integer pageNum,
+                                                           @PathVariable Integer pageSize,
+                                                           @PathVariable Byte userType){
+        PageHelper.startPage(pageNum,pageSize);
+
+        Page<User> userPage = userService.findUserListToLimit(userType);
+        //获取分页信息
+        Map<String,Object> pageInfo = new HashMap<String,Object>();
+        pageInfo.put("pageSize",userPage.getPageSize());
+        pageInfo.put("pageNum",userPage.getPageNum());
+        pageInfo.put("pages",userPage.getPages());
+        pageInfo.put("total",userPage.getTotal());
+
+        Map<String,Object> resultMap = new HashMap<String,Object>();
+        resultMap.put("userList",userPage);
+        resultMap.put("pageInfo",pageInfo);
+
+        return new ResponseBean(true,resultMap,CommonErrorEnum.SUCCESS_REQUEST);
     }
 }

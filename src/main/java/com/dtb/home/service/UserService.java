@@ -1,6 +1,7 @@
 package com.dtb.home.service;
 
 import com.dtb.entity.User;
+import com.github.pagehelper.Page;
 
 import java.util.List;
 
@@ -65,4 +66,13 @@ public interface UserService {
      * @return java.util.List<com.dtb.entity.User>
      */
     List<User> findUserList();
+
+    /**
+     * @auther lmx
+     * @date 2019/3/10 22:51
+     * @descript 根据用户类别分页查询用户列表
+     * @param userType
+     * @return com.github.pagehelper.Page<com.dtb.entity.User>
+     */
+    Page<User> findUserListToLimit(Byte userType);
 }

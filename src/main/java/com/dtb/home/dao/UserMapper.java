@@ -1,6 +1,7 @@
 package com.dtb.home.dao;
 
 import com.dtb.entity.User;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -44,6 +45,21 @@ public interface UserMapper {
      */
     @Select("select id,user_name,nick_name from as_user where email_verify=true and delete_time is null")
     List<User> selectUserList();
+
+    /**
+     * @auther lmx
+     * @date 2019/3/10 22:51
+     * @descript 根据用户类别分页查询用户列表
+     * @param userType
+     * @return com.github.pagehelper.Page<com.dtb.entity.User>
+     */
+    @Select("select id,user_name,nick_name,sex,province,city,area,user_type,email,user_photo,phone,user_summary,integral,create_time " +
+            "from as_user " +
+            "where user_type = #{userType} " +
+            "and email_verify = true " +
+            "and delete_time is null " +
+            "order by integral DESC")
+    Page<User> selectUserListToLimit(@Param("userType") Byte userType);
 
     int insert(User record);
 

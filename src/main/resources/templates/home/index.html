@@ -1,7 +1,26 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="home/public/head::head(~{::title},~{},~{})">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
     <title>主页-答题吧</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        .thumbnail{
+            height: 410px;
+        }
+        .thumbnail>img{
+            max-height: 200px;
+            width: 100%;
+        }
+        .text-overflow{
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 4;
+            overflow: hidden;
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -9,187 +28,112 @@
 <!--顶部导航栏导入-->
 <div th:replace="home/public/top-menu::top-menu"></div>
 
-<!--主页轮播图-->
-<div class="layui-carousel" id="test3" lay-filter="test4">
-    <div carousel-item>
-        <div><img th:src="@{/static/home/images/login1.jpg}"></div>
-        <div><img th:src="@{/static/home/images/login2.jpg}"></div>
-        <div><img th:src="@{/static/home/images/3.jpg}"></div>
-        <div><img th:src="@{/static/home/images/5.jpg}"></div>
-    </div>
-</div>
-
-<!--认证名师开始-->
-<div class="container" style="margin-top:15px;">
-    <div class="row" style="background-color:#FFFFFF;">
-        <div class="col-md-12 box col-xs-12 itembox">
-            <div class="row">
-                <div class="col-md-2 col-xs-12"><h4 class="title"
-                                                    style="border-bottom:2px solid red;padding-bottom:5px;">认证名师</h4>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-xs-6 col-md-3">
-                    <div class="thumbnail">
-                        <img th:src="@{/static/home/images/1.jpg}" alt="...">
-                        <div class="caption">
-                            <h3>Thumbnail label</h3>
-                            <p>...</p>
-                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                               class="btn btn-default"
-                                                                                               role="button">Button</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-md-3">
-                    <div class="thumbnail">
-                        <img th:src="@{/static/home/images/2.jpg}" alt="...">
-                        <div class="caption">
-                            <h3>Thumbnail label</h3>
-                            <p>...</p>
-                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                               class="btn btn-default"
-                                                                                               role="button">Button</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-md-3">
-                    <div class="thumbnail">
-                        <img th:src="@{/static/home/images/3.jpg}" alt="...">
-                        <div class="caption">
-                            <h3>Thumbnail label</h3>
-                            <p>...</p>
-                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                               class="btn btn-default"
-                                                                                               role="button">Button</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-md-3">
-                    <div class="thumbnail">
-                        <img th:src="@{/static/home/images/1.jpg}" alt="...">
-                        <div class="caption">
-                            <h3>Thumbnail label</h3>
-                            <p>...</p>
-                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                               class="btn btn-default"
-                                                                                               role="button">Button</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+<div id="indexApp" v-cloak>
+    <!--主页轮播图-->
+    <div class="layui-carousel" id="test3" lay-filter="test4">
+        <div carousel-item>
+            <div th:each="item : ${carouselList}"><img th:src="${item.photoUrl}"></div>
         </div>
     </div>
-</div>
-<!--认证名师结束-->
 
-<!--答题明星开始-->
-<div class="container" style="margin-top:15px;">
-    <div class="row" style="background-color:#FFFFFF;">
-        <div class="col-md-12 box col-xs-12 itembox">
-            <div class="row">
-                <div class="col-md-2 col-xs-12"><h4 class="title"
-                                                    style="border-bottom:2px solid red;padding-bottom:5px;">答题明星</h4>
+    <!--认证名师开始-->
+    <div class="container" style="margin-top:15px;">
+        <div class="row" style="background-color:#FFFFFF;">
+            <div class="col-md-12 box col-xs-12 itembox">
+                <div class="row">
+                    <div class="col-md-2 col-xs-12"><h4 class="title"
+                                                        style="border-bottom:2px solid red;padding-bottom:5px;">
+                        认证名师</h4>
+                    </div>
                 </div>
+
+                <div class="row">
+                    <div v-for="item in teacherList" class="col-xs-6 col-md-3">
+                        <div class="thumbnail">
+                            <img :src="item.userPhoto" alt="...">
+                            <div class="caption">
+                                <h3>{{item.userName}}</h3>
+                                <p class="text-overflow">{{item.userSummary!=null?item.userSummary:'暂无简介'}}</p>
+                                <p>
+                                    <a href="#" class="btn btn-primary" role="button">Button</a>
+                                    <a href="#" class="btn btn-default" role="button">Button</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-
-            <div class="row">
-                <div class="col-xs-6 col-md-3">
-                    <div class="thumbnail">
-                        <img th:src="@{/static/home/images/1.jpg}" alt="...">
-                        <div class="caption">
-                            <h3>Thumbnail label</h3>
-                            <p>...</p>
-                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                               class="btn btn-default"
-                                                                                               role="button">Button</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-md-3">
-                    <div class="thumbnail">
-                        <img th:src="@{/static/home/images/2.jpg}" alt="...">
-                        <div class="caption">
-                            <h3>Thumbnail label</h3>
-                            <p>...</p>
-                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                               class="btn btn-default"
-                                                                                               role="button">Button</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-md-3">
-                    <div class="thumbnail">
-                        <img th:src="@{/static/home/images/3.jpg}" alt="...">
-                        <div class="caption">
-                            <h3>Thumbnail label</h3>
-                            <p>...</p>
-                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                               class="btn btn-default"
-                                                                                               role="button">Button</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-md-3">
-                    <div class="thumbnail">
-                        <img th:src="@{/static/home/images/1.jpg}" alt="...">
-                        <div class="caption">
-                            <h3>Thumbnail label</h3>
-                            <p>...</p>
-                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                               class="btn btn-default"
-                                                                                               role="button">Button</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
-</div>
-<!--答题明星结束-->
+    <!--认证名师结束-->
 
+    <!--答题明星开始-->
+    <div class="container" style="margin-top:15px;">
+        <div class="row" style="background-color:#FFFFFF;">
+            <div class="col-md-12 box col-xs-12 itembox">
+                <div class="row">
+                    <div class="col-md-2 col-xs-12"><h4 class="title"
+                                                        style="border-bottom:2px solid red;padding-bottom:5px;">
+                        答题明星</h4>
+                    </div>
+                </div>
 
-<!-- 两栏列表start -->
-<div class="container" style="margin-top:15px;">
-    <div class="row" style="background-color:#FFFFFF;padding-bottom:15px ">
-        <div class="col-md-6 col-xs-12;" style="margin-top:15px;">
-            <div class="list-group-item active">热门文档</div>
-            <a href="#" class="list-group-item">24*7 支持</a>
-            <a href="#" class="list-group-item">免费 Window 空间托管</a>
-            <a href="#" class="list-group-item">图像的数量</a>
-            <a href="#" class="list-group-item">每年更新成本</a>
-            <a href="#" class="list-group-item">图像的数量</a>
-            <a href="#" class="list-group-item">每年更新成本</a>
-        </div>
-        <div class="col-md-6 col-xs-12;" style="margin-top:15px;">
-            <div href="#" class="list-group-item active">热门题目</div>
-            <a href="#" class="list-group-item">24*7 支持</a>
-            <a href="#" class="list-group-item">免费 Window 空间托管</a>
-            <a href="#" class="list-group-item">图像的数量</a>
-            <a href="#" class="list-group-item">每年更新成本</a>
+                <div class="row">
+                    <div v-for="item in studentList" class="col-xs-6 col-md-3">
+                        <div class="thumbnail">
+                            <img :src="item.userPhoto" alt="...">
+                            <div class="caption">
+                                <h3>{{item.nickName}}</h3>
+                                <p class="text-overflow">{{item.userSummary!=null?item.userSummary:'暂无简介'}}</p>
+                                <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
+                                                                                                   class="btn btn-default"
+                                                                                                   role="button">Button</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
-</div>
-<!-- 两栏列表end -->
+    <!--答题明星结束-->
 
+
+    <!-- 两栏列表start -->
+    <div class="container" style="margin-top:15px;">
+        <div class="row" style="background-color:#FFFFFF;padding-bottom:15px ">
+            <div class="col-md-6 col-xs-12;" style="margin-top:15px;">
+                <div class="list-group-item active">热门文档</div>
+                <a href="#" class="list-group-item">24*7 支持</a>
+                <a href="#" class="list-group-item">免费 Window 空间托管</a>
+                <a href="#" class="list-group-item">图像的数量</a>
+                <a href="#" class="list-group-item">每年更新成本</a>
+                <a href="#" class="list-group-item">图像的数量</a>
+                <a href="#" class="list-group-item">每年更新成本</a>
+            </div>
+            <div class="col-md-6 col-xs-12;" style="margin-top:15px;">
+                <div href="#" class="list-group-item active">热门题目</div>
+                <a href="#" class="list-group-item">24*7 支持</a>
+                <a href="#" class="list-group-item">免费 Window 空间托管</a>
+                <a href="#" class="list-group-item">图像的数量</a>
+                <a href="#" class="list-group-item">每年更新成本</a>
+            </div>
+        </div>
+    </div>
+    <!-- 两栏列表end -->
+</div>
 
 <!-- 底部导航栏 start-->
 <footer th:replace="home/public/footer::footer"></footer>
 <!-- 底部导航栏end -->
 
-<!--轮播图参数设置-->
+<script th:src="@{/static/home/plugs/vue/vue.js}"></script>
+
 <script type="text/javascript">
+
+    <!--轮播图参数设置-->
     layui.use(['carousel'], function () {
         var carousel = layui.carousel;
         //建造实例
@@ -201,6 +145,40 @@
             //,anim: 'updown' //切换动画方式
         });
     });
+
+    var indexApp = new Vue({
+        el: "#indexApp",
+        data:{
+            teacherList: ""//教师列表
+            ,studentList: ""//学生列表
+        },
+        methods:{
+            /**
+             * 根据用户类型查询用户列表
+             * @param userType 用户类型
+             */
+            getUserListToLimit: function (userType) {
+                var utp = 1;
+                if (userType == "teacher")
+                    utp = 2;
+                $.get("/home/user/getUserListToLimit/1/8/"+utp,function (res) {
+                    switch (userType){
+                        case "teacher":
+                            indexApp.$data.teacherList = res.data.userList;
+                            break;
+                        case "student":
+                            indexApp.$data.studentList = res.data.userList;
+                            break;
+                    }
+                });
+            }
+        }
+    });
+
+    /*获取认证名师*/
+    indexApp.getUserListToLimit("teacher");
+    /*获取答题明星列表*/
+    indexApp.getUserListToLimit("student");
 </script>
 </body>
 </html>

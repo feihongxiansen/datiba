@@ -3,6 +3,7 @@ package com.dtb.home.service.impl;
 import com.dtb.entity.User;
 import com.dtb.home.dao.UserMapper;
 import com.dtb.home.service.UserService;
+import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,5 +49,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findUserList() {
         return userMapper.selectUserList();
+    }
+
+    @Override
+    public Page<User> findUserListToLimit(Byte userType) {
+        return userMapper.selectUserListToLimit(userType);
     }
 }

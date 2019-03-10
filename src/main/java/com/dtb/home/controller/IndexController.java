@@ -1,6 +1,8 @@
 package com.dtb.home.controller;
 
+import com.dtb.entity.Carousel;
 import com.dtb.entity.QuestionsAssociation;
+import com.dtb.home.service.CarouselService;
 import com.dtb.home.service.QAService;
 import com.dtb.utils.VerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * @Author：lmx
@@ -31,15 +34,20 @@ public class IndexController {
     @Autowired
     private QAService qaService;
 
+    @Autowired
+    private CarouselService carouselService;
+
     /**
-     * @auther: lmx
-     * @descript: 渲染主页视图
-     * @date: 2019/2/28 17:46
-     * @param: []
-     * @return: java.lang.String
+     * @auther lmx
+     * @date 2019/3/11 0:35
+     * @descript 渲染主页视图
+     * @param model
+     * @return java.lang.String
      */
     @RequestMapping("index")
-    public String index(){
+    public String index(Model model){
+        List<Carousel> resultList = carouselService.findCarouselList();
+        model.addAttribute("carouselList",resultList);
         return "home/index";
     }
 

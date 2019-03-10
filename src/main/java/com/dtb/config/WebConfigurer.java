@@ -34,6 +34,7 @@ public class WebConfigurer implements WebMvcConfigurer {
                 ,"/static/upload/images/**"    //上传图片路径
                 ,"/home/user/checkLogin"    //登录验证
                 ,"/home/user/getUserList"    //获取用户列表
+                ,"/home/user/getUserListToLimit/**"    //根据用户类型获取用户列表
                 ,"/home/user/logOut"        //退出登录
                 ,"/home/user/checkEmailExist"//检测邮箱地址是否可用
                 ,"/home/user/register"      //用户注册
