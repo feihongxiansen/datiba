@@ -36,4 +36,13 @@ public interface QAService {
      */
     QuestionsAssociation findAnswerList(Integer questionId);
 
+    /**
+     * @auther lmx
+     * @date 2019/3/11 23:52
+     * @descript 添加问题
+     * @param question
+     * @return int
+     */
+    int addQuestion(QuestionsWithBLOBs question);
+
 }

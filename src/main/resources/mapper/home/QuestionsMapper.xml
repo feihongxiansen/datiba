@@ -122,9 +122,7 @@
       <if test="gradeId != null">
         grade_id,
       </if>
-      <if test="createTime != null">
         create_time,
-      </if>
       <if test="deleteTime != null">
         delete_time,
       </if>
@@ -163,9 +161,7 @@
       <if test="gradeId != null">
         #{gradeId,jdbcType=INTEGER},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
+        CURRENT_TIMESTAMP,
       <if test="deleteTime != null">
         #{deleteTime,jdbcType=TIMESTAMP},
       </if>

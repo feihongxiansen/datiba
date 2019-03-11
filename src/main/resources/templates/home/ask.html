@@ -1,0 +1,298 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{::link})">
+    <title>提问-答题吧</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/home/plugs/bootstrap-select/css/bootstrap-select.css}"/>
+    <style>
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .row {
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        img {
+            width: 30%;
+        }
+
+        .img-thumbnail {
+            height: 150px;
+            width: auto;
+        }
+
+        p {
+            line-height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<div id="ask_container" v-cloak>
+    <!--问题搜索栏开始-->
+    <nav class="navbar navbar-default ex-navbar">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="navbar-form navbar-left form-inline" style="text-align: center;width: 100%;">
+                <div class="form-group">
+                    <label>答题吧</label> >
+                    <label>有问有答</label> >
+                    <label>发起提问 </label>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!--问题搜索栏结束-->
+
+    <!--问题列表开始-->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-xs-10">
+                <!--tab选项卡开始-->
+                <ul id="myTab" class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#home" data-toggle="tab">
+                            我要提问
+                        </a>
+                    </li>
+                </ul>
+                <!--tab选项卡结束-->
+
+                <!--tab选项卡内容部分开始-->
+                <div id="myTabContent" class="tab-content" style="padding: 20px;">
+
+                    <!--提问部分开始-->
+                    <div class="tab-pane fade in active" id="home">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form class="navbar-form navbar-left form-inline"
+                                      style="text-align: center;width: 100%;">
+                                    <div class="form-group">
+                                        <select class="form-control" v-model="gradeId">
+                                            <option selected value="">———选择年级———</option>
+                                            <option v-for="item in gradeList" :value="item.id">{{item.gradeName}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <select class="form-control" v-model="subjectId">
+                                            <option selected value="">———选择学科———</option>
+                                            <option v-for="(item,index) in subjectList" v-if="index<=2"
+                                                    :value="item.id">{{item.subjectName}}
+                                            </option>
+                                            <option v-for="(item,index) in subjectList" v-if="index>2&&gradeId>1"
+                                                    :value="item.id">{{item.subjectName}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <select class="selectpicker" v-model="invitaId" data-live-search="true">
+                                            <option selected>——邀约答题人——</option>
+                                            <option v-for="item in userList" :value="item.id">{{item.userName}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" th:max="${session?.user?.getIntegral()}" class="form-control" v-model="integral"
+                                               placeholder="悬赏积分">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <textarea class="form-control" rows="8" v-model="questionSummary"
+                                          placeholder="请输入你的回答或上传图片" style="resize: none;"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" id="imgBox"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right" th:if="${session.user}!=null">
+                            <!--<div class="col-md-12 text-right">-->
+                                <button type="button" class="layui-btn" id="uploadimg">
+                                    <i class="layui-icon">&#xe67c;</i>选择图片
+                                </button>
+                                <button type="button" id="subBtn" @click="clearImg()" class="layui-btn layui-btn-normal">提问</button>
+                            </div>
+                            <div class="col-md-12 text-right" th:if="${session.user}==null">
+                                <a class="layui-btn layui-btn-normal" th:href="@{/home/index/login?pagePath=/home/index/ask}">登录提问</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--提问部分结束-->
+
+                </div>
+                <!--tab选项卡内容部分结束-->
+
+            </div>
+        </div>
+    </div>
+    <!--问题列表结束-->
+
+</div>
+
+<!-- 底部导航栏 start-->
+<footer th:replace="home/public/footer::footer"></footer>
+<!-- 底部导航栏end -->
+
+<script th:src="@{/static/home/plugs/vue/vue.js}"></script>
+<script th:src="@{/static/home/plugs/bootstrap-select/js/bootstrap-select.js}"></script>
+
+<!--vue相关js-->
+<script th:inline="javascript">
+
+    //图片上传接口地址
+    var uploadUrl = "/home/question/uploadImages";
+    var userId = [[${session?.user?.id}]];//当前登录用户id
+    /*layui插件模块加载开始*/
+    layui.use(['layer', 'form', 'upload'], function () {
+             var layer = layui.layer
+            , form = layui.form
+            , upload = layui.upload;
+        var load;
+        //图片上传
+        var uploadInst = upload.render({
+            elem: '#uploadimg'
+            , url: uploadUrl
+            , multiple: true//多图上传，不支持IE8/9
+            , number: 10//允许同时上传最多图片数量
+            , field: 'files'//后台接收字段名
+            , auto: false//不自动上传
+            , bindAction: "#subBtn"//绑定上传按钮
+            , acceptMime: 'image/*'//（只显示图片文件）
+            , choose: function(obj){ //选择图片后执行
+                //将每次选择的文件追加到文件队列
+                var files = obj.pushFile();
+
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                obj.preview(function(index, file, result){
+//                    console.log(index); //得到文件索引
+//                    console.log(file); //得到文件对象
+//                    console.log(result); //得到文件base64编码，比如图片
+                    var img = "<img src='" + result + "'alt='' class='img-thumbnail'>";
+                    $("#imgBox").append(img);
+                });
+            }
+            , before: function (obj) {
+                var load = layer.msg('图片上传中...', {
+                    icon: 16,
+                    shade: 0.01,
+                    time: false
+                });
+            }
+            , done: function (res, index, upload) { //上传后的回调
+                var img = "<img src='" + res.data + "'alt='' class='img-thumbnail'>";
+                $("#imgBox").append(img);
+                app.$data.questionPhotos = "," + app.$data.questionPhotos+res.data;
+                console.log("上传之后触发的：", res);
+            }
+            , error: function (index, upload) {
+                layer.closeAll(load); //关闭loading
+            }
+            , allDone: function (obj) { //当文件全部被提交后，才触发
+                console.log("全部上传后触发的：", obj);
+                console.log(obj.total); //得到总文件数
+                console.log("请求成功的文件数", obj.successful); //请求成功的文件数
+                console.log("请求失败的文件数", obj.aborted); //请求失败的文件数
+                app.subForm();
+                layer.closeAll(load); //关闭loading
+            }
+        })
+    });
+    /*layui插件模块加载结束*/
+
+    /*vue实例化开始*/
+    var app = new Vue({
+        el: "#ask_container",
+        data: {
+            subjectList: "",//学科信息
+            gradeList: "",//年级信息
+            userList:"",//用户列表
+
+            //提问相关请求参数
+            gradeId: "",//提问问题年级
+            subjectId: "",//提问问题学科
+            integral: null,//提问是否悬赏积分
+            questionSummary: "",//提问详情
+            invitaId:null,//提问时的邀约解答人
+            questionPhotos:""//问题附件图片
+        },
+        methods: {
+            /**
+             * 获取年级列表
+             */
+            getGradeList: function () {
+                $.get("/home/subject/getSubjectList", function (res) {
+                    app.$data.subjectList = res.data;
+                    console.log("subjectList:", res.data);
+                })
+            },
+            /**
+             * 获取学科列表
+             */
+            getSubjectList: function () {
+                $.get("/home/grade/getGradeList", function (res) {
+                    app.$data.gradeList = res.data;
+                    console.log("gradeList:", res.data);
+                })
+            },
+            /**
+             * 获取用户列表
+             */
+            getUserList:function () {
+                $.get("/home/user/getUserList", function (res) {
+                    app.$data.userList = res.data;
+                    console.log("userList:", res.data);
+                })
+                /*默认选中*/
+                $(".selectpicker").selectpicker('val', "——邀约答题人——");
+                $(".selectpicker").selectpicker({});
+            },
+            /**
+             * 清除本地回显图片
+             */
+            clearImg:function () {
+                $("#imgBox").empty();
+            },
+            /**
+             * 提交表单
+             */
+            subForm:function () {
+                //清除选择图片的样式
+                var subData = {
+                    gradeId: app.$data.gradeId,//提问问题年级
+                    subjectId: app.$data.subjectId,//提问问题学科
+                    integral: app.$data.integral,//提问是否悬赏积分
+                    questionSummary: app.$data.questionSummary,//提问详情
+                    invitaId:app.$data.invitaId,//提问时的邀约解答人
+                    questionPhotos:app.$data.questionPhotos,//问题附件图片
+                    userId:userId
+                };
+                console.log("提交数据：",subData);
+                $.post("/home/question/addQuestion",subData,function (res) {
+                    if (res.success){
+                        layer.msg("提问成功，请等待解答！", {icon: 2,time:1500});
+                    }else{
+                        layer.msg(res.errMsg, {icon: 1,time:1500});
+                    }
+                })
+            }
+        }
+    });
+    /*vue实例化结束*/
+
+    //首次加载获取数据
+    app.getSubjectList();//获取学科列表
+    app.getGradeList();//获取年级列表
+    app.getUserList();//获取用户列表
+
+
+</script>
+</body>
+</html>

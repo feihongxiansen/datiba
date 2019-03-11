@@ -86,4 +86,8 @@ public class QAServiceImpl implements QAService {
         return questionsList;
     }
 
+    @Override
+    public int addQuestion(QuestionsWithBLOBs question) {
+        return questionsMapper.insertSelective(question);
+    }
 }

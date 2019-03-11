@@ -37,6 +37,13 @@ public interface QuestionsMapper {
 
     int insert(QuestionsWithBLOBs record);
 
+    /**
+     * @auther lmx
+     * @date 2019/3/11 23:50
+     * @descript 插入问题记录
+     * @param record
+     * @return int
+     */
     int insertSelective(QuestionsWithBLOBs record);
 
     QuestionsWithBLOBs selectByPrimaryKey(Integer id);

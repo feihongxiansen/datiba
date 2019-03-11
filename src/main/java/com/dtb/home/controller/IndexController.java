@@ -8,10 +8,7 @@ import com.dtb.utils.VerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -137,6 +134,17 @@ public class IndexController {
         QuestionsAssociation questionAndAnswers = qaService.findAnswerList(questionId);
         model.addAttribute("questionInfo",questionAndAnswers);
         return  "home/answer";
+    }
+
+    /**
+     * @auther lmx
+     * @date 2019/3/11 21:48
+     * @descript 提问页面
+     * @return java.lang.String
+     */
+    @RequestMapping("ask")
+    public String ask(){
+        return "home/ask";
     }
 
 }

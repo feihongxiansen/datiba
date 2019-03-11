@@ -44,6 +44,7 @@ public class WebConfigurer implements WebMvcConfigurer {
                 ,"/home/question/getQuestionList" //获取问题列表
                 ,"/home/question/getAnswerList/**" //获取答案列表
                 ,"/home/question/uploadImages" //上传多图
+                ,"/home/question/addQuestion" //上传多图
                 ,"/home/grade/getGradeList" //获取年级列表
                 ,"/home/subject/getSubjectList" //获取学科列表
 //                ,"/home/index/register"     //注册页面

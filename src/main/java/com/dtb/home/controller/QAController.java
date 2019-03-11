@@ -106,6 +106,28 @@ public class QAController {
         return new ResponseBean(true,res,CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 
+    /**
+     * @auther lmx
+     * @date 2019/3/11 23:56
+     * @descript 用户提问
+     * @param question
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     */
+    @RequestMapping("addQuestion")
+    @ResponseBody
+    public ResponseBean<CommonErrorEnum> addQuestion(QuestionsWithBLOBs question){
+        if (question.getQuestionPhotos()!=null){
+            question.setQuestionPhotos(question.getQuestionPhotos().substring(1));
+        }
+
+        int affectedLine = qaService.addQuestion(question);
+        if (affectedLine >= 1){
+            return new ResponseBean(true,question,CommonErrorEnum.SUCCESS_OPTION);
+        }else{
+            return new ResponseBean(false,question,CommonErrorEnum.FAILED_QUESTION);
+        }
+    }
+
 
 
 }
