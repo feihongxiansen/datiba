@@ -55,4 +55,9 @@ public class UserServiceImpl implements UserService {
     public Page<User> findUserListToLimit(Byte userType) {
         return userMapper.selectUserListToLimit(userType);
     }
+
+    @Override
+    public int updateIntegralById(Integer integral, Integer userId) {
+        return userMapper.updateIntegralById(integral,userId);
+    }
 }

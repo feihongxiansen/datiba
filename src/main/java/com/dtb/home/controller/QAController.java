@@ -3,6 +3,7 @@ package com.dtb.home.controller;
 import com.dtb.entity.QuestionsAssociation;
 import com.dtb.entity.QuestionsWithBLOBs;
 import com.dtb.home.service.QAService;
+import com.dtb.home.service.UserService;
 import com.dtb.utils.FileUploadUtil;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
@@ -33,6 +34,9 @@ public class QAController {
 
     @Autowired
     private QAService qaService;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * @auther: lmx
@@ -118,6 +122,11 @@ public class QAController {
     public ResponseBean<CommonErrorEnum> addQuestion(QuestionsWithBLOBs question){
         if (question.getQuestionPhotos()!=null){
             question.setQuestionPhotos(question.getQuestionPhotos().substring(1));
+        }
+
+        //有悬赏积分，扣除悬赏用户的相应积分
+        if (question.getIntegral() > 0){
+            userService.updateIntegralById(-question.getIntegral(),question.getUserId());
         }
 
         int affectedLine = qaService.addQuestion(question);

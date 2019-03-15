@@ -2,8 +2,10 @@ package com.dtb.home.controller;
 
 import com.dtb.entity.Carousel;
 import com.dtb.entity.QuestionsAssociation;
+import com.dtb.entity.User;
 import com.dtb.home.service.CarouselService;
 import com.dtb.home.service.QAService;
+import com.dtb.home.service.UserService;
 import com.dtb.utils.VerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,9 @@ public class IndexController {
 
     @Autowired
     private CarouselService carouselService;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * @auther lmx
@@ -138,12 +143,16 @@ public class IndexController {
 
     /**
      * @auther lmx
-     * @date 2019/3/11 21:48
+     * @date 2019/3/14 23:43
      * @descript 提问页面
+     * @param invitaId 受邀请答题人id
      * @return java.lang.String
      */
     @RequestMapping("ask")
-    public String ask(){
+    public String ask(@RequestParam(value = "invitaId",required = false,defaultValue = "")Integer invitaId,Model model){
+        model.addAttribute("invitaId",invitaId);
+        List<User> userList = userService.findUserList();
+        model.addAttribute("userList",userList);
         return "home/ask";
     }
 

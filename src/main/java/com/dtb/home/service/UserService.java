@@ -75,4 +75,15 @@ public interface UserService {
      * @return com.github.pagehelper.Page<com.dtb.entity.User>
      */
     Page<User> findUserListToLimit(Byte userType);
+
+
+    /**
+     * @auther lmx
+     * @date 2019/3/15 1:10
+     * @descript 根据用户id修改积分值
+     * @param integral 调整的积分（增加/减少）
+     * @param userId 用户id
+     * @return int
+     */
+    int updateIntegralById(Integer integral,Integer userId);
 }

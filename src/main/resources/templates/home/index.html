@@ -55,7 +55,8 @@
                                 <h3>{{item.userName}}</h3>
                                 <p class="text-overflow">{{item.userSummary!=null?item.userSummary:'暂无简介'}}</p>
                                 <p>
-                                    <a href="#" class="btn btn-primary" role="button">Button</a>
+                                    <a th:if="${session.user}!=null" :href="'/home/index/ask?invitaId='+item.id" class="btn btn-primary" role="button">问老师</a>
+                                    <a th:if="${session.user}==null" :href="'/home/index/login?pagePath=/home/index/ask?invitaId='+item.id" class="btn btn-primary" role="button">登录提问</a>
                                     <a href="#" class="btn btn-default" role="button">Button</a>
                                 </p>
                             </div>
@@ -86,9 +87,9 @@
                             <div class="caption">
                                 <h3>{{item.nickName}}</h3>
                                 <p class="text-overflow">{{item.userSummary!=null?item.userSummary:'暂无简介'}}</p>
-                                <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#"
-                                                                                                   class="btn btn-default"
-                                                                                                   role="button">Button</a>
+                                <p><a th:if="${session.user}!=null" :href="'/home/index/ask?invitaId='+item.id" class="btn btn-primary" role="button">问学霸</a>
+                                    <a th:if="${session.user}==null" :href="'/home/index/login?pagePath=/home/index/ask?invitaId='+item.id" class="btn btn-primary" role="button">登录提问</a>
+                                    <a href="#" class="btn btn-default" role="button">Button</a>
                                 </p>
                             </div>
                         </div>

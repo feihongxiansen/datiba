@@ -326,6 +326,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.User">
     update as_user
     set user_name = #{userName,jdbcType=VARCHAR},

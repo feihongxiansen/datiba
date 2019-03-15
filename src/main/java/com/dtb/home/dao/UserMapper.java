@@ -4,6 +4,7 @@ import com.dtb.entity.User;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -60,6 +61,17 @@ public interface UserMapper {
             "and delete_time is null " +
             "order by integral DESC")
     Page<User> selectUserListToLimit(@Param("userType") Byte userType);
+
+    /**
+     * @auther lmx
+     * @date 2019/3/15 1:10
+     * @descript 根据用户id修改积分值
+     * @param integral 调整的积分（增加/减少）
+     * @param userId 用户id
+     * @return int
+     */
+    @Update("update as_user set integral = integral + #{integral} where id = #{userId}")
+    int updateIntegralById(@Param("integral")Integer integral,@Param("userId")Integer userId);
 
     int insert(User record);
 

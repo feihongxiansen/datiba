@@ -91,14 +91,14 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <select class="selectpicker" v-model="invitaId" data-live-search="true">
-                                            <option selected>——邀约答题人——</option>
-                                            <option v-for="item in userList" :value="item.id">{{item.userName}}</option>
+                                        <!--multiple="multiple"属性可多选-->
+                                        <select class="selectpicker show-tick" v-model="invitaId" title="——邀约答题人——" data-live-search="true">
+                                            <option th:each="item:${userList}" th:value="${item.id}" th:text="${item.userName}"></option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <input type="number" th:max="${session?.user?.getIntegral()}" class="form-control" v-model="integral"
-                                               placeholder="悬赏积分">
+                                        <input type="number" th:max="${session?.user?.getIntegral()}" min="0" class="form-control" v-model="integral"
+                                              v-on:input="checkIntegral" placeholder="悬赏积分">
                                     </div>
                                 </form>
                             </div>
@@ -243,22 +243,27 @@
                 })
             },
             /**
-             * 获取用户列表
-             */
-            getUserList:function () {
-                $.get("/home/user/getUserList", function (res) {
-                    app.$data.userList = res.data;
-                    console.log("userList:", res.data);
-                })
-                /*默认选中*/
-                $(".selectpicker").selectpicker('val', "——邀约答题人——");
-                $(".selectpicker").selectpicker({});
-            },
-            /**
              * 清除本地回显图片
              */
             clearImg:function () {
                 $("#imgBox").empty();
+            },
+            /**
+             * 检测悬赏积分是否大于自己所有积分
+             */
+            checkIntegral:function () {
+                if ([[${session?.user}]]==null){
+                    layer.msg("请先登录！", {icon: 2,time:1500});
+                    return;
+                }
+
+                if (app.$data.integral > [[${session?.user?.integral}]]){
+                    layer.msg("积分不足，已调整为最大可用积分！", {icon: 2,time:1500});
+                    app.$data.integral = [[${session?.user?.integral}]];
+                } else if (app.$data.integral < 0){
+                    layer.msg("悬赏积分不可为负数！", {icon: 2,time:1500});
+                    app.$data.integral = 0;
+                }
             },
             /**
              * 提交表单
@@ -277,9 +282,9 @@
                 console.log("提交数据：",subData);
                 $.post("/home/question/addQuestion",subData,function (res) {
                     if (res.success){
-                        layer.msg("提问成功，请等待解答！", {icon: 2,time:1500});
+                        layer.msg("提问成功，请等待解答！", {icon: 1,time:1500});
                     }else{
-                        layer.msg(res.errMsg, {icon: 1,time:1500});
+                        layer.msg(res.errMsg, {icon: 2,time:1500});
                     }
                 })
             }
@@ -290,7 +295,8 @@
     //首次加载获取数据
     app.getSubjectList();//获取学科列表
     app.getGradeList();//获取年级列表
-    app.getUserList();//获取用户列表
+    //是否选中邀约答题人
+    $('.selectpicker').selectpicker('val', [[${invitaId}]]);
 
 
 </script>
