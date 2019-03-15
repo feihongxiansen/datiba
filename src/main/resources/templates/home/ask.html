@@ -283,6 +283,7 @@
                 $.post("/home/question/addQuestion",subData,function (res) {
                     if (res.success){
                         layer.msg("提问成功，请等待解答！", {icon: 1,time:1500});
+                        setTimeout(refresh,1510);
                     }else{
                         layer.msg(res.errMsg, {icon: 2,time:1500});
                     }
@@ -291,6 +292,11 @@
         }
     });
     /*vue实例化结束*/
+
+    /*更新成功提示*/
+    function refresh () {
+        window.location.reload();//刷新当前界面
+    }
 
     //首次加载获取数据
     app.getSubjectList();//获取学科列表
