@@ -4,6 +4,7 @@ import com.dtb.entity.User;
 import com.github.pagehelper.Page;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author：lmx
@@ -86,4 +87,13 @@ public interface UserService {
      * @return int
      */
     int updateIntegralById(Integer integral,Integer userId);
+
+    /**
+     * @auther lmx
+     * @date 2019/3/16 17:45
+     * @descript 根据用户id查询信息
+     * @param userId
+     * @return java.util.Map<java.lang.String,java.lang.Object>
+     */
+    Map<String,Object> findUserInfoById(Integer userId);
 }

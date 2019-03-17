@@ -1,5 +1,6 @@
 package com.dtb.home.service;
 
+import com.dtb.entity.AnswersWithBLOBs;
 import com.dtb.entity.QuestionsAssociation;
 import com.dtb.entity.QuestionsWithBLOBs;
 import com.github.pagehelper.Page;
@@ -44,5 +45,14 @@ public interface QAService {
      * @return int
      */
     int addQuestion(QuestionsWithBLOBs question);
+
+    /**
+     * @auther lmx
+     * @date 2019/3/16 11:33
+     * @descript 添加答案
+     * @param answer
+     * @return int
+     */
+    int addAnswer(AnswersWithBLOBs answer);
 
 }

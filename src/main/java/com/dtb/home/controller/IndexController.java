@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author：lmx
@@ -154,6 +155,35 @@ public class IndexController {
         List<User> userList = userService.findUserList();
         model.addAttribute("userList",userList);
         return "home/ask";
+    }
+
+    /**
+     * @auther lmx
+     * @date 2019/3/16 17:52
+     * @descript 用户信息查看
+     * @param userId 用户id
+     * @param model
+     * @return java.lang.String
+     */
+    @RequestMapping("userinfo/{userId}")
+    public String userInfo(@PathVariable("userId")Integer userId,Model model){
+        Map<String,Object> userInfoMap = userService.findUserInfoById(userId);
+        model.addAttribute("userInfo",userInfoMap);
+        return "home/userinfo";
+    }
+
+    /**
+     * @auther lmx
+     * @date 2019/3/16 22:47
+     * @descript 教师/学生用户列表
+     * @param userType 用户类型，1学生，2教师
+     * @param model 视图模型
+     * @return java.lang.String
+     */
+    @RequestMapping("user/list/{userType}")
+    public String userList(@PathVariable("userType")Byte userType,Model model){
+        model.addAttribute("userType",userType);
+        return "home/user-list";
     }
 
 }

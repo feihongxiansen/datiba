@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserMapper {
 
@@ -72,6 +73,15 @@ public interface UserMapper {
      */
     @Update("update as_user set integral = integral + #{integral} where id = #{userId}")
     int updateIntegralById(@Param("integral")Integer integral,@Param("userId")Integer userId);
+
+    /**
+     * @auther lmx
+     * @date 2019/3/16 17:07
+     * @descript 查询用户基本信息及其答题统计信息
+     * @param userId
+     * @return java.util.Map<java.lang.String,java.lang.Object>
+     */
+    Map<String,Object> selectUserInfoById(@Param("userId")Integer userId);
 
     int insert(User record);
 

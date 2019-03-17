@@ -148,8 +148,7 @@
 <script th:inline="javascript">
 
     //图片上传接口地址
-    var uploadUrl = "/home/question/uploadImages";
-    var userId = [[${session?.user?.id}]];//当前登录用户id
+    var uploadUrl = "/home/question/uploadQuestionImages";
     /*layui插件模块加载开始*/
     layui.use(['layer', 'form', 'upload'], function () {
              var layer = layui.layer
@@ -178,6 +177,7 @@
                     var img = "<img src='" + result + "'alt='' class='img-thumbnail'>";
                     $("#imgBox").append(img);
                 });
+                app.$data.hasPhotos = true;
             }
             , before: function (obj) {
                 var load = layer.msg('图片上传中...', {
@@ -214,6 +214,7 @@
             subjectList: "",//学科信息
             gradeList: "",//年级信息
             userList:"",//用户列表
+            hasPhotos:false,//默认提问不上传图片
 
             //提问相关请求参数
             gradeId: "",//提问问题年级
@@ -221,7 +222,7 @@
             integral: null,//提问是否悬赏积分
             questionSummary: "",//提问详情
             invitaId:null,//提问时的邀约解答人
-            questionPhotos:""//问题附件图片
+            questionPhotos:null//问题附件图片
         },
         methods: {
             /**
@@ -247,6 +248,11 @@
              */
             clearImg:function () {
                 $("#imgBox").empty();
+                /*没有图片就直接提交表单*/
+                if (!app.$data.hasPhotos){
+                    console.log("是否有图片上传：",app.$data.hasPhotos);
+                    this.subForm();
+                }
             },
             /**
              * 检测悬赏积分是否大于自己所有积分
@@ -266,6 +272,29 @@
                 }
             },
             /**
+             * 调教表单前的验证
+             */
+            checkeForm:function (subData) {
+                console.log(subData);
+                if (subData.userId==null || subData.userId==""){
+                    layer.msg("请登录后提问！", {icon: 2,time:1500});
+                    return false;
+                }
+                if (subData.gradeId==null || subData.gradeId==""){
+                    layer.msg("请选择年级！", {icon: 2,time:1500});
+                    return false;
+                }
+                if (subData.subjectId==null || subData.subjectId==""){
+                    layer.msg("请选择学科！", {icon: 2,time:1500});
+                    return false;
+                }
+                if (subData.questionSummary==null || subData.questionSummary==""){
+                    layer.msg("请输入问题！", {icon: 2,time:1500});
+                    return false;
+                }
+                return true;
+            },
+            /**
              * 提交表单
              */
             subForm:function () {
@@ -277,8 +306,10 @@
                     questionSummary: app.$data.questionSummary,//提问详情
                     invitaId:app.$data.invitaId,//提问时的邀约解答人
                     questionPhotos:app.$data.questionPhotos,//问题附件图片
-                    userId:userId
+                    userId:[[${session?.user?.id}]]
                 };
+                //表单提交前数据验证
+                if(!this.checkeForm(subData)) return;
                 console.log("提交数据：",subData);
                 $.post("/home/question/addQuestion",subData,function (res) {
                     if (res.success){

@@ -1,5 +1,6 @@
 package com.dtb.home.controller;
 
+import com.dtb.entity.AnswersWithBLOBs;
 import com.dtb.entity.QuestionsAssociation;
 import com.dtb.entity.QuestionsWithBLOBs;
 import com.dtb.home.service.QAService;
@@ -97,17 +98,37 @@ public class QAController {
         return new ResponseBean(true,questionAndAnswers,CommonErrorEnum.SUCCESS_REQUEST);
     }
 
-    @RequestMapping("uploadImages")
+    /**
+     * @auther lmx
+     * @date 2019/3/16 11:37
+     * @descript 上传问题图片
+     * @param files
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     */
+    @RequestMapping("uploadQuestionImages")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> uploadImages(@RequestParam("files") MultipartFile[] files)throws IOException{
-
+    public ResponseBean<CommonErrorEnum> uploadQuestionImages(@RequestParam("files") MultipartFile[] files)throws IOException {
         String uploadPath = "/static/upload/images/question";
+        String res = this.uploadImages(files,uploadPath,"question_");
+        return new ResponseBean(true,res,CommonErrorEnum.FILEUPLOAD_SUCCESS);
+    }
+
+    /**
+     * @auther lmx
+     * @date 2019/3/16 11:42
+     * @descript 上传图片方法
+     * @param files 图片数组
+     * @param uploadPath 保存路径
+     * @param fileNamePre 图片名称前缀
+     * @return java.lang.String 返回使用逗号分隔的图片地址字符串
+     */
+    public String uploadImages(MultipartFile[] files,String uploadPath,String fileNamePre)throws IOException {
+
         String rootPath = ResourceUtils.getURL("classpath:").getPath()+uploadPath;
-        String res = FileUploadUtil.uploadFiles(files,rootPath,"question_");
+        String res = FileUploadUtil.uploadFiles(files,rootPath,fileNamePre);
         //存储在数据库中的图片路径地址
         res = uploadPath + "/" + res;
-
-        return new ResponseBean(true,res,CommonErrorEnum.FILEUPLOAD_SUCCESS);
+        return res;
     }
 
     /**
@@ -120,12 +141,14 @@ public class QAController {
     @RequestMapping("addQuestion")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> addQuestion(QuestionsWithBLOBs question){
-        if (question.getQuestionPhotos()!=null){
+        if (question.getQuestionPhotos()==null || question.getQuestionPhotos().trim() ==""){
+            question.setQuestionPhotos(null);
+        }else{
             question.setQuestionPhotos(question.getQuestionPhotos().substring(1));
         }
 
         //有悬赏积分，扣除悬赏用户的相应积分
-        if (question.getIntegral() > 0){
+        if (question.getIntegral()!=null && question.getIntegral()> 0){
             userService.updateIntegralById(-question.getIntegral(),question.getUserId());
         }
 
@@ -134,6 +157,49 @@ public class QAController {
             return new ResponseBean(true,question,CommonErrorEnum.SUCCESS_OPTION);
         }else{
             return new ResponseBean(false,question,CommonErrorEnum.FAILED_QUESTION);
+        }
+    }
+
+    /**
+     * @auther lmx
+     * @date 2019/3/16 11:47
+     * @descript 上传答案图片
+     * @param files 图片数组
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     */
+    @RequestMapping("uploadAnswerImages")
+    @ResponseBody
+    public ResponseBean<CommonErrorEnum> uploadAnswerImages(@RequestParam("files") MultipartFile[] files)throws IOException {
+        String uploadPath = "/static/upload/images/answer";
+        String res = this.uploadImages(files,uploadPath,"answer_");
+        return new ResponseBean(true,res,CommonErrorEnum.FILEUPLOAD_SUCCESS);
+    }
+
+
+    /**
+     * @auther lmx
+     * @date 2019/3/16 11:47
+     * @descript 添加答案
+     * @param answer 问题对象
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     */
+    @RequestMapping("addAnswer")
+    @ResponseBody
+    public ResponseBean<CommonErrorEnum> addAnswer(AnswersWithBLOBs answer){
+        if (answer.getAnswerPhotos()==null || answer.getAnswerPhotos().trim() ==""){
+            answer.setAnswerPhotos(null);
+        }else{
+            answer.setAnswerPhotos(answer.getAnswerPhotos().substring(1));
+        }
+
+        //对提问者奖励积分
+        userService.updateIntegralById(5,answer.getUserId());
+        //插入数据库
+        int affectedLine = qaService.addAnswer(answer);
+        if (affectedLine >= 1){
+            return new ResponseBean(true,CommonErrorEnum.SUCCESS_OPTION);
+        }else{
+            return new ResponseBean(false,CommonErrorEnum.FAILED_QUESTION);
         }
     }
 

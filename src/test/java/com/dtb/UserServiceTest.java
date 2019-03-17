@@ -22,6 +22,6 @@ public class UserServiceTest extends DtbApplicationTests{
     @Test
     public void getUserListTest(){
         System.out.println(userMapper.selectByPrimaryKey(1));
-        System.out.println(userService.findUserListToLimit((byte)1));
+        System.out.println(userService.findUserInfoById((1)));
     }
 }

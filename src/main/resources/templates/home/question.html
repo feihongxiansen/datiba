@@ -31,8 +31,14 @@
             width: auto;
         }
 
+
         p {
             line-height: 30px;
+        }
+        .tab-content{
+            border-left: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            border-right: 1px solid #ddd;
         }
     </style>
 </head>
@@ -63,7 +69,7 @@
                     <input type="text" v-model="questionSummary" class="form-control" placeholder="题目内容...">
                 </div>
                 <button type="button" @click="searchBtn()" class="btn btn-warning">搜索问题</button>
-                <a th:href="@{/home/index/ask}"  class="btn btn-info">去提问</a>
+                <a th:href="@{/home/index/ask}" class="btn btn-info">去提问</a>
             </form>
         </div>
     </nav>
@@ -80,7 +86,8 @@
                             全部问题
                         </a>
                     </li>
-                    <li><a href="#home" @click="changeIntegral('true')" data-toggle="tab">积分悬赏</a></li>
+                    <li><a href="#home" @click="changeIntegral('true')"
+                                                              data-toggle="tab">积分悬赏</a></li>
                 </ul>
                 <!--tab选项卡结束-->
 
@@ -106,23 +113,25 @@
                                   :class="{'label-info':subjectId==item.id}">{{item.subjectName}}</span>
                         </p>
 
-                        <div class="row" v-for="item in questionList"
-                             style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
-                            <div class="col-md-2">
-                                <div>
-                                    <img :src="item.user.userPhoto" style="width: 100%;" class="img-rounded"/>
-                                    <p class="text-center">{{item.user.nickName}}</p>
-                                </div>
-                            </div>
 
-                            <div class="col-md-10">
+                        <div class="row" v-for="item in questionList"
+                             style="border-bottom: #ddd 1px solid;margin-top: 15px;">
+
+                            <a :href="'/home/index/userinfo/'+item.user.id" class="col-md-2 layui-anim layui-anim-scaleSpring">
+                                <img :src="item.user.userPhoto" style="width: 100%;"
+                                     class="img-rounded"/>
+                                <p class="text-center">{{item.user.nickName}}</p>
+                            </a>
+
+                            <div class="col-md-10 layui-anim layui-anim-scaleSpring">
                                 <div class="row">
                                     <div class="col-md-12" :id="'viewer'+item.id">
                                         <p class="text-left">
                                             {{item.questionSummary}}
                                         </p>
                                         <img v-for="photo in item.questionPhotoList" :src="photo" :data-original="photo"
-                                             v-if="item.questionPhotoList!=null" class="img-thumbnail">
+                                             v-if="item.questionPhotoList!=null"
+                                             class="img-thumbnail">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -134,15 +143,18 @@
                                     </div>
 
                                     <div class="col-md-6 text-right">
-                                        <span class="col-md-3 col-md-offset-5 label label-success" style="color: white;">悬赏积分：{{item.integral}}分</span>
-                                        <span class="col-md-3 col-md-offset-1 label label-info"><a :href="'/home/index/answer/'+item.id" style="color: white;">回答：【{{item.count}}】</a></span>
+                                        <span class="col-md-3 col-md-offset-5 label label-success"
+                                              style="color: white;">悬赏积分：{{item.integral}}分</span>
+                                        <span class="col-md-3 col-md-offset-1 label label-info"><a
+                                                :href="'/home/index/answer/'+item.id" style="color: white;">回答：【{{item.count}}】</a></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="rom text-right">
                             <ul class="pagination">
-                                <li :class="{'disabled':pageNum<=1}" @click="changePage(pageNum-1)"><a href="#">&laquo;</a>
+                                <li :class="{'disabled':pageNum<=1}" @click="changePage(pageNum-1)"><a
+                                        href="#">&laquo;</a>
                                 </li>
                                 <li :class="{'disabled':pageNum==item}" v-for="(item,index) in pages"
                                     @click="changePage(item)"><a href="#">{{item}}</a></li>
@@ -177,8 +189,8 @@
     //图片上传接口地址
     var uploadUrl = "/home/question/uploadImages";
     /*layui插件模块加载开始*/
-    layui.use(['laypage', 'layer', 'form'], function () {
-        laypage = layui.laypage
+    layui.use(['element', 'laypage', 'layer', 'form'], function () {
+        var laypage = layui.laypage
             , layer = layui.layer
             , form = layui.form;
     });
@@ -191,7 +203,7 @@
             $("#viewer" + containerId).viewer({
                 url: "data-original"
             });
-            console.log("初始化了viewer:#viewer"+containerId);
+            console.log("初始化了viewer:#viewer" + containerId);
         }
     }
     /*销毁上一结果集产生的viewer，防止失效或者错乱*/
@@ -199,7 +211,7 @@
         for (var i = 0; i < app.$data.questionList.length; i++) {
             var containerId = app.$data.questionList[i].id;
             $("#viewer" + containerId).viewer("destroy");
-            console.log("销毁了viewerimg:#viewerimg"+containerId);
+            console.log("销毁了viewerimg:#viewerimg" + containerId);
         }
     }
 

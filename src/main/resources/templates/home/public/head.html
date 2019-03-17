@@ -12,6 +12,14 @@
     <link rel="stylesheet" type="text/css" th:href="@{/static/home/plugs/bootstrap/css/bootstrap.css}" />
     <script type="text/javascript" th:src="@{/static/home/js/jquery-3.3.1.min.js}"></script>
     <script type="text/javascript" th:src="@{/static/home/plugs/bootstrap/js/bootstrap.min.js}"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        a:link {text-decoration:none;}
+        a:visited {text-decoration:none;}
+        a:hover {text-decoration:none;}
+    </style>
 
     <!--/* 页面独有的js文件引入 */-->
     <th:block th:replace="${links}" />

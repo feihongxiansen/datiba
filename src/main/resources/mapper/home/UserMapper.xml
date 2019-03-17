@@ -51,6 +51,65 @@
     and delete_time is null
   </select>
 
+  <select id="selectUserInfoById" resultType="java.util.HashMap">
+    SELECT
+    	nick_name AS nickName,
+    	user_photo AS userPhoto,
+        IF(user_summary IS NULL,'这家伙很懒，没留下简介！',user_summary) AS userSummary,
+    	(
+    		CASE
+    		WHEN user_type = 1 THEN
+    			'普通用户'
+    		WHEN user_type = 2 THEN
+    			(
+    				SELECT
+
+    				IF (
+    					COUNT(*) >= 1,
+    					'认证教师',
+    					'未认证教师'
+    				)
+    				FROM
+    					as_teacher
+    				WHERE
+    					user_id = #{userId}
+    				AND auth_state = 1
+    			)
+    		END
+    	) AS userType,
+    	create_time AS createTime,
+    	login_time AS loginTime,
+    	(
+    		SELECT
+    			COUNT(*)
+    		FROM
+    			as_answers
+    		WHERE
+    			user_id = #{userId}
+    	) AS countAnswer,
+    	(
+    		SELECT
+    			COUNT(*)
+    		FROM
+    			as_questions
+    		WHERE
+    			user_id = #{userId}
+    	) AS countQuestion,
+    	(
+    		SELECT
+    			COUNT(*)
+    		FROM
+    			as_answers
+    		WHERE
+    			user_id = #{userId}
+    		AND adoption_state = TRUE
+    	) AS countAdoption
+    FROM
+    	as_user
+    WHERE
+    	id = #{userId};
+  </select>
+
   <select id="selectByEmail" resultMap="ResultMapWithBLOBs">
       select
       <include refid="Base_Column_List" />
@@ -156,12 +215,8 @@
       <if test="emailVerify != null">
         email_verify,
       </if>
-      <if test="loginTime != null">
         login_time,
-      </if>
-      <if test="createTime != null">
         create_time,
-      </if>
       <if test="updateTime != null">
         update_time,
       </if>
@@ -233,12 +288,8 @@
       <if test="emailVerify != null">
         #{emailVerify,jdbcType=BIT},
       </if>
-      <if test="loginTime != null">
-        #{loginTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="createTime != null">
         CURRENT_TIMESTAMP,
-      </if>
+        CURRENT_TIMESTAMP,
       <if test="updateTime != null">
         CURRENT_TIMESTAMP,
       </if>

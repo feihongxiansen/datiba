@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author：lmx
@@ -59,5 +60,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public int updateIntegralById(Integer integral, Integer userId) {
         return userMapper.updateIntegralById(integral,userId);
+    }
+
+    @Override
+    public Map<String, Object> findUserInfoById(Integer userId) {
+        return userMapper.selectUserInfoById(userId);
     }
 }

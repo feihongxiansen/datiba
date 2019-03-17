@@ -61,8 +61,8 @@
        AND subject_id = #{subjectId,jdbcType=INTEGER}
       </if>
       <if test="questionSummary != null and questionSummary!=''">
-       AND match (question_summary) against(#{questionSummary,jdbcType=LONGVARCHAR} IN BOOLEAN MODE)
-        OR question_summary LIKE concat('%',#{questionSummary,jdbcType=LONGVARCHAR},'%')
+       AND (match (question_summary) against(#{questionSummary,jdbcType=LONGVARCHAR} IN BOOLEAN MODE)
+        OR question_summary LIKE concat('%',#{questionSummary,jdbcType=LONGVARCHAR},'%'))
       </if>
       <if test="needIntegral == true">
        AND integral > 0

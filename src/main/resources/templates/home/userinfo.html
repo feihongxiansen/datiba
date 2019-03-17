@@ -1,0 +1,92 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{},~{})">
+	<title>用户信息-答题吧</title>
+</head>
+	
+<body>
+
+	<!--顶部导航栏导入-->
+	<div th:replace="home/public/top-menu::top-menu"></div>
+
+    <div class="layui-container">
+        <div class="layui-row">
+            <div class="layui-col-xs12">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                    <legend>用户详情</legend>
+                </fieldset>
+
+                <div style="padding: 20px; background-color: #F2F2F2;">
+                    <div class="layui-row layui-col-space15">
+                        <div class="layui-col-md7">
+                            <div class="layui-card layui-anim layui-anim-upbit">
+                                <div class="layui-card-header">基本信息</div>
+                                <div class="layui-card-body">
+                                    <table class="layui-table">
+                                        <tbody>
+                                        <tr>
+                                            <th class="layui-col-md4">昵称</th>
+                                            <td th:text="${userInfo.nickName}">出错啦</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="layui-col-md4">用户类型</td>
+                                            <td th:text="${userInfo.userType}">出错啦</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="layui-col-md4">注册时间</th>
+                                            <td th:text="${#dates.format(userInfo.createTime, 'yyyy-MM-dd HH:mm:ss')}">出错啦</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="layui-col-md4">上次登录</td>
+                                            <td th:text="${#dates.format(userInfo.loginTime, 'yyyy-MM-dd HH:mm:ss')}">出错啦</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="layui-col-md4">解答次数</td>
+                                            <td th:text="${userInfo.countAnswer}+'次'">出错啦</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="layui-col-md4">被采纳数</td>
+                                            <td th:text="${userInfo.countAdoption}+'次'">出错啦</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="layui-col-md4">提问次数</td>
+                                            <td th:text="${userInfo.countQuestion}+'次'">出错啦</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md5">
+                            <div class="layui-card layui-anim layui-anim-upbit">
+                                <div class="layui-card-header">用户头像</div>
+                                <div class="layui-card-body layui-anim layui-anim-scaleSpring">
+                                    <img th:src="@{${userInfo.userPhoto}}" class="img-responsive img-rounded" style="max-width: 100%;max-height: 285px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md12">
+                            <div class="layui-card layui-anim layui-anim-upbit">
+                                <div class="layui-card-header">个人简介</div>
+                                <div class="layui-card-body" style="min-height: 250px;" th:text="${userInfo.userSummary}">
+                                    这家伙很懒...................
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 底部导航栏 start-->
+    <footer th:replace="home/public/footer::footer"></footer>
+    <!-- 底部导航栏end -->
+
+	<script th:inline="javascript">
+
+	</script>
+
+</body>
+</html>

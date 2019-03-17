@@ -1,0 +1,142 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+	<title>用户列表-答题吧</title>
+    <style>
+        .head-img-box{
+            height: 146px;
+        }
+        .head-img{
+            max-height: 100%;
+            width: 100%;
+        }
+        .text-overflow{
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 4;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            height: 92px;
+        }
+        .layui-card-body{
+            height: 332px;
+        }
+    </style>
+</head>
+	
+<body>
+
+	<!--顶部导航栏导入-->
+	<div th:replace="home/public/top-menu::top-menu"></div>
+
+    <div class="layui-container" id="container" v-cloak>
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                    <legend>{{userType==1?'人气学霸':'知名教师'}}</legend>
+                </fieldset>
+
+                <div style="padding: 20px; background-color: #F2F2F2;">
+                    <div class="layui-row layui-col-space15">
+                        <!--单个用户信息框开始-->
+                        <div class="layui-col-md3" v-for="item in userList">
+                            <div class="layui-card layui-anim layui-anim-scale">
+                                <div class="layui-card-header">{{item.userType==1?item.nickName:item.userName}}</div>
+                                <div class="layui-card-body">
+                                    <div class="head-img-box">
+                                        <img class="head-img" :src="item.userPhoto" alt="...">
+                                    </div>
+                                    <div class="caption">
+                                        <p class="text-overflow">{{item.userSummary!=null?item.userSummary:'这家伙很懒，没留下简介！'}}</p>
+                                        <p class="text-right">
+                                            <a th:if="${session.user}!=null" :href="'/home/index/ask?invitaId='+item.id" class="layui-btn layui-btn-sm" role="button">{{item.userType==1?'去问学霸':'去问老师'}}</a>
+                                            <a th:if="${session.user}==null" :href="'/home/index/login?pagePath=/home/index/ask?invitaId='+item.id" class="layui-btn layui-btn-sm" role="button">登录提问</a>
+                                            <a :href="'/home/index/userinfo/'+item.id" class="layui-btn layui-btn-normal layui-btn-sm" role="button">查看详情</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--单个用户信息框结束-->
+                    </div>
+                    <div class="layui-row text-center">
+                        <div id="laypage"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 底部导航栏 start-->
+    <footer th:replace="home/public/footer::footer"></footer>
+    <!-- 底部导航栏end -->
+
+    <script th:src="@{/static/home/plugs/vue/vue.js}"></script>
+	<script th:inline="javascript">
+
+        /*初始化layui的分页插件*/
+        function initLayui() {
+            layui.use('laypage', function(){
+                var laypage = layui.laypage;
+                //执行一个laypage实例
+                laypage.render({
+                    elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
+                    ,count: totalCount //数据总数，从服务端得到
+                    ,limit: pageSize //每页显示的条数。laypage将会借助 count 和 limit 计算出分页数。
+                    ,limits: [8, 16, 24, 32, 40] //每页条数的选择项。如果 layout 参数开启了 limit，则会出现每页条数的select选择框
+                    ,layout: ['count','prev', 'page', 'next','limit','skip']
+                    ,jump: function(obj, first){
+                        //obj包含了当前分页的所有参数，比如：
+                        pageSize = obj.limit;
+                        pageIndex = obj.curr;
+                        //首次不执行
+                        if(!first){
+                            pagination(obj.curr, obj.limit);
+                        }
+                    }
+                });
+            });
+        }
+
+        var that = this;
+        var userListApp = new Vue({
+            el: "#container",
+            data:{
+                userList: "",//教师列表
+                userType:[[${userType}]],//用户类型
+                initLayui: false//是否可以渲染layui，请求到数据后才可以
+            },
+            watch:{//监听data中的数据变化
+                'initLayui': function (newVal) {
+                    if (newVal)
+                        that.initLayui();
+                }
+            }
+        });
+
+        var pageIndex = 1;
+        var pageSize = 8;
+        var totalCount = 10;
+        /*异步请求用户数据*/
+        function pagination(pageIndex, pageSize) {
+
+            var utp = userListApp.$data.userType;
+            var requestPath = "/home/user/getUserListToLimit/"+pageIndex+"/"+pageSize+"/"+utp;
+            $.get(requestPath,function (res) {
+                totalCount = res.data.pageInfo.total;
+                console.log("总数：",totalCount);
+                userListApp.$data.userList = res.data.userList;
+                userListApp.$data.initLayui = true;
+            });
+        };
+
+        /*获取用户列表*/
+        pagination(pageIndex,pageSize);
+	</script>
+
+</body>
+</html>

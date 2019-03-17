@@ -3,14 +3,11 @@
 <head th:replace="home/public/head::head(~{::title},~{::style},~{})">
     <title>主页-答题吧</title>
     <style>
-        [v-cloak] {
-            display: none;
+        .head-img-box{
+            height: 146px;
         }
-        .thumbnail{
-            height: 410px;
-        }
-        .thumbnail>img{
-            max-height: 200px;
+        .head-img{
+            max-height: 100%;
             width: 100%;
         }
         .text-overflow{
@@ -19,6 +16,12 @@
             -webkit-line-clamp: 4;
             overflow: hidden;
             width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            height: 92px;
+        }
+        .layui-card-body{
+            height: 332px;
         }
     </style>
 </head>
@@ -28,7 +31,7 @@
 <!--顶部导航栏导入-->
 <div th:replace="home/public/top-menu::top-menu"></div>
 
-<div id="indexApp" v-cloak>
+<div id="indexApp" v-cloak style="background-color: #F2F2F2;">
     <!--主页轮播图-->
     <div class="layui-carousel" id="test3" lay-filter="test4">
         <div carousel-item>
@@ -37,28 +40,32 @@
     </div>
 
     <!--认证名师开始-->
-    <div class="container" style="margin-top:15px;">
-        <div class="row" style="background-color:#FFFFFF;">
-            <div class="col-md-12 box col-xs-12 itembox">
-                <div class="row">
-                    <div class="col-md-2 col-xs-12"><h4 class="title"
+    <div class="layui-container" style="margin-top:15px;">
+        <div class="layui-row">
+            <div class="layui-col-md12 box layui-col-xs12 itembox">
+                <div class="layui-row">
+                    <div class="layui-col-md2 layui-col-xs12"><h4 class="title"
                                                         style="border-bottom:2px solid red;padding-bottom:5px;">
-                        认证名师</h4>
+                        人气教师</h4>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div v-for="item in teacherList" class="col-xs-6 col-md-3">
-                        <div class="thumbnail">
-                            <img :src="item.userPhoto" alt="...">
-                            <div class="caption">
-                                <h3>{{item.userName}}</h3>
-                                <p class="text-overflow">{{item.userSummary!=null?item.userSummary:'暂无简介'}}</p>
-                                <p>
-                                    <a th:if="${session.user}!=null" :href="'/home/index/ask?invitaId='+item.id" class="btn btn-primary" role="button">问老师</a>
-                                    <a th:if="${session.user}==null" :href="'/home/index/login?pagePath=/home/index/ask?invitaId='+item.id" class="btn btn-primary" role="button">登录提问</a>
-                                    <a href="#" class="btn btn-default" role="button">Button</a>
-                                </p>
+                <div class="layui-row layui-col-space15">
+                    <div v-for="item in teacherList" class="layui-col-md3">
+                        <div class="layui-card layui-anim layui-anim-scale">
+                            <div class="layui-card-header">{{item.userName}}</div>
+                            <div class="layui-card-body">
+                                <div class="head-img-box">
+                                    <img class="head-img" :src="item.userPhoto" alt="...">
+                                </div>
+                                <div class="caption">
+                                    <p class="text-overflow">{{item.userSummary!=null?item.userSummary:'这家伙很懒，没留下简介！'}}</p>
+                                    <p class="text-right">
+                                        <a th:if="${session.user}!=null" :href="'/home/index/ask?invitaId='+item.id" class="layui-btn layui-btn-sm" role="button">去问老师</a>
+                                        <a th:if="${session.user}==null" :href="'/home/index/login?pagePath=/home/index/ask?invitaId='+item.id" class="layui-btn layui-btn-sm" role="button">登录提问</a>
+                                        <a :href="'/home/index/userinfo/'+item.id" class="layui-btn layui-btn-normal layui-btn-sm" role="button">查看详情</a>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -70,27 +77,32 @@
     <!--认证名师结束-->
 
     <!--答题明星开始-->
-    <div class="container" style="margin-top:15px;">
-        <div class="row" style="background-color:#FFFFFF;">
-            <div class="col-md-12 box col-xs-12 itembox">
-                <div class="row">
-                    <div class="col-md-2 col-xs-12"><h4 class="title"
+    <div class="layui-container" style="margin-top:15px;">
+        <div class="layui-row">
+            <div class="layui-col-md12 box layui-col-xs12 itembox">
+                <div class="layui-row">
+                    <div class="layui-col-md2 layui-col-xs12"><h4 class="title"
                                                         style="border-bottom:2px solid red;padding-bottom:5px;">
                         答题明星</h4>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div v-for="item in studentList" class="col-xs-6 col-md-3">
-                        <div class="thumbnail">
-                            <img :src="item.userPhoto" alt="...">
-                            <div class="caption">
-                                <h3>{{item.nickName}}</h3>
-                                <p class="text-overflow">{{item.userSummary!=null?item.userSummary:'暂无简介'}}</p>
-                                <p><a th:if="${session.user}!=null" :href="'/home/index/ask?invitaId='+item.id" class="btn btn-primary" role="button">问学霸</a>
-                                    <a th:if="${session.user}==null" :href="'/home/index/login?pagePath=/home/index/ask?invitaId='+item.id" class="btn btn-primary" role="button">登录提问</a>
-                                    <a href="#" class="btn btn-default" role="button">Button</a>
-                                </p>
+                <div class="layui-row layui-col-space15">
+                    <div v-for="item in studentList" class="layui-col-xs6 layui-col-md3">
+                        <div class="layui-card layui-anim layui-anim-scale">
+                            <div class="layui-card-header">{{item.nickName}}</div>
+                            <div class="layui-card-body">
+                                <div class="head-img-box">
+                                    <img class="head-img" :src="item.userPhoto" alt="...">
+                                </div>
+                                <div class="caption">
+                                    <p class="text-overflow">{{item.userSummary!=null?item.userSummary:'这家伙很懒，没留下简介！'}}</p>
+                                    <p class="text-right">
+                                        <a th:if="${session.user}!=null" :href="'/home/index/ask?invitaId='+item.id" class="layui-btn layui-btn-sm" role="button">去问学霸</a>
+                                        <a th:if="${session.user}==null" :href="'/home/index/login?pagePath=/home/index/ask?invitaId='+item.id" class="layui-btn layui-btn-sm" role="button">登录提问</a>
+                                        <a :href="'/home/index/userinfo/'+item.id" class="layui-btn layui-btn-normal layui-btn-sm" role="button">查看详情</a>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

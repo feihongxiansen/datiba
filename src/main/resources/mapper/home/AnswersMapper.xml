@@ -98,9 +98,7 @@
       <if test="deleteTime != null">
         delete_time,
       </if>
-      <if test="createTime != null">
         create_time,
-      </if>
       <if test="updateTime != null">
         update_time,
       </if>
@@ -136,9 +134,7 @@
       <if test="deleteTime != null">
         #{deleteTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
+      CURRENT_TIMESTAMP,
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>

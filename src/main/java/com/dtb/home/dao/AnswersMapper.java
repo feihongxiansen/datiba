@@ -32,6 +32,13 @@ public interface AnswersMapper {
 
     int insert(AnswersWithBLOBs record);
 
+    /**
+     * @auther lmx
+     * @date 2019/3/16 11:32
+     * @descript 添加答案
+     * @param record
+     * @return int
+     */
     int insertSelective(AnswersWithBLOBs record);
 
     AnswersWithBLOBs selectByPrimaryKey(@Param("id") Integer id);

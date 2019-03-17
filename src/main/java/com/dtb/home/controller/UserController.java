@@ -2,6 +2,7 @@ package com.dtb.home.controller;
 
 import com.dtb.entity.User;
 import com.dtb.home.service.UserService;
+import com.dtb.utils.FileUploadUtil;
 import com.dtb.utils.MD5Util;
 import com.dtb.utils.VerifyUtil;
 import com.dtb.utils.email.EmailUtil;
@@ -13,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -137,18 +140,16 @@ public class UserController {
 
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/1 18:41
-     * @descript: 注册用户
-     * @param: user 用户实体类
-     * @param: session 会话session
-     * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @auther lmx
+     * @date 2019/3/17 12:52
+     * @descript 注册用户
+     * @param user 用户信息
+     * @param file 头像文件
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("register")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> register(User user){
-
-        System.out.println(user.getEmailCode()+user.getEmail());
+    public ResponseBean<CommonErrorEnum> register(User user,@RequestParam("file") MultipartFile file) throws Exception{
 
         //判断邮箱地址是否可用
         if (this.checkEmailExist(user.getEmail()).isSuccess()){
@@ -157,12 +158,16 @@ public class UserController {
             return checkRes;
         }
 
+        ResponseBean uploadResult = this.uploadUserPhoto(file);
+        user.setUserPhoto((String)uploadResult.getData());
+
         //重新生成邮箱验证码
         user.setEmailCode((String)VerifyUtil.createImage()[0]);
         //对用户密码加密
         user.setPassword(MD5Util.md5(user.getPassword(),environment.getProperty("com.dtb.security.md5.key")));
         //用户信息插入数据库
         userService.createUser(user);
+
 
         //创建用户失败
         if (user.getId()==null){
@@ -307,5 +312,22 @@ public class UserController {
         resultMap.put("pageInfo",pageInfo);
 
         return new ResponseBean(true,resultMap,CommonErrorEnum.SUCCESS_REQUEST);
+    }
+
+    /**
+     * @auther lmx
+     * @date 2019/3/17 1:37
+     * @descript 上传用户头像
+     * @param file 图片文件
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     */
+    @RequestMapping("uploadUserPhoto")
+    @ResponseBody
+    public ResponseBean<CommonErrorEnum> uploadUserPhoto(@RequestParam("file")MultipartFile file) throws Exception{
+        String uploadPath = "/static/upload/images/avatar";
+        String rootPath = ResourceUtils.getURL("classpath:").getPath()+uploadPath;
+        String imgPath = FileUploadUtil.upload(file,rootPath,"avatar_");
+        imgPath = uploadPath + "/" + imgPath;
+        return new ResponseBean(true,imgPath,CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 }
