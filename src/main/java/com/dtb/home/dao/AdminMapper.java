@@ -1,6 +1,7 @@
 package com.dtb.home.dao;
 
 import com.dtb.entity.Admin;
+import org.apache.ibatis.annotations.Param;
 
 public interface AdminMapper {
     int deleteByPrimaryKey(Integer id);
@@ -9,7 +10,7 @@ public interface AdminMapper {
 
     int insertSelective(Admin record);
 
-    Admin selectByPrimaryKey(Integer id);
+    Admin selectByPrimaryKey(@Param("id") Integer id);
 
     int updateByPrimaryKeySelective(Admin record);
 

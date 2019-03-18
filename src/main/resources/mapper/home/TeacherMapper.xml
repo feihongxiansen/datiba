@@ -6,6 +6,7 @@
     <result column="auth_state" jdbcType="TINYINT" property="authState" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="admin_id" jdbcType="INTEGER" property="adminId" />
+    <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
     <result column="reason" jdbcType="VARCHAR" property="reason" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
@@ -14,13 +15,31 @@
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.Teacher">
     <result column="paperwork_photos" jdbcType="LONGVARCHAR" property="paperworkPhotos" />
   </resultMap>
+  <resultMap extends="ResultMapWithBLOBs" id="ResultMapWithAssociation" type="com.dtb.entity.TeacherAssociation">
+    <association property="user" column="user_id" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"></association>
+    <association property="subject" column="subject_id" select="com.dtb.home.dao.SubjectMapper.selectByPrimaryKey"></association>
+    <association property="admin" column="admin_id" select="com.dtb.home.dao.AdminMapper.selectByPrimaryKey"></association>
+  </resultMap>
+
   <sql id="Base_Column_List">
-    id, auth_state, user_id, admin_id, reason, create_time, delete_time, update_time
+    id, auth_state, user_id, admin_id, subject_id, reason, create_time, delete_time, update_time
   </sql>
   <sql id="Blob_Column_List">
     paperwork_photos
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+
+
+  <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="ResultMapWithAssociation">
+    SELECT
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    FROM as_teacher
+    WHERE user_id = #{userId,jdbcType=INTEGER}
+    AND delete_time IS NULL
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithAssociation">
     select 
     <include refid="Base_Column_List" />
     ,
@@ -32,16 +51,6 @@
     delete from as_teacher
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.dtb.entity.Teacher">
-    insert into as_teacher (id, auth_state, user_id, 
-      admin_id, reason, create_time, 
-      delete_time, update_time, paperwork_photos
-      )
-    values (#{id,jdbcType=INTEGER}, #{authState,jdbcType=TINYINT}, #{userId,jdbcType=INTEGER}, 
-      #{adminId,jdbcType=INTEGER}, #{reason,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{deleteTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{paperworkPhotos,jdbcType=LONGVARCHAR}
-      )
-  </insert>
   <insert id="insertSelective" parameterType="com.dtb.entity.Teacher">
     insert into as_teacher
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -57,12 +66,13 @@
       <if test="adminId != null">
         admin_id,
       </if>
+      <if test="subjectId != null">
+        subject_id,
+      </if>
       <if test="reason != null">
         reason,
       </if>
-      <if test="createTime != null">
         create_time,
-      </if>
       <if test="deleteTime != null">
         delete_time,
       </if>
@@ -86,12 +96,13 @@
       <if test="adminId != null">
         #{adminId,jdbcType=INTEGER},
       </if>
+      <if test="subjectId != null">
+        #{subjectId,jdbcType=INTEGER},
+      </if>
       <if test="reason != null">
         #{reason,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
+        CURRENT_TIMESTAMP,
       <if test="deleteTime != null">
         #{deleteTime,jdbcType=TIMESTAMP},
       </if>
@@ -114,6 +125,9 @@
       </if>
       <if test="adminId != null">
         admin_id = #{adminId,jdbcType=INTEGER},
+      </if>
+      <if test="subjectId != null">
+        subject_id = #{subjectId,jdbcType=INTEGER},
       </if>
       <if test="reason != null">
         reason = #{reason,jdbcType=VARCHAR},

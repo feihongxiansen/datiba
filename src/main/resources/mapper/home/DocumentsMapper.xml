@@ -4,21 +4,25 @@
   <resultMap id="BaseResultMap" type="com.dtb.entity.Documents">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="admin_id" jdbcType="INTEGER" property="adminId" />
     <result column="integral" jdbcType="INTEGER" property="integral" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="summary" jdbcType="VARCHAR" property="summary" />
+    <result column="document_type" jdbcType="TINYINT" property="documentType" />
     <result column="grade_id" jdbcType="INTEGER" property="gradeId" />
     <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
     <result column="check_state" jdbcType="TINYINT" property="checkState" />
     <result column="download_count" jdbcType="INTEGER" property="downloadCount" />
+    <result column="file_path" jdbcType="VARCHAR" property="filePath" />
     <result column="reason" jdbcType="VARCHAR" property="reason" />
+    <result column="score" jdbcType="FLOAT" property="score" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, user_id, integral, title, summary, grade_id, subject_id, check_state, download_count, 
-    reason, create_time, update_time, delete_time
+    id, user_id, admin_id, integral, title, summary, document_type, grade_id, subject_id, check_state, download_count,
+    file_path, reason, score, create_time, update_time, delete_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -30,18 +34,7 @@
     delete from as_documents
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.dtb.entity.Documents">
-    insert into as_documents (id, user_id, integral, 
-      title, summary, grade_id, 
-      subject_id, check_state, download_count, 
-      reason, create_time, update_time, 
-      delete_time)
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{integral,jdbcType=INTEGER}, 
-      #{title,jdbcType=VARCHAR}, #{summary,jdbcType=VARCHAR}, #{gradeId,jdbcType=INTEGER}, 
-      #{subjectId,jdbcType=INTEGER}, #{checkState,jdbcType=TINYINT}, #{downloadCount,jdbcType=INTEGER}, 
-      #{reason,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{deleteTime,jdbcType=TIMESTAMP})
-  </insert>
+
   <insert id="insertSelective" parameterType="com.dtb.entity.Documents">
     insert into as_documents
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -51,6 +44,9 @@
       <if test="userId != null">
         user_id,
       </if>
+      <if test="adminId != null">
+        admin_id,
+      </if>
       <if test="integral != null">
         integral,
       </if>
@@ -59,6 +55,9 @@
       </if>
       <if test="summary != null">
         summary,
+      </if>
+      <if test="documentType != null">
+        document_type,
       </if>
       <if test="gradeId != null">
         grade_id,
@@ -72,12 +71,16 @@
       <if test="downloadCount != null">
         download_count,
       </if>
+      <if test="filePath != null">
+        file_path,
+      </if>
       <if test="reason != null">
         reason,
       </if>
-      <if test="createTime != null">
-        create_time,
+      <if test="score != null">
+        score,
       </if>
+        create_time,
       <if test="updateTime != null">
         update_time,
       </if>
@@ -92,6 +95,9 @@
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
       </if>
+      <if test="adminId != null">
+        #{adminId,jdbcType=INTEGER},
+      </if>
       <if test="integral != null">
         #{integral,jdbcType=INTEGER},
       </if>
@@ -100,6 +106,9 @@
       </if>
       <if test="summary != null">
         #{summary,jdbcType=VARCHAR},
+      </if>
+      <if test="documentType != null">
+        #{documentType,jdbcType=TINYINT},
       </if>
       <if test="gradeId != null">
         #{gradeId,jdbcType=INTEGER},
@@ -113,12 +122,16 @@
       <if test="downloadCount != null">
         #{downloadCount,jdbcType=INTEGER},
       </if>
+      <if test="filePath != null">
+        #{filePath,jdbcType=VARCHAR},
+      </if>
       <if test="reason != null">
         #{reason,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
+      <if test="score != null">
+        #{score,jdbcType=FLOAT},
       </if>
+      CURRENT_TIMESTAMP,
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
@@ -133,6 +146,9 @@
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
       </if>
+      <if test="adminId != null">
+        admin_id = #{adminId,jdbcType=INTEGER},
+      </if>
       <if test="integral != null">
         integral = #{integral,jdbcType=INTEGER},
       </if>
@@ -141,6 +157,9 @@
       </if>
       <if test="summary != null">
         summary = #{summary,jdbcType=VARCHAR},
+      </if>
+      <if test="documentType != null">
+        document_type = #{documentType,jdbcType=TINYINT},
       </if>
       <if test="gradeId != null">
         grade_id = #{gradeId,jdbcType=INTEGER},
@@ -154,35 +173,23 @@
       <if test="downloadCount != null">
         download_count = #{downloadCount,jdbcType=INTEGER},
       </if>
+      <if test="filePath != null">
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
       <if test="reason != null">
         reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=FLOAT},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+        update_time = CURRENT_TIMESTAMP,
       <if test="deleteTime != null">
         delete_time = #{deleteTime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Documents">
-    update as_documents
-    set user_id = #{userId,jdbcType=INTEGER},
-      integral = #{integral,jdbcType=INTEGER},
-      title = #{title,jdbcType=VARCHAR},
-      summary = #{summary,jdbcType=VARCHAR},
-      grade_id = #{gradeId,jdbcType=INTEGER},
-      subject_id = #{subjectId,jdbcType=INTEGER},
-      check_state = #{checkState,jdbcType=TINYINT},
-      download_count = #{downloadCount,jdbcType=INTEGER},
-      reason = #{reason,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

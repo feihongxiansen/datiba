@@ -1,0 +1,226 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>教师认证-答题吧</title>
+    <style>
+        .img-rounded {
+            max-height: 150px;
+            max-width: 180px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏导入-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+
+<div class="layui-container" id="container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>教师认证</legend>
+            </fieldset>
+
+            <div style="padding: 20px; background-color: #F2F2F2;">
+                <div class="layui-row layui-col-space15">
+
+                    <div class="layui-col-md12" v-for="item in userList">
+                        <div class="layui-card layui-anim layui-anim-scale">
+                            <div class="layui-card-body">
+
+                                <form class="layui-form layui-form-pane" id="form" enctype="multipart/form-data" action="">
+                                    <input type="hidden" name="userId" th:value="${session.user.id}">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">姓名</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" th:value="${session.user.userName}" class="layui-input disabled" disabled readonly>
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">姓名如不正确请到个人中心修改</div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">身份证正面</label>
+                                        <div class="layui-input-inline">
+                                            <button type="button" onclick="clearImg('idCardImgBox1');" class="layui-btn" id="chooseIdcardBtn1">
+                                                <i class="layui-icon">&#xe67c;</i>选择图片
+                                            </button>
+                                        </div>
+                                        <div class="layui-input-inline" id="idCardImgBox1"></div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">身份证反面</label>
+                                        <div class="layui-input-inline">
+                                            <button type="button" onclick="clearImg('idCardImgBox2');" class="layui-btn" id="chooseIdcardBtn2">
+                                                <i class="layui-icon">&#xe67c;</i>选择图片
+                                            </button>
+                                        </div>
+                                        <div class="layui-input-inline" id="idCardImgBox2"></div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">教师资格证</label>
+                                        <div class="layui-input-inline">
+                                            <button type="button" onclick="clearImg('certificateImgBox');" class="layui-btn" id="chooseCertificateBtn">
+                                                <i class="layui-icon">&#xe67c;</i>选择图片
+                                            </button>
+                                        </div>
+                                        <div class="layui-input-inline" id="certificateImgBox"></div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">学科</label>
+                                        <div class="layui-input-inline">
+                                            <select name="subjectId" lay-verify="required">
+                                                <option value="">请选择学科</option>
+                                                <option th:value="${item.id}" th:each="item : ${subjectList}" th:text="${item.subjectName}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="formRegister">立即提交</button>
+                                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script th:inline="javascript">
+
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form
+            , upload = layui.upload;
+
+        //身份证正面图片上传
+        upload.render({
+            elem: '#chooseIdcardBtn1'
+            , multiple: false//多图上传，不支持IE8/9
+            , field: 'idCardImg1'//后台接收字段名
+            , auto: false//不自动上传
+            , acceptMime: 'image/*'//（只显示图片文件）
+            , choose: function(obj){ //选择图片后执行
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                obj.preview(function(index, file, result){
+                    var img = "<img src='" + result + "'alt='' class='img-rounded'>";
+                    $("#idCardImgBox1").empty();
+                    $("#idCardImgBox1").append(img);
+                });
+            }
+            , error: function (index, upload) {
+                layer.closeAll(load); //关闭loading
+            }
+        });
+
+        //身份证反面图片上传
+        upload.render({
+            elem: '#chooseIdcardBtn2'
+            , multiple: false//多图上传，不支持IE8/9
+            , field: 'idCardImg2'//后台接收字段名
+            , auto: false//不自动上传
+            , acceptMime: 'image/*'//（只显示图片文件）
+            , choose: function(obj){ //选择图片后执行
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                obj.preview(function(index, file, result){
+                    var img = "<img src='" + result + "'alt='' class='img-rounded'>";
+                    $("#idCardImgBox2").empty();
+                    $("#idCardImgBox2").append(img);
+                });
+            }
+            , error: function (index, upload) {
+                layer.closeAll(load); //关闭loading
+            }
+        });
+
+        //资格证图片上传
+        upload.render({
+            elem: '#chooseCertificateBtn'
+            , multiple: false//多图上传，不支持IE8/9
+            , field: 'certificateImg'//后台接收字段名
+            , auto: false//不自动上传
+            , acceptMime: 'image/*'//（只显示图片文件）
+            , choose: function(obj){ //选择图片后执行
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                obj.preview(function(index, file, result){
+                    var img = "<img src='" + result + "'alt='' class='img-rounded'>";
+                    $("#certificateImgBox").empty();
+                    $("#certificateImgBox").append(img);
+                });
+            }
+            , error: function (index, upload) {
+                layer.closeAll(load); //关闭loading
+            }
+        });
+
+
+
+
+
+
+        //监听提交
+        form.on('submit(formRegister)', function (data) {
+            console.log(data.field);
+            var formData = new FormData($("#form")[0]);
+            if (data.field.idCardImg1 == null || data.field.idCardImg1 == "") {
+                layer.msg("请上传手持身份证正面图片！", {icon: 2, time: 1500});
+                return false;
+            }
+            if (data.field.idCardImg2 == null || data.field.idCardImg2 == "") {
+                layer.msg("请上传手持身份证反面图片！", {icon: 2, time: 1500});
+                return false;
+            }
+            if (data.field.certificateImg == null || data.field.certificateImg == "") {
+                layer.msg("请上传教师资格证图片！", {icon: 2, time: 1500});
+                return false;
+            }
+            var load = layer.msg('数据上传中...', {
+                icon: 16,
+                shade: 0.01,
+                time: false
+            });
+            //提交表单，登录验证
+            $.ajax({
+                url: "/home/teacher/add",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success == true) {
+                        layer.msg(res.errMsg, {icon: 1, time: 1500});
+                        setTimeout(refresh, 1500);
+                    } else {
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
+                    }
+                    console.log(res);
+                },
+                error: function (res) {
+                    layer.msg(res, {icon: 2, time: 1500});
+                },
+                complete: function () {
+                    //关闭加载动画
+                    layer.close(load);
+                }
+            });
+            return false;
+        });
+    });
+
+    /*清除回显图片*/
+    function clearImg(elementId) {
+        $("#"+elementId).empty();
+    }
+
+</script>
+</body>
+</html>

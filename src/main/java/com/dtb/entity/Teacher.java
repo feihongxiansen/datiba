@@ -11,6 +11,8 @@ public class Teacher {
 
     private Integer adminId;
 
+    private Integer subjectId;
+
     private String reason;
 
     private Date createTime;
@@ -51,6 +53,14 @@ public class Teacher {
 
     public void setAdminId(Integer adminId) {
         this.adminId = adminId;
+    }
+
+    public Integer getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Integer subjectId) {
+        this.subjectId = subjectId;
     }
 
     public String getReason() {

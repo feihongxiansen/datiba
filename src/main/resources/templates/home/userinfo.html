@@ -30,7 +30,7 @@
                                         </tr>
                                         <tr>
                                             <td class="layui-col-md4">用户类型</td>
-                                            <td th:text="${userInfo.userType}">出错啦</td>
+                                            <td><span th:class="${userInfo.userType}=='认证教师'?'layui-badge':''" th:text="${userInfo.userType}">出错啦</span></td>
                                         </tr>
                                         <tr>
                                             <th class="layui-col-md4">注册时间</th>
@@ -79,14 +79,9 @@
         </div>
     </div>
 
-
     <!-- 底部导航栏 start-->
     <footer th:replace="home/public/footer::footer"></footer>
     <!-- 底部导航栏end -->
-
-	<script th:inline="javascript">
-
-	</script>
 
 </body>
 </html>

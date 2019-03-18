@@ -1,0 +1,142 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::link},~{})">
+    <title>认证进度-答题吧</title>
+    <link rel="stylesheet" type="text/css" href="/static/home/plugs/time-line/jquery.eeyellow.Timeline.css">
+</head>
+
+<body>
+
+<!--顶部导航栏导入-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+
+<div class="layui-container" id="container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>教师认证进度</legend>
+            </fieldset>
+            <div class="layui-row">
+                <!--单个用户信息框开始-->
+                <div class="layui-col-md12" v-for="item in userList">
+                    <div class="layui-card layui-anim layui-anim-scale">
+                        <div class="layui-card-body">
+
+                            <div class="VivaTimeline">
+                                <dl>
+                                    <dd class="pos-left clearfix">
+                                        <div class="circ"></div>
+                                        <div class="time">
+                                            第三步<span th:if="${applyInfo.admin}==null" class="layui-badge layui-bg-gray">进行中</span>
+                                            <span th:if="${applyInfo.admin}!=null" class="layui-badge layui-bg-green">已完成</span>
+                                        </div>
+                                        <div class="events">
+                                            <div class="events-header">查看审核结果</div>
+                                            <div class="events-body">
+                                                <div class="row">
+                                                    <div class="col-md-6 pull-left">
+                                                        <img class="events-object img-responsive img-rounded"
+                                                            th:if="${applyInfo.authState}==0" src="/static/home/images/system/wait.gif"/>
+                                                        <img class="events-object img-responsive img-rounded"
+                                                             th:if="${applyInfo.authState}==1" src="/static/home/images/system/success.gif"/>
+                                                        <img class="events-object img-responsive img-rounded"
+                                                             th:if="${applyInfo.authState}==2" src="/static/home/images/system/verify.jpg"/>
+                                                        <img class="events-object img-responsive img-rounded"
+                                                             th:if="${applyInfo.authState}==3" src="/static/home/images/system/failed.jpg"/>
+                                                    </div>
+                                                    <div class="events-desc" th:if="${applyInfo.authState}==0">
+                                                        工作人员正在加班加点的进行审核中，请您耐心等待，审核通过后第一时间以邮件的形式通知您，请时时关注邮箱信息！
+                                                    </div>
+                                                    <div class="events-desc" th:if="${applyInfo.authState}==1">
+                                                        恭喜你，审核通过啦，答题吧又迎来一位<span th:text="${applyInfo.subject.subjectName}"></span>教师精英，感谢您的支持，快去帮助小伙伴回答问题吧！
+                                                        <a href="/home/index/question">去答题</a>
+                                                    </div>
+                                                    <div class="events-desc" th:if="${applyInfo.authState}==2" th:text="'你的认证资料存在问题：'+${applyInfo.reason}+'，需要您补充重新提交认证资料，以便进行继续认证！'">
+                                                    </div>
+                                                    <div class="events-desc" th:if="${applyInfo.authState}==3" th:text="'真遗憾，您的认证未通过，不通过理由为'+${applyInfo.reason}+'，如有疑问，请联系我们的客服进行处理！'">
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 pull-left">
+                                                        <img class="events-object img-responsive img-rounded"
+                                                             src="/static/home/images/3.jpg"/>
+                                                    </div>
+                                                    <div class="events-desc">
+                                                        认证小技巧，如果未通过，请根据提示的原因进行重新补充或者更新认证资料进行二次认证，如果结果为不通过，不可进行二次认证，如有疑问请联系我们的客服进行处理！
+                                                        <a href="#">去补充（更新）资料</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="events-footer"></div>
+                                        </div>
+                                    </dd>
+                                    <dd class="pos-right clearfix">
+                                        <div class="circ"></div>
+                                        <div class="time">
+                                            第二步<span th:if="${applyInfo.admin}==null" class="layui-badge layui-bg-gray">进行中</span>
+                                            <span th:if="${applyInfo.admin}!=null" class="layui-badge layui-bg-green">已完成</span>
+                                        </div>
+                                        <div class="events">
+                                            <div class="events-header">等待管理员审核</div>
+                                            <div class="events-body">
+                                                <div class="row">
+                                                    <div class="col-md-6 pull-left">
+                                                        <img class="events-object img-responsive img-rounded"
+                                                             th:src="@{${applyInfo.admin}==null?'/static/home/images/system/verify.jpg':'/static/home/images/system/verifyed.jpg'}"/>
+                                                    </div>
+                                                    <div class="events-desc"
+                                                         th:text="${applyInfo.admin}==null?'工作人员正在加班加点的进行审核中，请您耐心等待，审核通过后第一时间以邮件的形式通知您，请时时关注邮箱信息！':'您的申请已经审核结束了，快去查看审核结果吧！'">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="events-footer"></div>
+                                        </div>
+                                    </dd>
+                                    <dd class="pos-left clearfix">
+                                        <div class="circ"></div>
+                                        <div class="time">第一步<span class="layui-badge layui-bg-green">已完成</span></div>
+                                        <div class="events">
+                                            <div class="events-header">提交的审核材料</div>
+                                            <div class="events-body">
+                                                <div class="row"
+                                                     th:each="item,itemState : ${applyInfo?.paperworkPhotoArray}">
+                                                    <div class="col-md-6 pull-left">
+                                                        <img class="events-object img-responsive img-rounded"
+                                                             th:src="@{${item}}"/>
+                                                    </div>
+                                                    <div class="events-desc"
+                                                         th:text="'用户上传的审核材料图片'+${itemState.count}+'。温馨提示：按照要求上传材料，可增加审核通过的几率哟！'"></div>
+                                                </div>
+                                            </div>
+                                            <div class="events-footer"></div>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!--单个用户信息框结束-->
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 底部导航栏 start-->
+<footer th:replace="home/public/footer::footer"></footer>
+<!-- 底部导航栏end -->
+
+<script type="text/javascript" src="/static/home/plugs/time-line/jquery.eeyellow.Timeline.js"></script>
+<script th:inline="javascript">
+    $(document).ready(function () {
+        $('.VivaTimeline').vivaTimeline({
+            carousel: true,
+            carouselTime: 5000
+        });
+    });
+</script>
+</body>
+</html>

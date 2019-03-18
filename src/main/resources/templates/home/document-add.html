@@ -1,0 +1,210 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{},~{})">
+    <title>上传文档-答题吧</title>
+</head>
+
+<body>
+
+<!--顶部导航栏导入-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+
+<div class="layui-container" id="container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>上传文档</legend>
+            </fieldset>
+
+            <div style="padding: 20px; background-color: #F2F2F2;">
+                <div class="layui-row layui-col-space15">
+
+                    <div class="layui-col-md12">
+                        <div class="layui-card layui-anim layui-anim-scale">
+                            <div class="layui-card-body">
+
+                                <form class="layui-form layui-form-pane" id="form" enctype="multipart/form-data"
+                                      action="">
+                                    <input type="hidden" name="userId" th:value="${session.user.id}">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">标题</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" class="layui-input" name="title" lay-verify="required" placeholder="给文档写一个好标题，以便别人更好的找到">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">下载积分</label>
+                                        <div class="layui-input-inline">
+                                            <input type="number" min="0" class="layui-input" name="integral" lay-verify="required|number|nonNegativeInteger"
+                                                   placeholder="下载所需积分">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">文档类型</label>
+                                        <div class="layui-input-inline">
+                                            <select name="documentType" lay-verify="required">
+                                                <option value="">请选择文档类型</option>
+                                                <option value="1">题目文档</option>
+                                                <option value="2">复习文档</option>
+                                                <option value="3">杂项文档</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">适用年级</label>
+                                        <div class="layui-input-inline">
+                                            <select name="gradeId" lay-filter="gradeId" lay-verify="required">
+                                                <option value="">请选择年级</option>
+                                                <option th:value="${item.id}" th:each="item : ${gradeList}" th:text="${item.gradeName}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">适用学科</label>
+                                        <div class="layui-input-inline">
+                                            <select name="subjectId" id="subjectId" lay-verify="required">
+                                                <option value="">请选择学科</option>
+                                                <option th:value="${item.id}" th:if="${itemState.count<=3}" th:each="item,itemState : ${subjectList}" th:text="${item.subjectName}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">文档文件</label>
+                                        <div class="layui-input-block">
+                                            <button type="button" onclick="clearInfo('documentInfo');" class="layui-btn"
+                                                    id="chooseFileBtn">
+                                                <i class="layui-icon">&#xe67c;</i>选择文档
+                                            </button>
+                                        </div>
+                                        <div class="layui-input-block" id="documentInfo"></div>
+                                    </div>
+                                    <div class="layui-form-item layui-form-text">
+                                        <label class="layui-form-label">资料描述</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="summary" rows="8" lay-verify="required" placeholder="详细描述文档信息，帮助别人准确判断是否需要"
+                                                      class="layui-textarea"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="formRegister">立即提交</button>
+                                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+
+    var subjectList = [[${subjectList}]];
+
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form
+            , upload = layui.upload;
+
+        //身份证正面图片上传
+        upload.render({
+            elem: '#chooseFileBtn'
+            , multiple: false//多图上传，不支持IE8/9
+            , field: 'file'//后台接收字段名
+            , auto: false//不自动上传
+            , size: 50 * 1024//上传文件大小限制，单位为k
+            , accept: 'file'//所有文件类型
+            , choose: function (obj) { //选择图片后执行
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                console.log(obj);
+                obj.preview(function (index, file, result) {
+                    var info = "<span class='layui-badge layui-bg-orange'>" + "已选择文件：" + file.name + "</span>";
+                    $("#documentInfo").empty();
+                    $("#documentInfo").append(info);
+                });
+            }
+            , error: function (index, upload) {
+                layer.closeAll(load); //关闭loading
+            }
+        });
+
+        //监听select
+        form.on('select(gradeId)', function (data) {
+            console.log(data.value);
+            $("#subjectId").html("");
+            $("#subjectId").append($("<option>").val("").text("请选择学科"));
+            for (var i = 0; i < subjectList.length; i++) {
+                if (data.value <= 1 && i > 2)
+                    break;
+                var option = $("<option>").val(subjectList[i].id).text(subjectList[i].subjectName);
+                //通过LayUI.jQuery添加列表项
+                $("#subjectId").append(option);
+                form.render('select');
+            }
+        });
+
+        //监听提交
+        form.on('submit(formRegister)', function (data) {
+            console.log(data.field);
+            var formData = new FormData($("#form")[0]);
+            if (data.field.file == null || data.field.file == "") {
+                layer.msg("请上传文件！", {icon: 2, time: 1500});
+                return false;
+            }
+            var load = layer.msg('数据上传中...', {
+                icon: 16,
+                shade: 0.01,
+                time: false
+            });
+            //提交表单，登录验证
+            $.ajax({
+                url: "/home/document/upload",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success == true) {
+                        layer.msg(res.errMsg, {icon: 1, time: 1500});
+                        setTimeout(refresh, 1500);
+                    } else {
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
+                    }
+                    console.log(res);
+                },
+                error: function (res) {
+                    layer.msg(res, {icon: 2, time: 1500});
+                },
+                complete: function () {
+                    //关闭加载动画
+                    layer.close(load);
+                }
+            });
+            return false;
+        });
+
+        //自定义表单验证
+        form.verify({
+            nonNegativeInteger: [//非负整数验证
+                /^\d+$/
+                , '下载积分不可为负数！'
+            ]
+        });
+    });
+
+    /*清除回显图片*/
+    function clearInfo(elementId) {
+        $("#" + elementId).empty();
+    }
+
+
+</script>
+</body>
+</html>
