@@ -8,7 +8,7 @@
             <dl class="layui-nav-child">
                 <dd><a href="/home/index/user/list/2">知名教师</a></dd>
                 <dd><a href="/home/index/user/list/1">人气学霸</a></dd>
-                <dd><a href="">教师认证</a></dd>
+                <dd><a th:href="@{${session.user}==null?'/home/index/login?pagePath=/home/teacher/auth':'/home/teacher/auth'}">教师认证</a></dd>
             </dl>
         </li>
         <li class="layui-nav-item">
@@ -21,9 +21,8 @@
         <li class="layui-nav-item">
             <a href="javascript:;">资料专区</a>
             <dl class="layui-nav-child">
-                <dd><a href="">题目资料</a></dd>
-                <dd><a href="">复习资料</a></dd>
-                <dd><a href="">杂项资料</a></dd>
+                <dd><a href="/home/document/list/1/10">搜索资料</a></dd>
+                <dd><a th:href="@{${session.user}==null?'/home/index/login?pagePath=/home/document/add':'/home/document/add'}">上传资料</a></dd>
             </dl>
         </li>
         <li class="layui-nav-item"><a href="">积分兑换</a></li>
@@ -36,7 +35,8 @@
         <li class="layui-nav-item" th:if="${session.user} != null">
             <a href="javascript:;"><img th:src="@{${session.user.userPhoto}==null?'/static/home/images/user-head/1.jpg':${session.user.userPhoto}}" class="layui-nav-img" th:text="${session.user.userName}"></a>
             <dl class="layui-nav-child">
-                <dd><a href="javascript:;">修改信息</a></dd>
+                <dd><a href="javascript:;">个人中心</a></dd>
+                <dd><a th:href="@{${session.user}==null?'/home/index/login?pagePath=/home/document/myinfo':'/home/document/myinfo'}">我的资料</a></dd>
                 <dd><a href="javascript:void(0);" id="JsSignOut">退了</a></dd>
             </dl>
         </li>

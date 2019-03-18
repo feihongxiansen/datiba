@@ -52,6 +52,7 @@ public class WebConfigurer implements WebMvcConfigurer {
 //                ,"/home/index/about"     //联系我们页面
 //                ,"/home/index/getVerifyCode"//获取验证码图片
 //                ,"/home/index/index"
+//                ,"/home/teacher/auth"  //临时免拦截，教师认证
         );       //主页
     }
 }

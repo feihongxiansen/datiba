@@ -1,0 +1,8 @@
+1.本系统采用了mysql自带的全文搜索功能，因此需要在mysql的配置文件中配置全文搜索参数
+    在my.ini中配置两个地方，在[mysqld]下面添加代码
+        ;设置全文搜索字符长度
+        ft_min_word_len=2
+        ngram_token_size=2
+    在[client]下添加代码
+        ; 修改全文检索的最小许可字符为2个字符或汉字
+        ft_min_word_len=2

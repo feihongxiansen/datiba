@@ -51,7 +51,8 @@ public enum CommonErrorEnum {
     SUCCESS_VERIFY_EMAIL("036","邮箱验证成功"),
     FAILED_SENDEMAIL("037","发送邮件失败"),
     SUCCESS_REQUEST("038","请求成功"),
-    FAILED_QUESTION("039","操作失败");
+    FAILED_QUESTION("039","操作失败"),
+    WAIT_VERIFY("040","提交成功，等待审核");
 
     private String code;
 

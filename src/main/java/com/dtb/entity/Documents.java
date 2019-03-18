@@ -7,11 +7,15 @@ public class Documents {
 
     private Integer userId;
 
+    private Integer adminId;
+
     private Integer integral;
 
     private String title;
 
     private String summary;
+
+    private Byte documentType;
 
     private Integer gradeId;
 
@@ -21,7 +25,11 @@ public class Documents {
 
     private Integer downloadCount;
 
+    private String filePath;
+
     private String reason;
+
+    private Float score;
 
     private Date createTime;
 
@@ -43,6 +51,14 @@ public class Documents {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public Integer getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(Integer adminId) {
+        this.adminId = adminId;
     }
 
     public Integer getIntegral() {
@@ -67,6 +83,14 @@ public class Documents {
 
     public void setSummary(String summary) {
         this.summary = summary == null ? null : summary.trim();
+    }
+
+    public Byte getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(Byte documentType) {
+        this.documentType = documentType;
     }
 
     public Integer getGradeId() {
@@ -101,12 +125,28 @@ public class Documents {
         this.downloadCount = downloadCount;
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
     public String getReason() {
         return reason;
     }
 
     public void setReason(String reason) {
         this.reason = reason == null ? null : reason.trim();
+    }
+
+    public Float getScore() {
+        return score;
+    }
+
+    public void setScore(Float score) {
+        this.score = score;
     }
 
     public Date getCreateTime() {
