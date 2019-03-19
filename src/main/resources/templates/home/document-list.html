@@ -1,0 +1,275 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>搜索文档-答题吧</title>
+    <style>
+        .head-img-box {
+            height: 190px;
+        }
+
+        .head-img {
+            height: 100%;
+            width: 90%;
+        }
+
+        .text-box {
+            width: 100%;
+            height: 165px;
+        }
+
+        .text-overflow {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 4;
+            overflow: hidden;
+            font-size: 15px;
+            line-height: 26px;
+        }
+
+        .layui-card-body {
+            height: 230px;
+            padding: 20px 20px;
+        }
+
+        .layui-badge {
+            margin-right: 5px;
+        }
+
+        .layui-card {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏导入-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<!--问题搜索栏开始-->
+<nav class="navbar navbar-default layui-anim layui-anim-scale">
+    <form class="navbar-form layui-form layui-form-item" id="form">
+        <div class="layui-input-inline" style="margin-left: 20%;">
+            <select name="gradeId" lay-filter="gradeId">
+                <option value="">所有年级</option>
+                <option th:value="${item.id}" th:each="item : ${gradeList}" th:text="${item.gradeName}"></option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="subjectId" id="subjectId">
+                <option value="">所有学科</option>
+                <option th:value="${item.id}" th:if="${itemState.count<=3}" th:each="item,itemState : ${subjectList}"
+                        th:text="${item.subjectName}"></option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="documentType">
+                <option value="">所有资料类型</option>
+                <option value="1">题目资料</option>
+                <option value="2">复习资料</option>
+                <option value="3">杂项资料</option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="integral">
+                <option value="">所有积分类型</option>
+                <option value="0">免费资料</option>
+                <option value="1">需要积分</option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <input type="text" name="title" placeholder="输入关键字搜索" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-input-inline">
+            <button class="layui-btn layui-btn-warm">
+                <i class="layui-icon">&#xe615;</i>搜索
+            </button>
+        </div>
+    </form>
+</nav>
+<!--问题搜索栏结束-->
+
+<div class="layui-container" id="container" v-cloak>
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>文件列表</legend>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="layui-row" style="padding: 20px; background-color: #F2F2F2;">
+
+        <div class="layui-card layui-anim layui-anim-scale" v-for="item in documentList">
+            <div class="layui-card-body">
+                <div class="layui-col-md4">
+                    <div class="head-img-box">
+                        <img class="head-img" :src="item.user.userPhoto" alt="...">
+                    </div>
+                </div>
+                <div class="layui-col-md8">
+                    <div class="row text-box">
+                        <h4>{{item.title}}</h4>
+                        <p class="text-overflow">{{item.summary}}</p>
+                    </div>
+                    <div class="row">
+                        <div class="layui-col-md5">
+                            <span class="layui-badge layui-bg-orange">{{item.grade.gradeName}}</span>
+                            <span class="layui-badge layui-bg-blue">{{item.subject.subjectName}}</span>
+                            <span class="layui-badge layui-bg-green">{{item.documentType==1?'题目资料':item.documentType==2?'复习资料':'杂项资料'}}</span>
+                            <span class="layui-badge">{{item.integral>0?item.integral+'积分':'免积分'}}</span>
+                        </div>
+                        <div class="layui-col-md3">
+                            上传用户：<a :href="'/home/index/userinfo/'+item.user.id">{{item.user.nickName}}</a>
+                        </div>
+                        <div class="layui-col-md2">
+                            {{item.createTime | formatDate('yyyy-MM-dd')}}
+                        </div>
+
+                        <div class="layui-col-md2">
+                            <button class="layui-btn layui-btn-sm layui-btn-warm">
+                                查看详情<i class="layui-icon">&#xe65f;</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--分页按钮-->
+        <div class="layui-row text-center">
+            <div id="laypage"></div>
+        </div>
+
+    </div>
+
+
+</div>
+
+<!-- 底部导航栏 start-->
+<footer th:replace="home/public/footer::footer"></footer>
+<!-- 底部导航栏end -->
+
+<script th:src="@{/static/home/plugs/vue/vue.js}"></script>
+<script th:inline="javascript">
+
+    var subjectList = [[${subjectList}]];
+    var layer;
+    function initLayui() {
+        layui.use(['form', 'laypage', 'layer'], function () {
+            var form = layui.form
+                , laypage = layui.laypage;
+            layer = layui.layer;
+
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
+                , count: totalCount //数据总数，从服务端得到
+                , limit: pageSize //每页显示的条数。laypage将会借助 count 和 limit 计算出分页数。
+                , limits: [5, 10, 20, 40, , 50, 100] //每页条数的选择项。如果 layout 参数开启了 limit，则会出现每页条数的select选择框
+                , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+                , jump: function (obj, first) {
+                    //obj包含了当前分页的所有参数，比如：
+                    pageSize = obj.limit;
+                    pageIndex = obj.curr;
+                    //首次不执行
+                    if (!first) {
+                        pagination(obj.curr, obj.limit);
+                    }
+                }
+            });
+
+            //监听select
+            form.on('select(gradeId)', function (data) {
+                console.log(data.value);
+                $("#subjectId").html("");
+                $("#subjectId").append($("<option>").val("").text("请选择学科"));
+                for (var i = 0; i < subjectList.length; i++) {
+                    if (data.value <= 1 && i > 2)
+                        break;
+                    var option = $("<option>").val(subjectList[i].id).text(subjectList[i].subjectName);
+                    //通过LayUI.jQuery添加列表项
+                    $("#subjectId").append(option);
+                    form.render('select');
+                }
+            });
+        });
+    }
+
+    var that = this;
+    var app = new Vue({
+        el: "#container",
+        data: {
+            documentList: null,//教师列表
+            initLayui: false//是否可以渲染layui，请求到数据后才可以
+        },
+        watch: {//监听data中的数据变化
+            'initLayui': function (newVal) {
+                if (newVal)
+                    that.initLayui();
+            }
+        },
+        filters: {
+            formatDate: function (date, fmt) {
+                return new Date(date).Format(fmt);
+            }
+        }
+    });
+
+    //日期格式化
+    Date.prototype.Format = function(fmt) { //author: meizz
+        var o = {
+            "M+" : this.getMonth()+1,                 //月份
+            "d+" : this.getDate(),                    //日
+            "h+" : this.getHours(),                   //小时
+            "m+" : this.getMinutes(),                 //分
+            "s+" : this.getSeconds(),                 //秒
+            "q+" : Math.floor((this.getMonth()+3)/3), //季度
+            "S"  : this.getMilliseconds()             //毫秒
+        };
+        if(/(y+)/.test(fmt))
+            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+        for(var k in o)
+            if(new RegExp("("+ k +")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        return fmt;
+    };
+
+    var pageIndex = 1;
+    var pageSize = 10;
+    var totalCount = 10;
+    /*异步请求用户数据*/
+    function pagination(pageIndex, pageSize) {
+
+        var requestPath = "/home/document/searchListToLimit/" + pageIndex + "/" + pageSize;
+        var formData = new FormData($("#form")[0]);
+        if (app.$data.initLayui == false) {
+            formData = {};
+        }
+        //提交表单，登录验证
+        $.ajax({
+            url: requestPath,
+            type: "post",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.success == true) {
+                    totalCount = res.data.pageInfo.total;
+                    console.log("总数：", totalCount);
+                    console.log(res);
+                    app.$data.documentList = res.data.documentList;
+                    app.$data.initLayui = true;
+                }
+            },
+            error: function (res) {
+                console.log("出错啦");
+            }
+        });
+    }
+
+    /*获取用户列表*/
+    pagination(pageIndex, pageSize);
+
+</script>
+</body>
+</html>

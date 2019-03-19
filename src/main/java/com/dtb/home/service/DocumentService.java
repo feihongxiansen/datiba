@@ -1,6 +1,8 @@
 package com.dtb.home.service;
 
 import com.dtb.entity.Documents;
+import com.dtb.entity.DocumentsAssociation;
+import com.github.pagehelper.Page;
 
 /**
  * @Author：lmx
@@ -18,4 +20,14 @@ public interface DocumentService {
      * @return int 返回受影响行数
      */
     int addDocument(Documents document);
+
+    /**
+     * @auther lmx
+     * @date 2019/3/19 23:09
+     * @descript 多条件查询文档数据
+     * @param document 查询条件
+     * @return com.github.pagehelper.Page<com.dtb.entity.DocumentsAssociation>
+     */
+    Page<DocumentsAssociation> findDocumentListToLimit(Documents document);
+
 }
