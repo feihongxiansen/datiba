@@ -47,12 +47,15 @@ public class WebConfigurer implements WebMvcConfigurer {
                 ,"/home/question/addQuestion" //上传多图
                 ,"/home/grade/getGradeList" //获取年级列表
                 ,"/home/subject/getSubjectList" //获取学科列表
+                ,"/home/document/list"  //文档列表
+                ,"/home/document/searchListToLimit"  //分页搜索文件
+                ,"/home/document/detial/**"  //文件详情
 //                ,"/home/index/register"     //注册页面
 //                ,"/home/index/login"        //登录页面
 //                ,"/home/index/about"     //联系我们页面
 //                ,"/home/index/getVerifyCode"//获取验证码图片
 //                ,"/home/index/index"
-                ,"/home/document/**"  //临时免拦截，教师认证
+//                ,"/home/document/**"  //临时免拦截，教师认证
         );       //主页
     }
 }
