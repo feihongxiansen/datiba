@@ -5,7 +5,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="document_id" jdbcType="INTEGER" property="documentId" />
-    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="score" jdbcType="FLOAT" property="score" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -13,20 +13,38 @@
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.DocumentComments">
     <result column="comment_content" jdbcType="LONGVARCHAR" property="commentContent" />
   </resultMap>
+  <resultMap id="AssociationMap" extends="ResultMapWithBLOBs" type="com.dtb.entity.DocumentCommentsAssociation">
+    <association property="user" column="user_id" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"/>
+  </resultMap>
   <sql id="Base_Column_List">
     id, user_id, document_id, score, create_time, delete_time, update_time
   </sql>
   <sql id="Blob_Column_List">
     comment_content
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+
+  <select id="selectListByDocumentId" parameterType="java.lang.Integer" resultMap="AssociationMap">
     select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from as_document_comments
+    where document_id = #{documentId,jdbcType=INTEGER}
+    AND score IS NOT NULL
+    AND comment_content IS NOT NULL
+    AND  delete_time IS NULL
+    ORDER BY update_time DESC ,create_time DESC
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
     from as_document_comments
     where id = #{id,jdbcType=INTEGER}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from as_document_comments
     where id = #{id,jdbcType=INTEGER}

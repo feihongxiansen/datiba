@@ -1,0 +1,128 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>资料详情-答题吧</title>
+    <style>
+        .text-overflow {
+            font-size: 15px;
+            line-height: 26px;
+        }
+        .layui-card-body {
+            padding: 20px 20px;
+            padding-bottom: 40px;
+        }
+        .layui-badge {
+            margin-right: 5px;
+        }
+        .layui-card {
+            margin-bottom: 8px;
+        }
+        h4 {
+            font-weight: bolder;
+            line-height: unset;
+        }
+        .layui-rate {
+           padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏导入-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<div class="layui-container" id="container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>文件详情</legend>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="layui-row" style="padding: 20px; background-color: #F2F2F2;">
+
+        <div class="layui-card layui-anim layui-anim-scale" th:each="item : ${document}">
+            <div class="layui-card-header">
+                <h4 th:text="${item.title}"></h4>
+            </div>
+            <div class="layui-card-body">
+                <p class="text-overflow" th:text="${item.summary}"></p>
+                <div class="layui-col-md4">
+                    <span class="layui-badge layui-bg-orange" th:text="${item.grade.gradeName}"></span>
+                    <span class="layui-badge layui-bg-blue" th:text="${item.subject.subjectName}"></span>
+                    <span class="layui-badge layui-bg-green" th:if="${item.documentType}==1" th:text="'题目资料'"></span>
+                    <span class="layui-badge layui-bg-green" th:if="${item.documentType}==2" th:text="'复习资料'"></span>
+                    <span class="layui-badge layui-bg-green" th:if="${item.documentType}==3" th:text="'杂项资料'"></span>
+                    <span class="layui-badge" th:text="${item.integral}>0?${item.integral}+'积分':'免积分'"></span>
+                    <span class="layui-badge layui-bg-cyan" th:text="${item.downloadCount}+'次下载'"></span>
+                </div>
+                <div class="layui-col-md2" th:text="${#dates.format(item.createTime,'yyyy-MM-dd HH:mm:ss')}"></div>
+                <div class="layui-col-md3">
+                    上传用户：<a th:href="'/home/index/userinfo/'+${item.user.id}" th:text="${item.user.nickName}"></a>
+                </div>
+                <div class="layui-col-md2" id="score"></div>
+                <div class="layui-col-md1">
+                    <a class="layui-btn layui-btn-sm" th:href="${session.user}==null?'/home/index/login?pagePath=/home/document/detial/'+${item.id}:${item.filePath}">
+                        立即下载<i class="layui-icon">&#xe601;</i>
+                    </a>
+                </div>
+            </div>
+            <hr class="layui-bg-orange">
+
+            <div class="layui-card layui-anim layui-anim-scale" th:each="comments : ${item.comments}">
+                <div class="layui-card-body">
+                    <p class="text-overflow" th:text="${comments.commentContent}"></p>
+                    <div class="layui-col-md4" th:text="${#dates.format(comments.createTime,'yyyy-MM-dd HH:mm:ss')}"></div>
+                    <div class="layui-col-md5">
+                        下载用户：<a th:href="'/home/index/userinfo/'+${comments.user.id}" th:text="${comments.user.nickName}"></a>
+                    </div>
+                    <div class="layui-col-md3" th:id="'user-score-'+${comments.id}"></div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+</div>
+
+<!-- 底部导航栏 start-->
+<footer th:replace="home/public/footer::footer"></footer>
+<!-- 底部导航栏end -->
+
+<script th:inline="javascript">
+
+    var comments = [[${document[0]}]].comments;
+    console.log(comments);
+    layui.use(['rate'], function(){
+        var rate = layui.rate;
+        rate.render({
+            elem: '#score'
+            ,value: 3.5
+            ,half: true
+            ,text: false
+            ,readonly: true
+            ,theme: '#FF8000' //自定义主题色
+        });
+
+        for (var i=0; i<comments.length; i++){
+            var id = "#user-score-"+comments[i].id;
+            rate.render({
+                elem: id
+                ,value: comments[i].score
+                ,half: true
+                ,text: false
+                ,readonly: true
+                ,theme: '#FE0000' //自定义主题色
+            });
+        }
+
+    });
+</script>
+</body>
+</html>

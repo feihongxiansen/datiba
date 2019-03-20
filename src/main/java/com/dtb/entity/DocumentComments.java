@@ -9,7 +9,7 @@ public class DocumentComments {
 
     private Integer documentId;
 
-    private Integer score;
+    private Float score;
 
     private Date createTime;
 
@@ -43,11 +43,11 @@ public class DocumentComments {
         this.documentId = documentId;
     }
 
-    public Integer getScore() {
+    public Float getScore() {
         return score;
     }
 
-    public void setScore(Integer score) {
+    public void setScore(Float score) {
         this.score = score;
     }
 

@@ -1,5 +1,7 @@
 package com.dtb.entity;
 
+import java.util.List;
+
 /**
  * @Author：lmx
  * @Description：
@@ -15,6 +17,8 @@ public class DocumentsAssociation extends Documents {
     private Grade grade;
 
     private Subject subject;
+
+    private List<DocumentCommentsAssociation> comments;
 
     public User getUser() {
         return user;
@@ -46,5 +50,13 @@ public class DocumentsAssociation extends Documents {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public List<DocumentCommentsAssociation> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<DocumentCommentsAssociation> comments) {
+        this.comments = comments;
     }
 }
