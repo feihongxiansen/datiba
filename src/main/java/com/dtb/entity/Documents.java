@@ -172,4 +172,27 @@ public class Documents {
     public void setDeleteTime(Date deleteTime) {
         this.deleteTime = deleteTime;
     }
+
+    @Override
+    public String toString() {
+        return "Documents{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", adminId=" + adminId +
+                ", integral=" + integral +
+                ", title='" + title + '\'' +
+                ", summary='" + summary + '\'' +
+                ", documentType=" + documentType +
+                ", gradeId=" + gradeId +
+                ", subjectId=" + subjectId +
+                ", checkState=" + checkState +
+                ", downloadCount=" + downloadCount +
+                ", filePath='" + filePath + '\'' +
+                ", reason='" + reason + '\'' +
+                ", score=" + score +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", deleteTime=" + deleteTime +
+                '}';
+    }
 }

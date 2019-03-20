@@ -3,6 +3,9 @@
 <head th:replace="home/public/head::head(~{::title},~{::style},~{})">
     <title>搜索文档-答题吧</title>
     <style>
+        .layui-form{
+            margin-top: 20px;
+        }
         .head-img-box {
             height: 190px;
         }
@@ -38,6 +41,9 @@
         .layui-card {
             margin-bottom: 8px;
         }
+        h4 {
+            font-weight: bolder;
+        }
     </style>
 </head>
 
@@ -47,46 +53,45 @@
 <div th:replace="home/public/top-menu::top-menu"></div>
 
 <!--问题搜索栏开始-->
-<nav class="navbar navbar-default layui-anim layui-anim-scale">
-    <form class="navbar-form layui-form layui-form-item" id="form">
-        <div class="layui-input-inline" style="margin-left: 20%;">
-            <select name="gradeId" lay-filter="gradeId">
-                <option value="">所有年级</option>
-                <option th:value="${item.id}" th:each="item : ${gradeList}" th:text="${item.gradeName}"></option>
-            </select>
-        </div>
-        <div class="layui-input-inline">
-            <select name="subjectId" id="subjectId">
-                <option value="">所有学科</option>
-                <option th:value="${item.id}" th:if="${itemState.count<=3}" th:each="item,itemState : ${subjectList}"
-                        th:text="${item.subjectName}"></option>
-            </select>
-        </div>
-        <div class="layui-input-inline">
-            <select name="documentType">
-                <option value="">所有资料类型</option>
-                <option value="1">题目资料</option>
-                <option value="2">复习资料</option>
-                <option value="3">杂项资料</option>
-            </select>
-        </div>
-        <div class="layui-input-inline">
-            <select name="integral">
-                <option value="">所有积分类型</option>
-                <option value="0">免费资料</option>
-                <option value="1">需要积分</option>
-            </select>
-        </div>
-        <div class="layui-input-inline">
-            <input type="text" name="title" placeholder="输入关键字搜索" autocomplete="off" class="layui-input">
-        </div>
-        <div class="layui-input-inline">
-            <button class="layui-btn layui-btn-warm">
-                <i class="layui-icon">&#xe615;</i>搜索
-            </button>
-        </div>
-    </form>
-</nav>
+<form class="layui-form layui-form-item" id="form">
+    <div class="layui-input-inline" style="margin-left: 20%;">
+        <select name="gradeId" lay-filter="gradeId">
+            <option value="">所有年级</option>
+            <option th:value="${item.id}" th:each="item : ${gradeList}" th:text="${item.gradeName}"></option>
+        </select>
+    </div>
+    <div class="layui-input-inline">
+        <select name="subjectId" id="subjectId">
+            <option value="">所有学科</option>
+            <option th:value="${item.id}" th:if="${itemState.count<=3}" th:each="item,itemState : ${subjectList}"
+                    th:text="${item.subjectName}"></option>
+        </select>
+    </div>
+    <div class="layui-input-inline">
+        <select name="documentType">
+            <option value="">所有资料类型</option>
+            <option value="1">题目资料</option>
+            <option value="2">复习资料</option>
+            <option value="3">杂项资料</option>
+        </select>
+    </div>
+    <div class="layui-input-inline">
+        <select name="integral">
+            <option value="">所有积分类型</option>
+            <option value="0">免费资料</option>
+            <option value="1">需要积分</option>
+        </select>
+    </div>
+    <div class="layui-input-inline">
+        <input type="text" name="title" placeholder="输入关键字搜索" autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-input-inline">
+        <button class="layui-btn layui-btn-warm" lay-submit lay-filter="formSubmit">
+            <i class="layui-icon">&#xe615;</i>搜索
+        </button>
+    </div>
+</form>
+<hr class="layui-bg-green">
 <!--问题搜索栏结束-->
 
 <div class="layui-container" id="container" v-cloak>
@@ -118,6 +123,7 @@
                             <span class="layui-badge layui-bg-blue">{{item.subject.subjectName}}</span>
                             <span class="layui-badge layui-bg-green">{{item.documentType==1?'题目资料':item.documentType==2?'复习资料':'杂项资料'}}</span>
                             <span class="layui-badge">{{item.integral>0?item.integral+'积分':'免积分'}}</span>
+                            <span class="layui-badge layui-bg-cyan">{{item.downloadCount+'次下载'}}</span>
                         </div>
                         <div class="layui-col-md3">
                             上传用户：<a :href="'/home/index/userinfo/'+item.user.id">{{item.user.nickName}}</a>
@@ -127,9 +133,9 @@
                         </div>
 
                         <div class="layui-col-md2">
-                            <button class="layui-btn layui-btn-sm layui-btn-warm">
+                            <a class="layui-btn layui-btn-sm layui-btn-warm" :href="'/home/document/detial/'+item.id">
                                 查看详情<i class="layui-icon">&#xe65f;</i>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -153,19 +159,18 @@
 <script th:inline="javascript">
 
     var subjectList = [[${subjectList}]];
-    var layer;
+    var formData={};
     function initLayui() {
-        layui.use(['form', 'laypage', 'layer'], function () {
+        layui.use(['form', 'laypage'], function () {
             var form = layui.form
                 , laypage = layui.laypage;
-            layer = layui.layer;
 
             //执行一个laypage实例
             laypage.render({
                 elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
                 , count: totalCount //数据总数，从服务端得到
                 , limit: pageSize //每页显示的条数。laypage将会借助 count 和 limit 计算出分页数。
-                , limits: [5, 10, 20, 40, , 50, 100] //每页条数的选择项。如果 layout 参数开启了 limit，则会出现每页条数的select选择框
+                , limits: [5, 10, 20, 40, 50, 100] //每页条数的选择项。如果 layout 参数开启了 limit，则会出现每页条数的select选择框
                 , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
                 , jump: function (obj, first) {
                     //obj包含了当前分页的所有参数，比如：
@@ -192,6 +197,16 @@
                     form.render('select');
                 }
             });
+
+            //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                console.log(data.field);
+                formData = data.field;
+                //搜索按钮请求，需要刷新layui，防止分页不刷新
+                app.$data.initLayui = false;
+                pagination(pageIndex, pageSize);
+                return false;
+            });
         });
     }
 
@@ -216,49 +231,47 @@
     });
 
     //日期格式化
-    Date.prototype.Format = function(fmt) { //author: meizz
+    Date.prototype.Format = function (fmt) { //author: meizz
         var o = {
-            "M+" : this.getMonth()+1,                 //月份
-            "d+" : this.getDate(),                    //日
-            "h+" : this.getHours(),                   //小时
-            "m+" : this.getMinutes(),                 //分
-            "s+" : this.getSeconds(),                 //秒
-            "q+" : Math.floor((this.getMonth()+3)/3), //季度
-            "S"  : this.getMilliseconds()             //毫秒
+            "M+": this.getMonth() + 1,                 //月份
+            "d+": this.getDate(),                    //日
+            "h+": this.getHours(),                   //小时
+            "m+": this.getMinutes(),                 //分
+            "s+": this.getSeconds(),                 //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds()             //毫秒
         };
-        if(/(y+)/.test(fmt))
-            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-        for(var k in o)
-            if(new RegExp("("+ k +")").test(fmt))
-                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
         return fmt;
     };
 
     var pageIndex = 1;
-    var pageSize = 10;
+    var pageSize = 5;
     var totalCount = 10;
     /*异步请求用户数据*/
     function pagination(pageIndex, pageSize) {
-
-        var requestPath = "/home/document/searchListToLimit/" + pageIndex + "/" + pageSize;
-        var formData = new FormData($("#form")[0]);
-        if (app.$data.initLayui == false) {
-            formData = {};
-        }
+        console.log(formData);
+        formData['pageNum'] = pageIndex;
+        formData['pageSize'] = pageSize;
+        var requestPath = "/home/document/searchListToLimit";
         //提交表单，登录验证
         $.ajax({
             url: requestPath,
             type: "post",
             data: formData,
-            processData: false,
-            contentType: false,
             success: function (res) {
-                if (res.success == true) {
+                if (res.success) {
                     totalCount = res.data.pageInfo.total;
                     console.log("总数：", totalCount);
                     console.log(res);
                     app.$data.documentList = res.data.documentList;
+                    //需要重新渲染Layui，防止数据不刷新
                     app.$data.initLayui = true;
+                    return true;
                 }
             },
             error: function (res) {

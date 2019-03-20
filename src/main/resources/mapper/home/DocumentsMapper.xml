@@ -20,11 +20,12 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
   </resultMap>
-  <resultMap id="AssociationMap" type="com.dtb.entity.DocumentsAssociation">
+  <resultMap id="AssociationMap" extends="BaseResultMap" type="com.dtb.entity.DocumentsAssociation">
     <association property="user" column="user_id" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"/>
     <association property="admin" column="admin_id" select="com.dtb.home.dao.AdminMapper.selectByPrimaryKey"/>
     <association property="grade" column="grade_id" select="com.dtb.home.dao.GradeMapper.selectByPrimaryKey"/>
     <association property="subject" column="subject_id" select="com.dtb.home.dao.SubjectMapper.selectByPrimaryKey"/>
+    <collection property="comments" column="id" select="com.dtb.home.dao.DocumentCommentsMapper.selectListByDocumentId"/>
   </resultMap>
   <sql id="Base_Column_List">
     id, user_id, admin_id, integral, title, summary, document_type, grade_id, subject_id, check_state, download_count,
@@ -40,50 +41,50 @@
   </select>
 
   <select id="selectDocumentListToLimit" resultMap="AssociationMap">
-    select
+    SELECT
     <include refid="Base_Column_List" />
-    from as_documents
+    FROM as_documents
     <where>
       <if test="id != null">
         id = #{id,jdbcType=INTEGER}
       </if>
       <if test="userId != null">
-        user_id = #{userId,jdbcType=INTEGER}
+        AND user_id = #{userId,jdbcType=INTEGER}
       </if>
       <if test="adminId != null">
-        admin_id = #{adminId,jdbcType=INTEGER}
+        AND admin_id = #{adminId,jdbcType=INTEGER}
       </if>
       <if test="integral != null">
-        if(#{integral}>0,integral > 0,integral <![CDATA[<=]]> 0)
+        AND IF(#{integral}>0,integral > 0,integral &lt;= 0)
       </if>
       <if test="title != null">
-        title LIKE CONCAT('%',#{title,jdbcType=VARCHAR},'%')
+        AND title LIKE CONCAT('%',#{title,jdbcType=VARCHAR},'%')
       </if>
       <if test="summary != null">
-        summary LIKE CONCAT('%',#{summary,jdbcType=VARCHAR},'%')
+        AND summary LIKE CONCAT('%',#{summary,jdbcType=VARCHAR},'%')
       </if>
       <if test="documentType != null">
-        document_type = #{documentType,jdbcType=TINYINT}
+        AND document_type = #{documentType,jdbcType=TINYINT}
       </if>
       <if test="gradeId != null">
-        grade_id = #{gradeId,jdbcType=INTEGER}
+        AND grade_id = #{gradeId,jdbcType=INTEGER}
       </if>
       <if test="subjectId != null">
-        subject_id = #{subjectId,jdbcType=INTEGER}
+        AND subject_id = #{subjectId,jdbcType=INTEGER}
       </if>
       <if test="checkState != null">
-        check_state = #{checkState,jdbcType=TINYINT}
+        AND check_state = #{checkState,jdbcType=TINYINT}
       </if>
       <if test="downloadCount != null">
-        download_count = #{downloadCount,jdbcType=INTEGER}
+        AND download_count = #{downloadCount,jdbcType=INTEGER}
       </if>
       <if test="reason != null">
-        reason LIKE CONCAT('%',#{reason,jdbcType=VARCHAR},'%')
+        AND reason LIKE CONCAT('%',#{reason,jdbcType=VARCHAR},'%')
       </if>
       <if test="score != null">
-        score = #{score,jdbcType=FLOAT}
+        AND score = #{score,jdbcType=FLOAT}
       </if>
-       AND delete_time IS NULL
+      AND delete_time IS NULL
     </where>
     ORDER BY score DESC,download_count DESC, create_time DESC
   </select>

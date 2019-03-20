@@ -44,87 +44,100 @@ public class DocumentController {
 
 
     /**
+     * @param model 页面容器
+     * @return java.lang.String
      * @auther lmx
      * @date 2019/3/17 21:33
      * @descript 文档列表页渲染
-     * @param model 页面容器
-     * @return java.lang.String
      */
     @RequestMapping("list")
-    public String list(Model model){
-        model.addAttribute("gradeList",gradeService.findAll());
-        model.addAttribute("subjectList",subjectService.findAll());
+    public String list(Model model) {
+        model.addAttribute("gradeList", gradeService.findAll());
+        model.addAttribute("subjectList", subjectService.findAll());
         return "home/document-list";
     }
 
     /**
+     * @param model 页面模型
+     * @return java.lang.String
      * @auther lmx
      * @date 2019/3/17 21:37
      * @descript 添加文档页面渲染
-     * @param model 页面模型
-     * @return java.lang.String
      */
     @RequestMapping("add")
-    public String add(Model model){
-        model.addAttribute("gradeList",gradeService.findAll());
-        model.addAttribute("subjectList",subjectService.findAll());
+    public String add(Model model) {
+        model.addAttribute("gradeList", gradeService.findAll());
+        model.addAttribute("subjectList", subjectService.findAll());
         return "home/document-add";
     }
 
     /**
+     * @param document 文档实体类
+     * @param file     文件
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @auther lmx
      * @date 2019/3/18 23:50
      * @descript 用户上传文档
-     * @param document 文档实体类
-     * @param file 文件
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("upload")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> upload(Documents document,
-                                                @RequestParam("file")MultipartFile file) throws Exception{
+                                                @RequestParam("file") MultipartFile file) throws Exception {
         String uploadPath = "/static/upload/document/user-upload";
-        String rootPath = ResourceUtils.getURL("classpath:").getPath()+uploadPath;
-        String filePath = FileUploadUtil.upload(file,rootPath,"document_"+document.getDocumentType()+"_");
+        String rootPath = ResourceUtils.getURL("classpath:").getPath() + uploadPath;
+        String filePath = FileUploadUtil.upload(file, rootPath, "document_" + document.getDocumentType() + "_");
         filePath = uploadPath + "/" + filePath;
         document.setFilePath(filePath);
 
         int affectLine = documentService.addDocument(document);
-        if (affectLine>0){
-            return new ResponseBean(true,CommonErrorEnum.FILEUPLOAD_SUCCESS);
+        if (affectLine > 0) {
+            return new ResponseBean(true, CommonErrorEnum.FILEUPLOAD_SUCCESS);
         }
-        return new ResponseBean(false,CommonErrorEnum.FAILED_QUESTION);
+        return new ResponseBean(false, CommonErrorEnum.FAILED_QUESTION);
     }
 
     /**
+     * @param documents 搜索条件
+     * @param pageNum   当前页码
+     * @param pageSize  每页数据
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @auther lmx
      * @date 2019/3/19 22:29
      * @descript 多条件搜索文档
-     * @param documents 搜索条件
-     * @param pageNum 当前页码
-     * @param pageSize 每页数据
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("searchListToLimit/{pageNum}/{pageSize}")
+    @RequestMapping("searchListToLimit")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> searchDocumentList(Documents documents,
-                                                            @PathVariable("pageNum") Integer pageNum,
-                                                            @PathVariable("pageSize") Integer pageSize){
+                                                            @RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
+                                                            @RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize) {
         byte checkStatus = 1;//查询条件，通过审核的文件
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum, pageSize);
         documents.setCheckState(checkStatus);
         Page<DocumentsAssociation> pageList = documentService.findDocumentListToLimit(documents);
 
-        Map<String,Object> pageInfo = new HashMap<String,Object>();
-        pageInfo.put("pageSize",pageList.getPageSize());
-        pageInfo.put("pageNum",pageList.getPageNum());
-        pageInfo.put("pages",pageList.getPages());
-        pageInfo.put("total",pageList.getTotal());
+        Map<String, Object> pageInfo = new HashMap<String, Object>();
+        pageInfo.put("pageSize", pageList.getPageSize());
+        pageInfo.put("pageNum", pageList.getPageNum());
+        pageInfo.put("pages", pageList.getPages());
+        pageInfo.put("total", pageList.getTotal());
 
-        Map<String,Object> resultMap = new HashMap<String,Object>();
-        resultMap.put("documentList",pageList);
-        resultMap.put("pageInfo",pageInfo);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("documentList", pageList);
+        resultMap.put("pageInfo", pageInfo);
 
-        return new ResponseBean(true,resultMap,CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
+    }
+
+
+    @RequestMapping("detial/{documentId}")
+    public String documentDetial(@PathVariable("documentId") Integer documentId, Model model){
+        Documents documents = new Documents();
+        documents.setId(documentId);
+        byte checkStatus = 1;//查询条件，通过审核的文件
+        PageHelper.startPage(1, 1);
+        documents.setCheckState(checkStatus);
+        Page<DocumentsAssociation> page = documentService.findDocumentListToLimit(documents);
+        model.addAttribute("document",page);
+        return "home/document-detial";
     }
 }
