@@ -1,10 +1,13 @@
 package com.dtb.home.controller;
 
+import com.dtb.entity.DocumentComments;
 import com.dtb.entity.Documents;
 import com.dtb.entity.DocumentsAssociation;
+import com.dtb.entity.User;
 import com.dtb.home.service.DocumentService;
 import com.dtb.home.service.GradeService;
 import com.dtb.home.service.SubjectService;
+import com.dtb.home.service.UserService;
 import com.dtb.utils.FileUploadUtil;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,12 +39,12 @@ public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
-
     @Autowired
     private SubjectService subjectService;
-
     @Autowired
     private GradeService gradeService;
+    @Autowired
+    private UserService userService;
 
 
     /**
@@ -128,7 +132,14 @@ public class DocumentController {
         return new ResponseBean(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
-
+    /**
+     * @param documentId 文档id
+     * @param model      视图容器
+     * @return java.lang.String
+     * @auther lmx
+     * @date 2019/3/21 20:56
+     * @descript 文档详情查看
+     */
     @RequestMapping("detial/{documentId}")
     public String documentDetial(@PathVariable("documentId") Integer documentId, Model model){
         Documents documents = new Documents();
@@ -139,5 +150,72 @@ public class DocumentController {
         Page<DocumentsAssociation> page = documentService.findDocumentListToLimit(documents);
         model.addAttribute("document",page);
         return "home/document-detial";
+    }
+
+    /**
+     * @param documentId 文档id
+     * @param session    会话session
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @auther lmx
+     * @date 2019/3/21 21:07
+     * @descript 下载前检测，如果首次下载，需要扣除积分，如果下载过，不需要扣除
+     */
+    @RequestMapping("downloadCheck/{documentId}")
+    @ResponseBody
+    public ResponseBean<CommonErrorEnum> downloadCheck(@PathVariable("documentId") Integer documentId,
+                                                       HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return new ResponseBean(false, CommonErrorEnum.FAILED_AUTH);
+        }
+        DocumentComments documentComments = documentService.findByUserIdAndDocumentId(user.getId(), documentId);
+        if (documentComments == null) {
+            return new ResponseBean(true, "FIRST", CommonErrorEnum.FIRST_DOWNLOAD);
+        } else {
+            //下载次数自加一
+            documentService.downloadCountAdd(documentId);
+            return new ResponseBean(true, "DOWNLOADED", CommonErrorEnum.SUCCESS_REQUEST);
+        }
+    }
+
+    /**
+     * @param addId      增加积分的用户id，也是文档上传者
+     * @param lessId     扣除积分的用户id，也是文档下载者
+     * @param integral   积分数
+     * @param documentId 资料id
+     * @param session    会话session
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @auther lmx
+     * @date 2019/3/21 22:26
+     * @descript 首次下载文档，对积分进行扣除/增加
+     */
+    @RequestMapping("changeIntegral")
+    @ResponseBody
+    public ResponseBean<CommonErrorEnum> changeIntegral(@RequestParam("addId") Integer addId,
+                                                        @RequestParam("lessId") Integer lessId,
+                                                        @RequestParam("integral") Integer integral,
+                                                        @RequestParam("documentId") Integer documentId,
+                                                        HttpSession session) {
+        User oldUser = (User) session.getAttribute("user");
+        if (oldUser.getId() != lessId) {
+            return new ResponseBean(false, "-1", "不能操作别人的积分");
+        }
+        userService.updateIntegralById(-integral, lessId);
+        userService.updateIntegralById(integral, addId);
+        //下载次数自加一
+        documentService.downloadCountAdd(documentId);
+
+        //如果不为空就是用户之前下载过此文档
+        if (documentService.findByUserIdAndDocumentId(lessId, documentId) != null) {
+            return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
+        }
+        //否则就是首次下载
+        DocumentComments documentComment = new DocumentComments();
+        documentComment.setUserId(lessId);
+        documentComment.setDocumentId(documentId);
+        documentService.addDocumentComment(documentComment);
+        //扣除积分后更新session
+        session.setAttribute("user", userService.findById(oldUser.getId()));
+        return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
     }
 }
