@@ -9,11 +9,27 @@ import java.util.List;
 public interface DocumentCommentsMapper {
     int deleteByPrimaryKey(Integer id);
 
-    int insert(DocumentComments record);
-
-    int insertSelective(DocumentComments record);
+    /**
+     * @param record
+     * @return java.lang.Integer
+     * @auther lmx
+     * @date 2019/3/21 22:54
+     * @descript 插入数据
+     */
+    Integer insertSelective(DocumentComments record);
 
     DocumentComments selectByPrimaryKey(@Param("id") Integer id);
+
+    /**
+     * @param userId
+     * @param documentId
+     * @return com.dtb.entity.DocumentComments
+     * @auther lmx
+     * @date 2019/3/21 20:49
+     * @descript 根据用户id和文档id查询，看用户是否下载过，下载过再次下载不再扣除积分
+     */
+    DocumentComments selectByUserIdAndDocumentId(@Param("userId") Integer userId,
+                                                 @Param("documentId") Integer documentId);
 
     /**
      * @auther lmx
@@ -25,8 +41,6 @@ public interface DocumentCommentsMapper {
     List<DocumentCommentsAssociation> selectListByDocumentId(@Param("documentId")Integer documentId);
 
     int updateByPrimaryKeySelective(DocumentComments record);
-
-    int updateByPrimaryKeyWithBLOBs(DocumentComments record);
 
     int updateByPrimaryKey(DocumentComments record);
 }

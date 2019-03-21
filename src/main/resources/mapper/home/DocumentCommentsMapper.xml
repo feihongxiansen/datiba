@@ -36,6 +36,15 @@
     ORDER BY update_time DESC ,create_time DESC
   </select>
 
+  <select id="selectByUserIdAndDocumentId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from as_document_comments
+    where document_id = #{documentId,jdbcType=INTEGER}
+    and user_id = #{userId,jdbcType=INTEGER}
+    and delete_time is null
+  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
     select
     <include refid="Base_Column_List" />
@@ -49,14 +58,7 @@
     delete from as_document_comments
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.dtb.entity.DocumentComments">
-    insert into as_document_comments (id, user_id, document_id, 
-      score, create_time, delete_time, 
-      update_time, comment_content)
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{documentId,jdbcType=INTEGER}, 
-      #{score,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{deleteTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{commentContent,jdbcType=LONGVARCHAR})
-  </insert>
+
   <insert id="insertSelective" parameterType="com.dtb.entity.DocumentComments">
     insert into as_document_comments
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -72,9 +74,7 @@
       <if test="score != null">
         score,
       </if>
-      <if test="createTime != null">
         create_time,
-      </if>
       <if test="deleteTime != null">
         delete_time,
       </if>
@@ -98,9 +98,7 @@
       <if test="score != null">
         #{score,jdbcType=INTEGER},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
+      CURRENT_TIMESTAMP,
       <if test="deleteTime != null">
         #{deleteTime,jdbcType=TIMESTAMP},
       </if>
@@ -112,6 +110,7 @@
       </if>
     </trim>
   </insert>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.DocumentComments">
     update as_document_comments
     <set>
@@ -130,26 +129,14 @@
       <if test="deleteTime != null">
         delete_time = #{deleteTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+      update_time = CURRENT_TIMESTAMP,
       <if test="commentContent != null">
         comment_content = #{commentContent,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.DocumentComments">
-    update as_document_comments
-    set user_id = #{userId,jdbcType=INTEGER},
-      document_id = #{documentId,jdbcType=INTEGER},
-      score = #{score,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      comment_content = #{commentContent,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+
   <update id="updateByPrimaryKey" parameterType="com.dtb.entity.DocumentComments">
     update as_document_comments
     set user_id = #{userId,jdbcType=INTEGER},
