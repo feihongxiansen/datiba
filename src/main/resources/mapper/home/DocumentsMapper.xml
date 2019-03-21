@@ -32,7 +32,6 @@
     file_path, reason, score, create_time, update_time, delete_time
   </sql>
 
-
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

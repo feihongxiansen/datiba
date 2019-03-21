@@ -1,5 +1,6 @@
 package com.dtb.home.service;
 
+import com.dtb.entity.DocumentComments;
 import com.dtb.entity.Documents;
 import com.dtb.entity.DocumentsAssociation;
 import com.github.pagehelper.Page;
@@ -29,5 +30,33 @@ public interface DocumentService {
      * @return com.github.pagehelper.Page<com.dtb.entity.DocumentsAssociation>
      */
     Page<DocumentsAssociation> findDocumentListToLimit(Documents document);
+
+    /**
+     * @param userId
+     * @param documentId
+     * @return com.dtb.entity.DocumentComments
+     * @auther lmx
+     * @date 2019/3/21 20:49
+     * @descript 根据用户id和文档id查询，看用户是否下载过，下载过再次下载不再扣除积分
+     */
+    DocumentComments findByUserIdAndDocumentId(Integer userId, Integer documentId);
+
+    /**
+     * @param documentComment
+     * @return java.lang.Integer
+     * @auther lmx
+     * @date 2019/3/21 22:58
+     * @descript 添加文件下载评论
+     */
+    Integer addDocumentComment(DocumentComments documentComment);
+
+    /**
+     * @param id 文档id
+     * @return java.lang.Integer
+     * @auther lmx
+     * @date 2019/3/21 23:11
+     * @descript 下载次数自增一
+     */
+    Integer downloadCountAdd(Integer id);
 
 }

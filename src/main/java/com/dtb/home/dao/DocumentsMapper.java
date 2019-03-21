@@ -4,6 +4,7 @@ import com.dtb.entity.Documents;
 import com.dtb.entity.DocumentsAssociation;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 public interface DocumentsMapper {
     int deleteByPrimaryKey(Integer id);
@@ -25,6 +26,16 @@ public interface DocumentsMapper {
      * @return com.github.pagehelper.Page<com.dtb.entity.DocumentsAssociation>
      */
     Page<DocumentsAssociation> selectDocumentListToLimit(Documents documents);
+
+    /**
+     * @param id 文档id
+     * @return java.lang.Integer
+     * @auther lmx
+     * @date 2019/3/21 23:11
+     * @descript 下载次数自增一
+     */
+    @Update("UPDATE as_documents SET download_count=download_count+1,update_time=CURRENT_TIMESTAMP WHERE id = #{id}")
+    Integer downloadCountAdd(@Param("id") Integer id);
 
     Documents selectByPrimaryKey(@Param("id") Integer id);
 

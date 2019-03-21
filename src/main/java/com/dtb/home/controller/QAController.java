@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,11 +74,6 @@ public class QAController {
         pageMap.put("pageSize",page.getPageSize());
         pageMap.put("pages",page.getPages());
         resultMap.put("pageInfo",pageMap);
-
-        System.out.println(resultMap);
-
-        System.out.println("pageNum:"+pageNum+"-pageSize:"+pageSize+"-gradeId:"+gradeId+
-                "-subjectId:"+subjectId+"-needIntegral:"+needIntegral+"-questionSummary:"+questionSummary);
         return new ResponseBean(true,resultMap,CommonErrorEnum.SUCCESS_REQUEST);
     }
 
@@ -135,12 +131,11 @@ public class QAController {
      * @auther lmx
      * @date 2019/3/11 23:56
      * @descript 用户提问
-     * @param question
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("addQuestion")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> addQuestion(QuestionsWithBLOBs question){
+    public ResponseBean<CommonErrorEnum> addQuestion(QuestionsWithBLOBs question, HttpSession session) {
         if (question.getQuestionPhotos()==null || question.getQuestionPhotos().trim() ==""){
             question.setQuestionPhotos(null);
         }else{
@@ -150,6 +145,8 @@ public class QAController {
         //有悬赏积分，扣除悬赏用户的相应积分
         if (question.getIntegral()!=null && question.getIntegral()> 0){
             userService.updateIntegralById(-question.getIntegral(),question.getUserId());
+            //扣除积分后更新session
+            session.setAttribute("user", userService.findById(question.getUserId()));
         }
 
         int affectedLine = qaService.addQuestion(question);

@@ -50,6 +50,7 @@ public class WebConfigurer implements WebMvcConfigurer {
                 ,"/home/document/list"  //文档列表
                 ,"/home/document/searchListToLimit"  //分页搜索文件
                 ,"/home/document/detial/**"  //文件详情
+                , "/home/document/downloadCheck/**"  //文件下载检查
 //                ,"/home/index/register"     //注册页面
 //                ,"/home/index/login"        //登录页面
 //                ,"/home/index/about"     //联系我们页面

@@ -52,7 +52,9 @@ public enum CommonErrorEnum {
     FAILED_SENDEMAIL("037","发送邮件失败"),
     SUCCESS_REQUEST("038","请求成功"),
     FAILED_QUESTION("039","操作失败"),
-    WAIT_VERIFY("040","提交成功，等待审核");
+    WAIT_VERIFY("040", "提交成功，等待审核"),
+    FAILED_AUTH("041", "非法请求，请登录后操作"),
+    FIRST_DOWNLOAD("042", "首次下载");
 
     private String code;
 

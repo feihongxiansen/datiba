@@ -1,7 +1,9 @@
 package com.dtb.home.service.impl;
 
+import com.dtb.entity.DocumentComments;
 import com.dtb.entity.Documents;
 import com.dtb.entity.DocumentsAssociation;
+import com.dtb.home.dao.DocumentCommentsMapper;
 import com.dtb.home.dao.DocumentsMapper;
 import com.dtb.home.service.DocumentService;
 import com.github.pagehelper.Page;
@@ -19,6 +21,8 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Autowired
     private DocumentsMapper documentsMapper;
+    @Autowired
+    private DocumentCommentsMapper documentCommentsMapper;
 
     @Override
     public int addDocument(Documents document) {
@@ -28,5 +32,20 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Page<DocumentsAssociation> findDocumentListToLimit(Documents document) {
         return documentsMapper.selectDocumentListToLimit(document);
+    }
+
+    @Override
+    public DocumentComments findByUserIdAndDocumentId(Integer userId, Integer documentId) {
+        return documentCommentsMapper.selectByUserIdAndDocumentId(userId, documentId);
+    }
+
+    @Override
+    public Integer addDocumentComment(DocumentComments documentComment) {
+        return documentCommentsMapper.insertSelective(documentComment);
+    }
+
+    @Override
+    public Integer downloadCountAdd(Integer id) {
+        return documentsMapper.downloadCountAdd(id);
     }
 }

@@ -64,9 +64,9 @@
                 </div>
                 <div class="layui-col-md2" id="score"></div>
                 <div class="layui-col-md1">
-                    <a class="layui-btn layui-btn-sm" th:href="${session.user}==null?'/home/index/login?pagePath=/home/document/detial/'+${item.id}:${item.filePath}">
+                    <button class="layui-btn layui-btn-sm" th:onclick="'javascript:download('+${item.id}+')'">
                         立即下载<i class="layui-icon">&#xe601;</i>
-                    </a>
+                    </button>
                 </div>
             </div>
             <hr class="layui-bg-orange">
@@ -99,8 +99,10 @@
 
     var comments = [[${document[0]}]].comments;
     console.log(comments);
-    layui.use(['rate'], function(){
+    var layer;
+    layui.use(['rate', 'layer'], function () {
         var rate = layui.rate;
+        layer = layui.layer;
         rate.render({
             elem: '#score'
             ,value: 3.5
@@ -109,7 +111,7 @@
             ,readonly: true
             ,theme: '#FF8000' //自定义主题色
         });
-
+        /*用户评分图标渲染*/
         for (var i=0; i<comments.length; i++){
             var id = "#user-score-"+comments[i].id;
             rate.render({
@@ -121,8 +123,74 @@
                 ,theme: '#FE0000' //自定义主题色
             });
         }
-
     });
+
+
+    /*文档校验下载*/
+    function download(documentId) {
+        console.log("文档ID：" + documentId);
+        var user = [[${session?.user}]];
+        var document = [[${document}]][0];
+        if (user == null) {//未登录
+            layer.confirm('登录后才能下载，去登录吗？', {
+                btn: ['登录', '不去'] //按钮
+            }, function () {
+                window.location.href = "/home/index/login?pagePath=/home/document/detial/" + documentId;
+            }, function () {
+            });
+            return;
+        }
+        if (user.id == document.user.id) {//自己上传的文件
+            window.open(document.filePath);
+            return;
+        }
+        $.get("/home/document/downloadCheck/" + documentId, function (res) {
+            console.log(res);
+            if (res.seccess == false) {
+                return layer.msg(res.errMsg, {icon: 2, time: 1500});
+            }
+            if (res.success && res.data == "DOWNLOADED") {
+                window.open(document.filePath);
+                return window.location.reload();//刷新页面，防止用户数据更新后读取不一致
+            }
+            if (res.success && res.data == "FIRST") {
+                var canDownload = user.integral >= document.integral;
+                var msg = canDownload ?
+                    '您当前的剩余积分：' + user.integral + '分，下载所需积分：' + document.integral + '分，确认下载吗？' :
+                    '您当前的剩余积分：' + user.integral + '分，下载所需积分：' + document.integral + '分，您当前积分不足，无法下载，请前往答题专区答题赚取积分。';
+                if (canDownload) {
+                    layer.confirm(msg, {
+                        btn: ['下载', '取消']
+                    }, function (sure) {
+                        layer.close(sure);
+                        var changeIntegralPath = "/home/document/changeIntegral";
+                        var requestData = {
+                            addId: document.user.id,
+                            lessId: user.id,
+                            integral: document.integral,
+                            documentId: documentId
+                        };
+                        $.post(changeIntegralPath, requestData, function (res) {
+                            console.log("积分改变结果：", res);
+                            if (res.success) {
+                                window.open(document.filePath);
+                                window.location.reload();//刷新页面，防止用户数据更新后读取不一致
+                            }
+                        });
+
+                    }, function () {
+                    })
+                } else {
+                    layer.confirm(msg, {
+                        btn: ['去答题', '再看看']
+                    }, function () {
+                        window.location.href = "/home/index/question";
+                    }, function () {
+                    })
+                }
+            }
+        });
+    }
 </script>
 </body>
 </html>
