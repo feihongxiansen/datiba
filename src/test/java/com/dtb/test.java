@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -87,7 +88,6 @@ public class test {
                 {
                     sum[i]+=(arr[i][a]-48)*Math.pow(16,arr[i].length-a-1);
                 }
-
             }
         }
         for(int i=0;i<n;i++)
@@ -190,5 +190,38 @@ public class test {
 //        System.out.println(suggester.suggest("发言", 1));       // 语义
 //        System.out.println(suggester.suggest("危机公共", 1));   // 字符
 //        System.out.println(suggester.suggest("mayun", 1));      // 拼音
+    }
+
+    public int quickSelect(int a[], int l, int r, int k) {
+        Random rand = new Random();
+        int p = rand.nextInt(r - l + 1) + l;
+        int x = a[p];
+        int tmp = a[p];
+        a[p] = a[r];
+        a[r] = tmp;
+        int i = l, j = r;
+        while (i < j) {
+            while (i < j && a[i] < x) i++;
+            if (i < j) {
+                a[j] = a[i];
+                j--;
+            }
+            while (i < j && a[j] > x) j--;
+            if (i < j) {
+                a[i] = a[j];
+                i++;
+            }
+        }
+        a[i] = x;
+        p = i;
+        if (i - l + 1 == k) return a[i];
+        if (i - l + 1 < k) return quickSelect(a, i + 1, r, k); //填空
+        else return quickSelect(a, l, i - 1, k);
+    }
+
+    @Test
+    public void quick() {
+        int[] a = {1, 4, 2, 8, 5, 7};
+        System.out.println(quickSelect(a, 0, 5, 4));
     }
 }

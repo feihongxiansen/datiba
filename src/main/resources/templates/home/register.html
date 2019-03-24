@@ -130,19 +130,18 @@
 
 <script th:inline="javascript">
 
-
-    layui.use(['form','upload'], function () {
+    //省市区参数初始化
+    var defaults = {
+        s1: 'province',
+        s2: 'city',
+        s3: 'area',
+        v1: null,
+        v2: null,
+        v3: null
+    };
+    layui.use(['form', 'upload'], function () {
         var form = layui.form
-            ,upload = layui.upload;
-        //省市区参数初始化
-        var defaults = {
-            s1: 'province',
-            s2: 'city',
-            s3: 'area',
-            v1: null,
-            v2: null,
-            v3: null
-        };
+            , upload = layui.upload;
 
         //自定义表单验证
         form.verify({

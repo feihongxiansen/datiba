@@ -1,0 +1,215 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>意见反馈-答题吧</title>
+    <style>
+        img {
+            width: 30%;
+        }
+
+        .img-thumbnail {
+            height: 150px;
+            width: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<div class="layui-container" id="container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>意见反馈</legend>
+            </fieldset>
+
+            <div style="padding: 20px; background-color: #F2F2F2;">
+                <div class="layui-row layui-col-space15">
+
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-body">
+
+                                <form class="layui-form layui-form-pane" id="form" enctype="multipart/form-data"
+                                      action="">
+                                    <input type="hidden" name="userId" th:value="${session.user.id}">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">反馈类型</label>
+                                        <div class="layui-input-inline">
+                                            <select name="questionType" id="questionType" lay-verify="required">
+                                                <option value="">请选择反馈类型</option>
+                                                <option value="软件BUG">软件BUG</option>
+                                                <option value="平台建设">平台建设</option>
+                                                <option value="创新建议">创新建议</option>
+                                                <option value="其他建议">其他建议</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item layui-form-text">
+                                        <label class="layui-form-label">问题描述</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="questionSummary" v-model="questionSummary" rows="8"
+                                                      lay-verify="required" placeholder="详细描述问题或意见建议......"
+                                                      class="layui-textarea"></textarea>
+                                        </div>
+                                    </div>
+                                    <!--反馈图片回显框-->
+                                    <div class="layui-input-inline" id="imgBox"></div>
+
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button type="button" class="layui-btn layui-btn-warm" id="uploadimg">
+                                                <i class="layui-icon">&#xe67c;</i>选择图片
+                                            </button>
+                                            <button class="layui-btn" id="subBtn" type="button">立即提交</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/static/home/plugs/vue/vue.js}"></script>
+<!--vue相关js-->
+<script th:inline="javascript">
+
+    //图片上传接口地址
+    var uploadUrl = "/home/feedback/upload/images";
+    /*layui插件模块加载开始*/
+    layui.use(['layer', 'form', 'upload'], function () {
+        var layer = layui.layer
+            , upload = layui.upload;
+        var load;
+        //图片上传
+        var uploadInst = upload.render({
+            elem: '#uploadimg'
+            , url: uploadUrl
+            , multiple: true//多图上传，不支持IE8/9
+            , number: 10//允许同时上传最多图片数量
+            , field: 'files'//后台接收字段名
+            , auto: false//不自动上传
+            , bindAction: "#subBtn"//绑定上传按钮
+            , acceptMime: 'image/*'//（只显示图片文件）
+            , choose: function (obj) { //选择图片后执行
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                obj.preview(function (index, file, result) {
+                    // console.log(index); //得到文件索引
+                    // console.log(file); //得到文件对象
+                    // console.log(result); //得到文件base64编码，比如图片
+                    var img = "<img src='" + result + "'alt='' class='img-thumbnail'>";
+                    $("#imgBox").append(img);
+                });
+                app.$data.hasPhotos = true;
+            }
+            , before: function (obj) {
+                var load = layer.msg('图片上传中...', {
+                    icon: 16,
+                    shade: 0.01,
+                    time: false
+                });
+            }
+            , done: function (res, index, upload) { //上传后的回调
+                var img = "<img src='" + res.data + "'alt='' class='img-thumbnail'>";
+                $("#imgBox").append(img);
+                app.$data.questionPhotos = app.$data.questionPhotos + "," + res.data;
+                console.log("上传之后触发的：", res);
+            }
+            , error: function (index, upload) {
+                layer.closeAll(load); //关闭loading
+            }
+            , allDone: function (obj) { //当文件全部被提交后，才触发
+                console.log("全部上传后触发的：", obj);
+                console.log(obj.total); //得到总文件数
+                console.log("请求成功的文件数", obj.successful); //请求成功的文件数
+                console.log("请求失败的文件数", obj.aborted); //请求失败的文件数
+                app.subForm();
+                layer.closeAll(load); //关闭loading
+            }
+        })
+    });
+    /*layui插件模块加载结束*/
+
+    /*vue实例化开始*/
+    var app = new Vue({
+        el: "#container",
+        data: {
+            hasPhotos: false,//默认提问不上传图片
+
+            //提问相关请求参数
+            questionSummary: "",//提问详情
+            questionPhotos: ""//问题附件图片
+        },
+        methods: {
+            /**
+             * 清除本地回显图片
+             */
+            clearImg: function () {
+                $("#imgBox").empty();
+                /*没有图片就直接提交表单*/
+                if (!app.$data.hasPhotos) {
+                    console.log("是否有图片上传：", app.$data.hasPhotos);
+                    this.subForm();
+                }
+            },
+            /**
+             * 调教表单前的验证
+             */
+            checkeForm: function (subData) {
+                console.log(subData);
+                if (subData.questionType == null || subData.questionType == "") {
+                    layer.msg("请选择反馈类型！", {icon: 2, time: 1500});
+                    return false;
+                }
+                if (subData.questionSummary == null || subData.questionSummary == "") {
+                    layer.msg("请输入反馈内容！", {icon: 2, time: 1500});
+                    return false;
+                }
+                return true;
+            },
+            /**
+             * 提交表单
+             */
+            subForm: function () {
+                //清除选择图片的样式
+                var subData = {
+                    questionType: $("#questionType").val(),//提问问题年级
+                    questionSummary: app.$data.questionSummary,//提问详情
+                    questionPhotos: app.$data.questionPhotos,//问题附件图片
+                    userId: [[${session?.user?.id}]]
+                };
+                //表单提交前数据验证
+                if (!this.checkeForm(subData)) return;
+                console.log("提交数据：", subData);
+                $.post("/home/feedback/addFeedback", subData, function (res) {
+                    if (res.success) {
+                        layer.msg(res.data, {icon: 1, time: 1500});
+                        setTimeout(refresh, 1500);
+                    } else {
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
+                    }
+                })
+            }
+        }
+    });
+    /*vue实例化结束*/
+
+    /*更新成功提示*/
+    function refresh() {
+        window.location.reload();//刷新当前界面
+    }
+
+
+</script>
+</body>
+</html>

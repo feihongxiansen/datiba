@@ -25,8 +25,8 @@
                 <dd><a th:href="@{${session.user}==null?'/home/index/login?pagePath=/home/document/add':'/home/document/add'}">上传资料</a></dd>
             </dl>
         </li>
-        <li class="layui-nav-item"><a href="">积分兑换</a></li>
-        <li class="layui-nav-item"><a href="">意见反馈</a></li>
+        <li class="layui-nav-item"><a href="/home/index/gift/list">积分兑换</a></li>
+        <li class="layui-nav-item"><a href="/home/feedback/add">意见反馈</a></li>
         <li class="layui-nav-item"><a href="/home/index/about">联系我们</a></li>
 
         <li class="layui-nav-item" th:if="${session.user} == null"><a href="home/index/login">登录</a></li>

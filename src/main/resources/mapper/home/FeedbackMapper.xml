@@ -33,16 +33,6 @@
     delete from as_feedback
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.dtb.entity.FeedbackWithBLOBs">
-    insert into as_feedback (id, user_id, admin_id, 
-      question_type, question_state, create_time, 
-      update_time, delete_time, question_summary, 
-      question_photos)
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{adminId,jdbcType=INTEGER}, 
-      #{questionType,jdbcType=VARCHAR}, #{questionState,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{deleteTime,jdbcType=TIMESTAMP}, #{questionSummary,jdbcType=LONGVARCHAR}, 
-      #{questionPhotos,jdbcType=LONGVARCHAR})
-  </insert>
   <insert id="insertSelective" parameterType="com.dtb.entity.FeedbackWithBLOBs">
     insert into as_feedback
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -61,9 +51,7 @@
       <if test="questionState != null">
         question_state,
       </if>
-      <if test="createTime != null">
         create_time,
-      </if>
       <if test="updateTime != null">
         update_time,
       </if>
@@ -93,9 +81,7 @@
       <if test="questionState != null">
         #{questionState,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
+      CURRENT_TIMESTAMP,
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
@@ -128,9 +114,7 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+      update_time = CURRENT_TIMESTAMP,
       <if test="deleteTime != null">
         delete_time = #{deleteTime,jdbcType=TIMESTAMP},
       </if>
@@ -141,30 +125,6 @@
         question_photos = #{questionPhotos,jdbcType=LONGVARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.FeedbackWithBLOBs">
-    update as_feedback
-    set user_id = #{userId,jdbcType=INTEGER},
-      admin_id = #{adminId,jdbcType=INTEGER},
-      question_type = #{questionType,jdbcType=VARCHAR},
-      question_state = #{questionState,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      question_summary = #{questionSummary,jdbcType=LONGVARCHAR},
-      question_photos = #{questionPhotos,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Feedback">
-    update as_feedback
-    set user_id = #{userId,jdbcType=INTEGER},
-      admin_id = #{adminId,jdbcType=INTEGER},
-      question_type = #{questionType,jdbcType=VARCHAR},
-      question_state = #{questionState,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
