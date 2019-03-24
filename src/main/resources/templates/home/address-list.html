@@ -1,0 +1,110 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{},~{})">
+    <title>收货地址-答题吧</title>
+</head>
+<body style="padding: 20px 20px;">
+
+<table id="addressTable"></table>
+<div class="layui-row">
+    <div class="layui-col-md12 text-right">
+        <button id="chooseBtn" class="layui-btn">确定</button>
+        <button id="cancelBtn" class="layui-btn layui-btn-normal">取消</button>
+    </div>
+</div>
+<script th:src="@{/static/home/plugs/address/data.js}"></script>
+<script th:inline="javascript">
+
+    layui.use(['table'], function () {
+        var table = layui.table;
+        //第一个实例
+        table.render({
+            elem: '#addressTable'
+            , url: "/home/address/queryAddressListByUserId/" + 1 //数据接口
+            , page: false //不开启分页
+            , even: false //不开启隔行背景
+            , parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": 0,
+                    "msg": res.errorCode, //解析提示代码
+                    "data": res.data //解析数据列表
+                };
+            }
+            , cols: [[ //表头
+                {field: 'id', title: 'ID', width: "7%", sort: true, fixed: 'left'}
+                , {field: 'userName', title: '收货人姓名', width: "8%"}
+                , {field: 'phone', title: '收货人电话', width: "10%", sort: true}
+                , {field: 'province', title: '省名', width: "7%"}
+                , {field: 'city', title: '市名', width: "10%"}
+                , {field: 'area', title: '区/县名', width: "15%", sort: true}
+                , {field: 'detial', title: '详细地址', width: "25%", sort: true}
+                , {field: 'createTime', title: '创建时间', width: "13%"}
+                , {title: '选择', width: "5%", align: "center", templet: '#choose'}
+            ]]
+        });
+    });
+
+    //注意：parent 是 JS 自带的全局对象，可用于操作父页面
+    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+    //给父页面传值
+    $('#chooseBtn').on('click', function () {
+        var addressId = $("input[name='addressId']:checked").val();
+        if (addressId == null || addressId === '') {
+            parent.layer.msg('请选择地址！', {time: 1500});
+            return;
+        }
+        $.get("/home/address/queryAddressById/" + addressId, function (res) {
+            var address = res.data;
+            //根据地址代码获取地址的名称和code对象
+            var addressItem = getAddressNameByCode(address.province, address.city, address.area);
+            address.province = addressItem.province;
+            address.city = addressItem.city;
+            address.area = addressItem.area;
+            //将选择的地址赋值给父页面的变量
+            parent.address = address;
+            //调用父页面的方法刷新收货地址的显示
+            parent.changeAddressSelect(address);
+        });
+        //关闭当前页面
+        parent.layer.close(index);
+    });
+
+    /*取消按钮*/
+    $('#cancelBtn').on('click', function () {
+        parent.layer.close(index);
+    });
+
+    /**
+     * 根据地区代码查询地名
+     */
+    function getAddressNameByCode(provinceCode, cityCode, areaCode) {
+        var address = {};
+        $.each(threeSelectData, function (k1, v1) {
+            if (v1.val === provinceCode) {
+                $.each(v1.items, function (k2, v2) {
+                    if (v2.val === cityCode) {
+                        $.each(v2.items, function (k3, v3) {
+                            if (v3 === areaCode) {
+                                address = {
+                                    province: {name: k1, code: v1.val},
+                                    city: {name: k2, code: v2.val},
+                                    area: {name: k3, code: v3}
+                                };
+                            }
+                        })
+                    }
+                })
+            }
+        });
+        return address;
+    }
+</script>
+
+<script type="text/html" id="choose">
+    <span class="layui-form">
+        <input type="radio" name="addressId" value="{{d.id}}" class="layui-table-link"/>
+    </span>
+</script>
+
+</body>
+</html>

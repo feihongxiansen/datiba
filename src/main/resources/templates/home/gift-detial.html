@@ -1,0 +1,207 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>物品详情-答题吧</title>
+    <style>
+        .text-overflow {
+            font-size: 15px;
+            line-height: 26px;
+        }
+
+        .layui-card-body {
+            padding: 20px 20px;
+            padding-bottom: 40px;
+        }
+
+        .layui-badge {
+            margin-right: 5px;
+        }
+
+        .layui-card {
+            margin-bottom: 8px;
+        }
+
+        h4 {
+            font-weight: bolder;
+            line-height: unset;
+        }
+
+        .layui-rate {
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏导入-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<div class="layui-container" id="container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>物品详情</legend>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="layui-row" style="padding: 20px; background-color: #F2F2F2;">
+
+        <div class="layui-card layui-anim layui-anim-scale">
+            <div class="layui-card-header">
+                <h4 th:text="${gift.giftName}"></h4>
+            </div>
+            <div class="layui-card-body">
+                <p class="text-overflow" th:text="${gift.summary}"></p>
+                <div class="layui-col-md6">
+                    <span class="layui-badge layui-bg-orange" th:text="'剩余：'+${gift.quantity}+'件'"></span>
+                    <span class="layui-badge" th:text="'需要：'+${gift.integral}+'积分'"></span>
+                </div>
+                <div class="layui-col-md6 text-right"
+                     th:text="${#dates.format(gift.createTime,'yyyy-MM-dd HH:mm:ss')}"></div>
+            </div>
+            <hr class="layui-bg-orange">
+
+            <div class="layui-card layui-anim layui-anim-scale">
+                <div class="layui-card-body">
+                    <form class="layui-form" lay-filter="form" id="form" action="">
+                        <input type="hidden" name="giftId" th:value="${gift.id}">
+                        <input type="hidden" name="userId" th:value="${session.user.id}">
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <span class="layui-badge layui-bg-gray">请通过选择地址来填充数据，不可自己输入</span>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="userName" required lay-verify="required" maxlength="15"
+                                       readonly lay-filter="userName" class="layui-input disabled">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">电话</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="userPhone" required lay-verify="required|phone" readonly
+                                       lay-filter="userPhone" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" id="address">
+                            <label class="layui-form-label">地址</label>
+                            <div class="layui-input-inline">
+                                <select name="addressProvince" readonly id="addressProvince"
+                                        lay-filter="addressProvince">
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="addressCity" readonly id="addressCity" lay-filter="addressCity">
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="addressDistrict" readonly id="addressDistrict"
+                                        lay-filter="addressDistrict">
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="addressDetial" readonly required lay-verify="required"
+                                       lay-filter="addressDetial" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" type="button" id="chooseAddressBtn">选择地址</button>
+                                <button class="layui-btn layui-btn-warm" lay-submit lay-filter="formSubmit">提交兑换
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script th:inline="javascript">
+
+    var layer, form, address;
+    layui.use(['layer', 'form'], function () {
+        layer = layui.layer;
+        form = layui.form;
+
+        form.on('submit(formSubmit)', function (d) {
+            console.log(d.field);
+            var formData = new FormData($("#form")[0]);
+            console.log(formData);
+            $.ajax({
+                url: "/home/exchange/addExchange",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success == true) {
+                        layer.msg("兑换成功，请关注物流信息", {icon: 1, time: 1500});
+                        setTimeout(goGiftList, 1500);
+                    } else {
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
+                    }
+                    console.log(res);
+                },
+                error: function (res) {
+                    layer.msg(res, {icon: 2, time: 1500});
+                }
+            });
+            return false;
+        });
+
+    });
+
+    function goGiftList() {
+        window.location.href = "/home/index/gift/list";
+    }
+
+    /**
+     *监听选择地址按钮
+     */
+    $("#chooseAddressBtn").on('click', function (e) {
+        layer.open({
+            type: 2,
+            title: '收货地址',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['70%', '50%'],
+            content: '/home/address/addressList'//iframe的url
+        });
+    });
+
+    /**
+     * 选择地址后刷新地址下拉框数据，在弹出层页面（address-list.html）调用该方法
+     * @param address
+     */
+    function changeAddressSelect(address) {
+        $("#addressProvince").html('');
+        $("#addressProvince").append($("<option>").val(address.province.code).text(address.province.name));
+        $("#addressCity").html('');
+        $("#addressCity").append($("<option>").val(address.city.code).text(address.city.name));
+        $("#addressDistrict").html('');
+        $("#addressDistrict").append($("<option>").val(address.area.code).text(address.area.name));
+        form.render('select');
+        form.val("form", {
+            "userName": address.userName // "name": "value"
+            , "userPhone": address.phone
+            , "addressProvince": address.province.code
+            , "addressCity": address.city.code
+            , "addressDistrict": address.area.code
+            , "addressDetial": address.detial
+        });
+        form.render();
+    }
+</script>
+</body>
+</html>
