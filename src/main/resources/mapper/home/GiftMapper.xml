@@ -1,158 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dtb.home.dao.GiftMapper">
-  <resultMap id="BaseResultMap" type="com.dtb.entity.Gift">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="gift_name" jdbcType="VARCHAR" property="giftName" />
-    <result column="quantity" jdbcType="INTEGER" property="quantity" />
-    <result column="integral" jdbcType="INTEGER" property="integral" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
-  </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.GiftWithBLOBs">
-    <result column="photos" jdbcType="LONGVARCHAR" property="photos" />
-    <result column="summary" jdbcType="LONGVARCHAR" property="summary" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Gift">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="gift_name" jdbcType="VARCHAR" property="giftName"/>
+        <result column="quantity" jdbcType="INTEGER" property="quantity"/>
+        <result column="integral" jdbcType="INTEGER" property="integral"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.GiftWithBLOBs">
+        <result column="photos" jdbcType="LONGVARCHAR" property="photos"/>
+        <result column="summary" jdbcType="LONGVARCHAR" property="summary"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, gift_name, quantity, integral, create_time, update_time, delete_time
   </sql>
-  <sql id="Blob_Column_List">
+    <sql id="Blob_Column_List">
     photos, summary
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select 
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from as_gift
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from as_gift
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.dtb.entity.GiftWithBLOBs">
-    insert into as_gift (id, gift_name, quantity, 
-      integral, create_time, update_time, 
-      delete_time, photos, summary
-      )
-    values (#{id,jdbcType=INTEGER}, #{giftName,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER}, 
-      #{integral,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{deleteTime,jdbcType=TIMESTAMP}, #{photos,jdbcType=LONGVARCHAR}, #{summary,jdbcType=LONGVARCHAR}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.dtb.entity.GiftWithBLOBs">
-    insert into as_gift
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="giftName != null">
-        gift_name,
-      </if>
-      <if test="quantity != null">
-        quantity,
-      </if>
-      <if test="integral != null">
-        integral,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="deleteTime != null">
-        delete_time,
-      </if>
-      <if test="photos != null">
-        photos,
-      </if>
-      <if test="summary != null">
-        summary,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="giftName != null">
-        #{giftName,jdbcType=VARCHAR},
-      </if>
-      <if test="quantity != null">
-        #{quantity,jdbcType=INTEGER},
-      </if>
-      <if test="integral != null">
-        #{integral,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="deleteTime != null">
-        #{deleteTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="photos != null">
-        #{photos,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="summary != null">
-        #{summary,jdbcType=LONGVARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.GiftWithBLOBs">
-    update as_gift
-    <set>
-      <if test="giftName != null">
-        gift_name = #{giftName,jdbcType=VARCHAR},
-      </if>
-      <if test="quantity != null">
-        quantity = #{quantity,jdbcType=INTEGER},
-      </if>
-      <if test="integral != null">
-        integral = #{integral,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="deleteTime != null">
-        delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="photos != null">
-        photos = #{photos,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="summary != null">
-        summary = #{summary,jdbcType=LONGVARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.GiftWithBLOBs">
-    update as_gift
-    set gift_name = #{giftName,jdbcType=VARCHAR},
-      quantity = #{quantity,jdbcType=INTEGER},
-      integral = #{integral,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      photos = #{photos,jdbcType=LONGVARCHAR},
-      summary = #{summary,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Gift">
-    update as_gift
-    set gift_name = #{giftName,jdbcType=VARCHAR},
-      quantity = #{quantity,jdbcType=INTEGER},
-      integral = #{integral,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from as_gift
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPageGiftList" resultType="com.dtb.entity.GiftWithBLOBs">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_gift
+        WHERE delete_time IS NULL
+        ORDER BY create_time DESC
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from as_gift
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insertSelective" parameterType="com.dtb.entity.GiftWithBLOBs">
+        insert into as_gift
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="giftName != null">
+                gift_name,
+            </if>
+            <if test="quantity != null">
+                quantity,
+            </if>
+            <if test="integral != null">
+                integral,
+            </if>
+            create_time,
+            update_time,
+            <if test="deleteTime != null">
+                delete_time,
+            </if>
+            <if test="photos != null">
+                photos,
+            </if>
+            <if test="summary != null">
+                summary,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="giftName != null">
+                #{giftName,jdbcType=VARCHAR},
+            </if>
+            <if test="quantity != null">
+                #{quantity,jdbcType=INTEGER},
+            </if>
+            <if test="integral != null">
+                #{integral,jdbcType=INTEGER},
+            </if>
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="photos != null">
+                #{photos,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="summary != null">
+                #{summary,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.GiftWithBLOBs">
+        update as_gift
+        <set>
+            <if test="giftName != null">
+                gift_name = #{giftName,jdbcType=VARCHAR},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity,jdbcType=INTEGER},
+            </if>
+            <if test="integral != null">
+                integral = #{integral,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deleteTime != null">
+                delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="photos != null">
+                photos = #{photos,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="summary != null">
+                summary = #{summary,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

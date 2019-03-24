@@ -24,20 +24,20 @@
     from as_address
     where id = #{id,jdbcType=INTEGER}
   </select>
+
+  <select id="selectAddressListByUserId" resultType="com.dtb.entity.Address">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM as_address
+    WHERE user_id = #{userId,jdbcType=INTEGER}
+    AND delete_time IS NULL
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from as_address
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.dtb.entity.Address">
-    insert into as_address (id, user_id, user_name, 
-      phone, province, city, 
-      area, detial, create_time, 
-      update_time, delete_time)
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, 
-      #{phone,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
-      #{area,jdbcType=VARCHAR}, #{detial,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{deleteTime,jdbcType=TIMESTAMP})
-  </insert>
+
   <insert id="insertSelective" parameterType="com.dtb.entity.Address">
     insert into as_address
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -65,9 +65,7 @@
       <if test="detial != null">
         detial,
       </if>
-      <if test="createTime != null">
         create_time,
-      </if>
       <if test="updateTime != null">
         update_time,
       </if>
@@ -100,9 +98,7 @@
       <if test="detial != null">
         #{detial,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
+      CURRENT_TIMESTAMP,
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
@@ -138,27 +134,11 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+      update_time = CURRENT_TIMESTAMP,
       <if test="deleteTime != null">
         delete_time = #{deleteTime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Address">
-    update as_address
-    set user_id = #{userId,jdbcType=INTEGER},
-      user_name = #{userName,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      province = #{province,jdbcType=VARCHAR},
-      city = #{city,jdbcType=VARCHAR},
-      area = #{area,jdbcType=VARCHAR},
-      detial = #{detial,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

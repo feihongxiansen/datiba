@@ -189,7 +189,7 @@
             , done: function (res, index, upload) { //上传后的回调
                 var img = "<img src='" + res.data + "'alt='' class='img-thumbnail'>";
                 $("#imgBox").append(img);
-                app.$data.questionPhotos = "," + app.$data.questionPhotos+res.data;
+                app.$data.questionPhotos = app.$data.questionPhotos + "," + res.data;
                 console.log("上传之后触发的：", res);
             }
             , error: function (index, upload) {
@@ -222,7 +222,7 @@
             integral: null,//提问是否悬赏积分
             questionSummary: "",//提问详情
             invitaId:null,//提问时的邀约解答人
-            questionPhotos:null//问题附件图片
+            questionPhotos: ""//问题附件图片
         },
         methods: {
             /**

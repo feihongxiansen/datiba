@@ -30,18 +30,6 @@
     delete from as_exchange
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.dtb.entity.Exchange">
-    insert into as_exchange (id, user_id, gift_id, 
-      user_name, user_phone, address_province, 
-      address_city, address_district, address_detial, 
-      track_number, create_time, update_time, 
-      delete_time)
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{giftId,jdbcType=INTEGER}, 
-      #{userName,jdbcType=VARCHAR}, #{userPhone,jdbcType=VARCHAR}, #{addressProvince,jdbcType=VARCHAR}, 
-      #{addressCity,jdbcType=VARCHAR}, #{addressDistrict,jdbcType=VARCHAR}, #{addressDetial,jdbcType=VARCHAR}, 
-      #{trackNumber,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{deleteTime,jdbcType=TIMESTAMP})
-  </insert>
   <insert id="insertSelective" parameterType="com.dtb.entity.Exchange">
     insert into as_exchange
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -75,9 +63,7 @@
       <if test="trackNumber != null">
         track_number,
       </if>
-      <if test="createTime != null">
         create_time,
-      </if>
       <if test="updateTime != null">
         update_time,
       </if>
@@ -116,9 +102,7 @@
       <if test="trackNumber != null">
         #{trackNumber,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
+      CURRENT_TIMESTAMP,
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
@@ -160,29 +144,11 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+      update_time = CURRENT_TIMESTAMP,
       <if test="deleteTime != null">
         delete_time = #{deleteTime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Exchange">
-    update as_exchange
-    set user_id = #{userId,jdbcType=INTEGER},
-      gift_id = #{giftId,jdbcType=INTEGER},
-      user_name = #{userName,jdbcType=VARCHAR},
-      user_phone = #{userPhone,jdbcType=VARCHAR},
-      address_province = #{addressProvince,jdbcType=VARCHAR},
-      address_city = #{addressCity,jdbcType=VARCHAR},
-      address_district = #{addressDistrict,jdbcType=VARCHAR},
-      address_detial = #{addressDetial,jdbcType=VARCHAR},
-      track_number = #{trackNumber,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

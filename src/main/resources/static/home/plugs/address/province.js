@@ -1,11 +1,12 @@
-﻿var defaults = {
-    s1: 'province',
-    s2: 'city',
-    s3: 'area',
-    v1: null,
-    v2: null,
-    v3: null
-};
+﻿// 此变量在引用页面的js中声明
+// var defaults = {
+//     s1: 'province',
+//     s2: 'city',
+//     s3: 'area',
+//     v1: null,
+//     v2: null,
+//     v3: null
+// };
 var $form;
 var form;
 var $;

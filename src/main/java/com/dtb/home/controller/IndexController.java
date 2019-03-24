@@ -10,7 +10,10 @@ import com.dtb.utils.VerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -184,6 +187,18 @@ public class IndexController {
     public String userList(@PathVariable("userType")Byte userType,Model model){
         model.addAttribute("userType",userType);
         return "home/user-list";
+    }
+
+    /**
+     * 积分兑换兑换列表
+     *
+     * @return java.lang.String
+     * @author lmx
+     * @date 2019/3/23 18:35
+     */
+    @RequestMapping("gift/list")
+    public String list() {
+        return "home/gift-list";
     }
 
 }

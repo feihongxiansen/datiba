@@ -59,50 +59,50 @@ public class UserController {
      */
     @RequestMapping("checkLogin")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> checkLogin(@RequestParam(value = "email",required = true) String email,
-                                                    @RequestParam(value = "password",required = true) String password,
-                                                    @RequestParam(value = "verifyCode",required = true) String verifyCode,
-                                                    @RequestParam(value = "pagePath", required = false,defaultValue = "/home/index/index") String pagePath,
-                                                    HttpSession session){
+    public ResponseBean<CommonErrorEnum> checkLogin(@RequestParam(value = "email", required = true) String email,
+                                                    @RequestParam(value = "password", required = true) String password,
+                                                    @RequestParam(value = "verifyCode", required = true) String verifyCode,
+                                                    @RequestParam(value = "pagePath", required = false, defaultValue = "/home/index/index") String pagePath,
+                                                    HttpSession session) {
 
         //首先验证验证码是否存在
-        String trueVerifyCode = (String)session.getAttribute("verifyCode");
-        if(trueVerifyCode == null){
-            return new ResponseBean(false,CommonErrorEnum.REFRESH_VERIFYCODE);
+        String trueVerifyCode = (String) session.getAttribute("verifyCode");
+        if (trueVerifyCode == null) {
+            return new ResponseBean(false, CommonErrorEnum.REFRESH_VERIFYCODE);
         }
 
         //判断验证码是否输入正确（验证码忽略大小写）
-        if (!trueVerifyCode.equalsIgnoreCase(verifyCode)){
-            return new ResponseBean(false,CommonErrorEnum.ERROR_VERIFYCODE);
+        if (!trueVerifyCode.equalsIgnoreCase(verifyCode)) {
+            return new ResponseBean(false, CommonErrorEnum.ERROR_VERIFYCODE);
         }
 
         //根据手机号查找用户
         User user = userService.findByEmail(email);
         //判断是否存在当前用户
-        if (user == null){
-            return new ResponseBean(false,CommonErrorEnum.NO_USER_EXIST);
+        if (user == null) {
+            return new ResponseBean(false, CommonErrorEnum.NO_USER_EXIST);
         }
 
         //判断密码是否正确
-        if (!MD5Util.md5Verify(password,environment.getProperty("com.dtb.security.md5.key"),user.getPassword())){
-            return new ResponseBean(false,CommonErrorEnum.INVALID_PASSWORD);
+        if (!MD5Util.md5Verify(password, environment.getProperty("com.dtb.security.md5.key"), user.getPassword())) {
+            return new ResponseBean(false, CommonErrorEnum.INVALID_PASSWORD);
         }
 
         //判断是否通过邮箱验证
-        if (!user.getEmailVerify()){
-            return new ResponseBean(false,CommonErrorEnum.NO_VERIFY_EMAIL);
+        if (!user.getEmailVerify()) {
+            return new ResponseBean(false, CommonErrorEnum.NO_VERIFY_EMAIL);
         }
 
         //判断用户当前是否被禁止登录
-        if (!user.getLoginState()){
-            return new ResponseBean(false,CommonErrorEnum.BAN_LOGIN);
+        if (!user.getLoginState()) {
+            return new ResponseBean(false, CommonErrorEnum.BAN_LOGIN);
         }
 
         //通过所有验证
-        session.setAttribute("user",user);
-        Map<String,Object> resultMap = new HashMap<String,Object>();
-        resultMap.put("pagePath",pagePath);
-        ResponseBean responseBean=new ResponseBean(true,resultMap,CommonErrorEnum.LOGIN_SUCCESS);
+        session.setAttribute("user", user);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("pagePath", pagePath);
+        ResponseBean responseBean = new ResponseBean(true, resultMap, CommonErrorEnum.LOGIN_SUCCESS);
         return responseBean;
     }
 
@@ -115,9 +115,9 @@ public class UserController {
      */
     @RequestMapping("logOut")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> logOut(HttpSession session){
+    public ResponseBean<CommonErrorEnum> logOut(HttpSession session) {
         session.removeAttribute("user");
-        return new ResponseBean(true,"/home/index/index",CommonErrorEnum.LOGOUT_SUCCESS);
+        return new ResponseBean(true, "/home/index/index", CommonErrorEnum.LOGOUT_SUCCESS);
     }
 
 
@@ -130,57 +130,57 @@ public class UserController {
      */
     @RequestMapping("checkEmailExist")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> checkEmailExist(@RequestParam(value = "email",required = true) String email){
+    public ResponseBean<CommonErrorEnum> checkEmailExist(@RequestParam(value = "email", required = true) String email) {
         User user = userService.findByEmail(email);
-        if (user == null){
-            return new ResponseBean(false,CommonErrorEnum.NOT_EXIST_EMAIL);
+        if (user == null) {
+            return new ResponseBean(false, CommonErrorEnum.NOT_EXIST_EMAIL);
         }
-        return new ResponseBean(true,CommonErrorEnum.REPEAT_EMAIL);
+        return new ResponseBean(true, CommonErrorEnum.REPEAT_EMAIL);
     }
 
 
     /**
-     * @auther lmx
-     * @date 2019/3/17 12:52
-     * @descript 注册用户
      * @param user 用户信息
      * @param file 头像文件
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @auther lmx
+     * @date 2019/3/17 12:52
+     * @descript 注册用户
      */
     @RequestMapping("register")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> register(User user,@RequestParam("file") MultipartFile file) throws Exception{
+    public ResponseBean<CommonErrorEnum> register(User user, @RequestParam("file") MultipartFile file) throws Exception {
 
         //判断邮箱地址是否可用
-        if (this.checkEmailExist(user.getEmail()).isSuccess()){
+        if (this.checkEmailExist(user.getEmail()).isSuccess()) {
             ResponseBean<CommonErrorEnum> checkRes = this.checkEmailExist(user.getEmail());
             checkRes.setSuccess(false);
             return checkRes;
         }
 
         ResponseBean uploadResult = this.uploadUserPhoto(file);
-        user.setUserPhoto((String)uploadResult.getData());
+        user.setUserPhoto((String) uploadResult.getData());
 
         //重新生成邮箱验证码
-        user.setEmailCode((String)VerifyUtil.createImage()[0]);
+        user.setEmailCode((String) VerifyUtil.createImage()[0]);
         //对用户密码加密
-        user.setPassword(MD5Util.md5(user.getPassword(),environment.getProperty("com.dtb.security.md5.key")));
+        user.setPassword(MD5Util.md5(user.getPassword(), environment.getProperty("com.dtb.security.md5.key")));
         //用户信息插入数据库
         userService.createUser(user);
 
 
         //创建用户失败
-        if (user.getId()==null){
-            return new ResponseBean(false,CommonErrorEnum.FAILED_CREATEUSER);
+        if (user.getId() == null) {
+            return new ResponseBean(false, CommonErrorEnum.FAILED_CREATEUSER);
         }
 
         //发送邮件，让用户激活账户
-        Map<String,Object> map = new HashMap<>();
-        map.put("id",user.getId());
-        map.put("emailCode",user.getEmailCode());
-        emailUtil.sendTemplateMail(user.getEmail(),"【答题吧-账号激活】",map,"email/account_activation");
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", user.getId());
+        map.put("emailCode", user.getEmailCode());
+        emailUtil.sendTemplateMail(user.getEmail(), "【答题吧-账号激活】", map, "email/account_activation");
 
-        return new ResponseBean(true,"/home/user/login",CommonErrorEnum.WAIT_VERIFY_EMAIL);
+        return new ResponseBean(true, "/home/user/login", CommonErrorEnum.WAIT_VERIFY_EMAIL);
     }
 
     /**
@@ -192,25 +192,25 @@ public class UserController {
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("activation/{id}/{emailCode}")
-    public String activation(@PathVariable Integer id, @PathVariable String emailCode, Model model){
+    public String activation(@PathVariable Integer id, @PathVariable String emailCode, Model model) {
         User user = userService.findById(id);
         String page = "home/activation";
 
         //检测用户是否存在
-        if (user == null){
-            model.addAttribute("data",new ResponseBean(false,CommonErrorEnum.NO_USER_EXIST));
+        if (user == null) {
+            model.addAttribute("data", new ResponseBean(false, CommonErrorEnum.NO_USER_EXIST));
             return page;
         }
 
         //检测是否已经验证过邮箱
-        if (user.getEmailVerify()){
-            model.addAttribute("data",new ResponseBean(true,CommonErrorEnum.VERIFYED_EMAIL));
+        if (user.getEmailVerify()) {
+            model.addAttribute("data", new ResponseBean(true, CommonErrorEnum.VERIFYED_EMAIL));
             return page;
         }
 
         //验证邮箱验证码是否正确
-        if (!user.getEmailCode().equalsIgnoreCase(emailCode)){
-            model.addAttribute("data",new ResponseBean<Integer>(false,id,CommonErrorEnum.ERROR_EMAILCODE));
+        if (!user.getEmailCode().equalsIgnoreCase(emailCode)) {
+            model.addAttribute("data", new ResponseBean<Integer>(false, id, CommonErrorEnum.ERROR_EMAILCODE));
             return page;
         }
 
@@ -219,12 +219,12 @@ public class UserController {
         int res = userService.updateByIdSelective(user);
 
         //验证结果是否持久化
-        if (res<=0){
-            model.addAttribute("data",new ResponseBean<Integer>(false,id,CommonErrorEnum.FAILED_VERIFY));
+        if (res <= 0) {
+            model.addAttribute("data", new ResponseBean<Integer>(false, id, CommonErrorEnum.FAILED_VERIFY));
             return page;
         }
 
-        model.addAttribute("data",new ResponseBean(true,CommonErrorEnum.SUCCESS_VERIFY_EMAIL));
+        model.addAttribute("data", new ResponseBean(true, CommonErrorEnum.SUCCESS_VERIFY_EMAIL));
         return page;
     }
 
@@ -237,97 +237,97 @@ public class UserController {
      */
     @RequestMapping("resetEmailCode/{id}")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> resetEmailCode(@PathVariable Integer id){
+    public ResponseBean<CommonErrorEnum> resetEmailCode(@PathVariable Integer id) {
         User user = userService.findById(id);
 
         //检测用户是否存在
-        if (user == null){
-            return new ResponseBean(false,CommonErrorEnum.NO_USER_EXIST);
+        if (user == null) {
+            return new ResponseBean(false, CommonErrorEnum.NO_USER_EXIST);
         }
 
         //检测是否已经验证过邮箱
-        if (user.getEmailVerify()){
-            return new ResponseBean(false,CommonErrorEnum.VERIFYED_EMAIL);
+        if (user.getEmailVerify()) {
+            return new ResponseBean(false, CommonErrorEnum.VERIFYED_EMAIL);
         }
 
         //重新生成邮箱验证码
-        user.setEmailCode((String)VerifyUtil.createImage()[0]);
+        user.setEmailCode((String) VerifyUtil.createImage()[0]);
 
         //将新的邮箱验证码持久化
         int res = userService.updateByIdSelective(user);
         //检测是否持久化成功
-        if (res<=0){
-            return new ResponseBean(false,CommonErrorEnum.FAILED_SENDEMAIL);
+        if (res <= 0) {
+            return new ResponseBean(false, CommonErrorEnum.FAILED_SENDEMAIL);
         }
 
         //发送邮件，让用户激活账户
-        Map<String,Object> map = new HashMap<>();
-        map.put("id",user.getId());
-        map.put("emailCode",user.getEmailCode());
-        emailUtil.sendTemplateMail(user.getEmail(),"【答题吧-账号激活】",map,"email/account_activation");
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", user.getId());
+        map.put("emailCode", user.getEmailCode());
+        emailUtil.sendTemplateMail(user.getEmail(), "【答题吧-账号激活】", map, "email/account_activation");
 
-        return new ResponseBean(true,CommonErrorEnum.SENDEMAIL_SUCCESS);
+        return new ResponseBean(true, CommonErrorEnum.SENDEMAIL_SUCCESS);
     }
 
     /**
+     * @param
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @auther lmx
      * @date 2019/3/10 17:43
      * @descript 获取用户列表，返回字段仅有用户id，用户名和昵称
-     * @param
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("getUserList")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> getUserList(){
+    public ResponseBean<CommonErrorEnum> getUserList() {
         List<User> userList = userService.findUserList();
-        return new ResponseBean(true,userList,CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean(true, userList, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
     /**
-     * @auther lmx
-     * @date 2019/3/10 23:02
-     * @descript 根据用户类型获取用户列表
      * @param pageNum
      * @param pageSize
      * @param userType
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @auther lmx
+     * @date 2019/3/10 23:02
+     * @descript 根据用户类型获取用户列表
      */
     @RequestMapping("getUserListToLimit/{pageNum}/{pageSize}/{userType}")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> getUserListToLimit(@PathVariable Integer pageNum,
-                                                           @PathVariable Integer pageSize,
-                                                           @PathVariable Byte userType){
-        PageHelper.startPage(pageNum,pageSize);
+                                                            @PathVariable Integer pageSize,
+                                                            @PathVariable Byte userType) {
+        PageHelper.startPage(pageNum, pageSize);
 
         Page<User> userPage = userService.findUserListToLimit(userType);
         //获取分页信息
-        Map<String,Object> pageInfo = new HashMap<String,Object>();
-        pageInfo.put("pageSize",userPage.getPageSize());
-        pageInfo.put("pageNum",userPage.getPageNum());
-        pageInfo.put("pages",userPage.getPages());
-        pageInfo.put("total",userPage.getTotal());
+        Map<String, Object> pageInfo = new HashMap<String, Object>();
+        pageInfo.put("pageSize", userPage.getPageSize());
+        pageInfo.put("pageNum", userPage.getPageNum());
+        pageInfo.put("pages", userPage.getPages());
+        pageInfo.put("total", userPage.getTotal());
 
-        Map<String,Object> resultMap = new HashMap<String,Object>();
-        resultMap.put("userList",userPage);
-        resultMap.put("pageInfo",pageInfo);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("userList", userPage);
+        resultMap.put("pageInfo", pageInfo);
 
-        return new ResponseBean(true,resultMap,CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
     /**
+     * @param file 图片文件
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @auther lmx
      * @date 2019/3/17 1:37
      * @descript 上传用户头像
-     * @param file 图片文件
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("uploadUserPhoto")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> uploadUserPhoto(@RequestParam("file")MultipartFile file) throws Exception{
+    public ResponseBean<CommonErrorEnum> uploadUserPhoto(@RequestParam("file") MultipartFile file) throws Exception {
         String uploadPath = "/static/upload/images/avatar";
-        String rootPath = ResourceUtils.getURL("classpath:").getPath()+uploadPath;
-        String imgPath = FileUploadUtil.upload(file,rootPath,"avatar_");
+        String rootPath = ResourceUtils.getURL("classpath:").getPath() + uploadPath;
+        String imgPath = FileUploadUtil.upload(file, rootPath, "avatar_");
         imgPath = uploadPath + "/" + imgPath;
-        return new ResponseBean(true,imgPath,CommonErrorEnum.FILEUPLOAD_SUCCESS);
+        return new ResponseBean(true, imgPath, CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 }

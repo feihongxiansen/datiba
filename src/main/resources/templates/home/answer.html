@@ -4,19 +4,27 @@
     <title>解答详情-答题吧</title>
     <link rel="stylesheet" type="text/css" th:href="@{/static/home/plugs/viewer/viewer.css}"/>
     <style>
-        [v-cloak] {display: none;}
+        [v-cloak] {
+            display: none;
+        }
 
         .row {
             padding-top: 5px;
             padding-bottom: 10px;
         }
 
-        img {width: 30%;}
-        .img-thumbnail{
+        img {
+            width: 30%;
+        }
+
+        .img-thumbnail {
             height: 150px;
             width: auto;
         }
-        p {line-height: 30px;}
+
+        p {
+            line-height: 30px;
+        }
     </style>
 </head>
 
@@ -56,16 +64,17 @@
                                     <div class="col-md-12" id="questionPhotoBox">
                                         <p class="text-left" th:text="${questionInfo.questionSummary}"></p>
                                         <th:block th:if="${questionInfo.questionPhotoList}!=null">
-                                            <img th:src="@{${item}}" th:each="item : ${questionInfo.questionPhotoList}" class="img-thumbnail">
+                                            <img th:src="@{${item}}" th:each="item : ${questionInfo.questionPhotoList}"
+                                                 class="img-thumbnail">
                                         </th:block>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label class="col-md-3 text-success"
-                                             th:text="'['+${questionInfo?.grade?.gradeName}+${questionInfo?.subject?.subjectName}+']'"></label>
+                                               th:text="'['+${questionInfo?.grade?.gradeName}+${questionInfo?.subject?.subjectName}+']'"></label>
                                         <label class="col-md-9 text-muted"
-                                             th:text="${#dates.format(questionInfo.createTime, 'yyyy-MM-dd HH:mm:ss')}"></label>
+                                               th:text="${#dates.format(questionInfo.createTime, 'yyyy-MM-dd HH:mm:ss')}"></label>
                                     </div>
 
                                     <div class="col-md-6 text-right">
@@ -78,7 +87,8 @@
 
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <textarea class="form-control" rows="8" v-model="answerSummary" placeholder="请输入你的回答或上传图片" style="resize: none;"></textarea>
+                                        <textarea class="form-control" rows="8" v-model="answerSummary"
+                                                  placeholder="请输入你的回答或上传图片" style="resize: none;"></textarea>
                                     </div>
                                 </div>
 
@@ -90,10 +100,13 @@
                                         <button type="button" class="layui-btn" id="uploadimg">
                                             <i class="layui-icon">&#xe67c;</i>上传图片
                                         </button>
-                                        <button type="button" id="subBtn" @click="clearImg()" class="layui-btn layui-btn-normal">回答</button>
+                                        <button type="button" id="subBtn" @click="clearImg()"
+                                                class="layui-btn layui-btn-normal">回答
+                                        </button>
                                     </div>
                                     <div class="col-md-12 text-right" th:if="${session.user}==null">
-                                        <a th:href="@{'/home/index/login?pagePath=/home/index/answer/'+${questionInfo.id}}" class="layui-btn layui-btn-normal">登录答题</a>
+                                        <a th:href="@{'/home/index/login?pagePath=/home/index/answer/'+${questionInfo.id}}"
+                                           class="layui-btn layui-btn-normal">登录答题</a>
                                     </div>
                                 </div>
                             </div>
@@ -103,27 +116,37 @@
 
                         <div id="myTabContent" class="tab-content" style="padding: 20px;">
                             <div class="tab-pane fade in active" id="home">
-                                <div class="row" th:each="item : ${questionInfo.answers}" style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                                <div class="row" th:each="item : ${questionInfo.answers}"
+                                     style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
                                     <a class="col-md-2" th:href="@{'/home/index/userinfo/'+${item?.user?.id}}">
-                                        <img th:src="@{${item?.user?.userPhoto}}" style="width: 100%;" class="img-rounded" />
-                                        <p class="text-center"  th:text="${item?.user?.nickName}"></p>
+                                        <img th:src="@{${item?.user?.userPhoto}}" style="width: 100%;"
+                                             class="img-rounded"/>
+                                        <p class="text-center" th:text="${item?.user?.nickName}"></p>
                                     </a>
 
                                     <div class="col-md-10">
                                         <div class="row">
                                             <div class="col-md-12" th:id="'answer'+${item.id}">
                                                 <p class="text-left" th:text="${item.answerSummary}"></p>
-                                                <img th:each="photo:${item.answerPhotoList}" th:src="${photo}" th:data-original="${photo}" class="img-thumbnail">
+                                                <img th:each="photo:${item.answerPhotoList}" th:src="${photo}"
+                                                     th:data-original="${photo}" class="img-thumbnail">
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <div class="col-md-9 text-muted" th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                                                <div class="col-md-9 text-muted"
+                                                     th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm:ss')}"></div>
                                             </div>
 
                                             <div class="col-md-6 text-right">
-                                                <button class="col-md-3 col-md-offset-5 btn btn-info"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> 999</button>
-                                                <button class="col-md-3 col-md-offset-1 btn btn-warning"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> 23</button>
+                                                <button class="col-md-3 col-md-offset-5 btn btn-info"><span
+                                                        class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+                                                    999
+                                                </button>
+                                                <button class="col-md-3 col-md-offset-1 btn btn-warning"><span
+                                                        class="glyphicon glyphicon-thumbs-down"
+                                                        aria-hidden="true"></span> 23
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -158,13 +181,13 @@
     /*初始化答案列表的viewer*/
     function initAnswerViewer() {
         var answerList = [[${questionInfo.answers}]];
-        for (var i=0; i<answerList.length; i++){
-            initViewer("answer"+answerList[i].id);
+        for (var i = 0; i < answerList.length; i++) {
+            initViewer("answer" + answerList[i].id);
         }
     }
 
     /*更新成功提示*/
-    function refresh () {
+    function refresh() {
         window.location.reload();//刷新当前界面
     }
 
@@ -175,7 +198,7 @@
         var laypage = layui.laypage
             , layer = layui.layer
             , form = layui.form
-            ,upload = layui.upload;
+            , upload = layui.upload;
         var load;
         //图片上传
         var uploadInst = upload.render({
@@ -206,7 +229,7 @@
             , done: function (res, index, upload) { //上传后的回调
                 var img = "<img src='" + res.data + "'alt='' class='img-thumbnail'>";
                 $("#imgBox").append(img);
-                answerApp.$data.answerPhotos = "," + answerApp.$data.answerPhotos + res.data;
+                answerApp.$data.answerPhotos = answerApp.$data.answerPhotos + "," + res.data;
                 console.log("上传之后触发的：", res);
             }
             , error: function (index, upload) {
@@ -226,35 +249,35 @@
 
     /*实例化vue*/
     var answerApp = new Vue({
-        el:"#answer_container",
-        data:{
-            answerSummary:"",//答案内容
-            answerPhotos:null,//答案图片
-            hasPhotos:false//默认没有图片上传
+        el: "#answer_container",
+        data: {
+            answerSummary: "",//答案内容
+            answerPhotos: null,//答案图片
+            hasPhotos: false//默认没有图片上传
         },
-        methods:{
+        methods: {
             /**
              * 清除本地回显图片
              */
-            clearImg:function () {
+            clearImg: function () {
                 $("#imgBox").empty();
                 /*没有图片就直接提交表单*/
-                if (!answerApp.$data.hasPhotos){
-                    console.log("是否有图片上传：",answerApp.$data.hasPhotos);
+                if (!answerApp.$data.hasPhotos) {
+                    console.log("是否有图片上传：", answerApp.$data.hasPhotos);
                     this.subForm();
                 }
             },
             /**
              * 调教表单前的验证
              */
-            checkeForm:function (subData) {
+            checkeForm: function (subData) {
                 console.log(subData);
-                if (subData.userId==null || subData.userId==""){
-                    layer.msg("请登录后解答！", {icon: 2,time:1500});
+                if (subData.userId == null || subData.userId == "") {
+                    layer.msg("请登录后解答！", {icon: 2, time: 1500});
                     return false;
                 }
-                if (subData.answerSummary==null || subData.answerSummary==""){
-                    layer.msg("请输入答案！", {icon: 2,time:1500});
+                if (subData.answerSummary == null || subData.answerSummary == "") {
+                    layer.msg("请输入答案！", {icon: 2, time: 1500});
                     return false;
                 }
                 return true;
@@ -262,25 +285,25 @@
             /**
              * 提交表单
              */
-            subForm:function () {
+            subForm: function () {
                 //清除选择图片的样式
                 var subData = {
-                    userId:[[${session?.user?.id}]],//答题人id
-                    questionId:[[${questionInfo?.id}]],//问题id
-                    answerSummary:answerApp.$data.answerSummary,//答案内容
-                    answerPhotos:answerApp.$data.answerPhotos//问题附件图片
+                    userId: [[${session?.user?.id}]],//答题人id
+                    questionId: [[${questionInfo?.id}]],//问题id
+                    answerSummary: answerApp.$data.answerSummary,//答案内容
+                    answerPhotos: answerApp.$data.answerPhotos//问题附件图片
                 };
                 //数据校验
-                if (!this.checkeForm(subData)){
+                if (!this.checkeForm(subData)) {
                     return;
                 }
-                console.log("提交数据：",subData);
-                $.post("/home/question/addAnswer",subData,function (res) {
-                    if (res.success){
-                        layer.msg("提交成功，感谢您的解答！", {icon: 1,time:1500});
-                        setTimeout(refresh,1510);
-                    }else{
-                        layer.msg(res.errMsg, {icon: 2,time:1500});
+                console.log("提交数据：", subData);
+                $.post("/home/question/addAnswer", subData, function (res) {
+                    if (res.success) {
+                        layer.msg("提交成功，感谢您的解答！", {icon: 1, time: 1500});
+                        setTimeout(refresh, 1510);
+                    } else {
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
                     }
                 })
             }
@@ -288,13 +311,10 @@
     });
 
 
-
     /*初始化问题图片的viewer*/
     initViewer("questionPhotoBox");
     /*初始化答案列表的viewer*/
     initAnswerViewer();
-
-
 
 
 </script>

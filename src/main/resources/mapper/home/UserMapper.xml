@@ -51,7 +51,7 @@
     and delete_time is null
   </select>
 
-  <select id="selectUserInfoById" resultType="java.util.HashMap">
+  <select id="selectUserInfoById" resultType="java.util.Map">
     SELECT
     	nick_name AS nickName,
     	user_photo AS userPhoto,
