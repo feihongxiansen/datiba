@@ -24,3 +24,8 @@ HELP.md
 /nbdist/
 /.nb-gradle/
 /build/
+
+### Springboot ###
+dtb_logs/
+*.gz
+*.log

@@ -218,4 +218,17 @@ public class DocumentController {
         session.setAttribute("user", userService.findById(oldUser.getId()));
         return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
     }
+
+    /**
+     * 我的文档
+     * @author lmx
+     * @date 2019/3/25 0:04
+     * @return java.lang.String
+     */
+    @RequestMapping("myDocumentList")
+    public String myDocumentList(Model model){
+        model.addAttribute("gradeList", gradeService.findAll());
+        model.addAttribute("subjectList", subjectService.findAll());
+        return "home/mydocument-list";
+    }
 }
