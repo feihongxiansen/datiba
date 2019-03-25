@@ -64,7 +64,7 @@
                                             <button type="button" class="layui-btn layui-btn-warm" id="uploadimg">
                                                 <i class="layui-icon">&#xe67c;</i>选择图片
                                             </button>
-                                            <button class="layui-btn" id="subBtn" type="button">立即提交</button>
+                                            <button class="layui-btn" id="subBtn" @click="clearImg()" type="button">立即提交</button>
                                         </div>
                                     </div>
                                 </form>
@@ -165,7 +165,13 @@
             /**
              * 调教表单前的验证
              */
-            checkeForm: function (subData) {
+            checkeForm: function () {
+                var subData = {
+                    questionType: $("#questionType").val(),//提问问题年级
+                    questionSummary: app.$data.questionSummary,//提问详情
+                    questionPhotos: app.$data.questionPhotos,//问题附件图片
+                    userId: [[${session?.user?.id}]]
+                };
                 console.log(subData);
                 if (subData.questionType == null || subData.questionType == "") {
                     layer.msg("请选择反馈类型！", {icon: 2, time: 1500});

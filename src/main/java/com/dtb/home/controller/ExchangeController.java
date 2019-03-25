@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
+
 /**
  * @author lmx
  * @version 1.0.0
@@ -39,7 +41,7 @@ public class ExchangeController {
      */
     @RequestMapping("addExchange")
     @ResponseBody
-    public ResponseBean<String> addExchange(Exchange exchange) {
+    public ResponseBean<String> addExchange(Exchange exchange, HttpSession session) {
         User user = userService.findById(exchange.getUserId());
         GiftWithBLOBs gift = giftService.findById(exchange.getGiftId());
         if (gift.getQuantity() <= 0) {
@@ -49,6 +51,8 @@ public class ExchangeController {
             return new ResponseBean<String>(false, "您当前积分不足，不能兑换该物品，请去答题赚取积分或者兑换其他物品！", CommonErrorEnum.SUCCESS_REQUEST);
         }
         userService.updateIntegralById(-gift.getIntegral(), user.getId());
+        //更新session的数据
+        session.setAttribute("user",userService.findById(user.getId()));
         GiftWithBLOBs newGift = new GiftWithBLOBs();
         newGift.setId(gift.getId());
         newGift.setQuantity(gift.getQuantity() - 1);
