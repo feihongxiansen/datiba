@@ -20,7 +20,7 @@
         //第一个实例
         table.render({
             elem: '#addressTable'
-            , url: "/home/address/queryAddressListByUserId/" + 1 //数据接口
+            , url: "/home/address/queryAddressListByUserId/" + [[${session.user.id}]] //数据接口
             , page: false //不开启分页
             , even: false //不开启隔行背景
             , parseData: function (res) { //res 即为原始返回的数据
@@ -32,13 +32,13 @@
             }
             , cols: [[ //表头
                 {field: 'id', title: 'ID', width: "7%", sort: true, fixed: 'left'}
-                , {field: 'userName', title: '收货人姓名', width: "8%"}
+                , {field: 'userName', title: '收货人姓名', sort: true, width: "8%"}
                 , {field: 'phone', title: '收货人电话', width: "10%", sort: true}
-                , {field: 'province', title: '省名', width: "7%"}
-                , {field: 'city', title: '市名', width: "10%"}
+                , {field: 'province', title: '省名', sort: true, width: "7%"}
+                , {field: 'city', title: '市名', sort: true, width: "10%"}
                 , {field: 'area', title: '区/县名', width: "15%", sort: true}
                 , {field: 'detial', title: '详细地址', width: "25%", sort: true}
-                , {field: 'createTime', title: '创建时间', width: "13%"}
+                , {field: 'createTime', title: '创建时间', sort: true, width: "13%"}
                 , {title: '选择', width: "5%", align: "center", templet: '#choose'}
             ]]
         });

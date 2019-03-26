@@ -29,6 +29,10 @@
             line-height: 26px;
         }
 
+        .text-summary {
+            font-size: 15px;
+            line-height: 26px;
+        }
         .layui-card-body {
             height: 230px;
             padding: 20px 20px;
@@ -39,11 +43,28 @@
         }
 
         .layui-card {
-            margin-bottom: 8px;
+            margin-bottom: 20px;
         }
         h4 {
             font-weight: bolder;
         }
+
+        .shadow {
+            -webkit-box-shadow: #666 3px 3px 10px;
+            -moz-box-shadow: #666 3px 3px 10px;
+            box-shadow: #666 3px 3px 10px;
+        }
+
+        .download-card-box {
+            padding: 20px 20px;
+            padding-bottom: 40px;
+            height: auto;
+        }
+
+        .layui-rate {
+            padding: 0;
+        }
+
     </style>
 </head>
 
@@ -52,103 +73,186 @@
 <!--顶部导航栏导入-->
 <div th:replace="home/public/top-menu::top-menu"></div>
 
-<!--问题搜索栏开始-->
-<form class="layui-form layui-form-item" id="form">
-    <input type="hidden" name="userId" th:value="${session.user.id}">
-    <div class="layui-input-inline" style="margin-left: 20%;">
-        <select name="gradeId" lay-filter="gradeId">
-            <option value="">所有年级</option>
-            <option th:value="${item.id}" th:each="item : ${gradeList}" th:text="${item.gradeName}"></option>
-        </select>
-    </div>
-    <div class="layui-input-inline">
-        <select name="subjectId" id="subjectId">
-            <option value="">所有学科</option>
-            <option th:value="${item.id}" th:if="${itemState.count<=3}" th:each="item,itemState : ${subjectList}"
-                    th:text="${item.subjectName}"></option>
-        </select>
-    </div>
-    <div class="layui-input-inline">
-        <select name="documentType">
-            <option value="">所有资料类型</option>
-            <option value="1">题目资料</option>
-            <option value="2">复习资料</option>
-            <option value="3">杂项资料</option>
-        </select>
-    </div>
-    <div class="layui-input-inline">
-        <select name="integral">
-            <option value="">所有积分类型</option>
-            <option value="0">免费资料</option>
-            <option value="1">需要积分</option>
-        </select>
-    </div>
-    <div class="layui-input-inline">
-        <input type="text" name="title" placeholder="输入关键字搜索" autocomplete="off" class="layui-input">
-    </div>
-    <div class="layui-input-inline">
-        <button class="layui-btn layui-btn-warm" lay-submit lay-filter="formSubmit">
-            <i class="layui-icon">&#xe615;</i>搜索
-        </button>
-    </div>
-</form>
-<hr class="layui-bg-green">
-<!--问题搜索栏结束-->
 
-<div class="layui-container" id="container" v-cloak>
+<div class="layui-container">
     <div class="layui-row">
         <div class="layui-col-md12">
-            <fieldset class="layui-elem-field layui-field-title">
-                <legend>我的上传</legend>
-            </fieldset>
-        </div>
-    </div>
+            <div class="layui-tab layui-tab-card">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">我的上传</li>
+                    <li onclick="getCommentList()">积分明细</li>
+                    <li onclick="getDownloadList()">我的下载</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <!--我的上传开始-->
+                    <div id="myUpload" v-cloak class="layui-tab-item layui-show">
+                        <!--问题搜索栏开始-->
+                        <form class="layui-form layui-form-item" id="form">
+                            <input type="hidden" name="userId" th:value="${session.user.id}">
+                            <div class="layui-input-inline">
+                                <select name="gradeId" lay-filter="gradeId">
+                                    <option value="">所有年级</option>
+                                    <option th:value="${item.id}" th:each="item : ${gradeList}"
+                                            th:text="${item.gradeName}"></option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="subjectId" id="subjectId">
+                                    <option value="">所有学科</option>
+                                    <option th:value="${item.id}" th:if="${itemState.count<=3}"
+                                            th:each="item,itemState : ${subjectList}"
+                                            th:text="${item.subjectName}"></option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="documentType">
+                                    <option value="">所有资料类型</option>
+                                    <option value="1">题目资料</option>
+                                    <option value="2">复习资料</option>
+                                    <option value="3">杂项资料</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="integral">
+                                    <option value="">所有积分类型</option>
+                                    <option value="0">免费资料</option>
+                                    <option value="1">需要积分</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <button class="layui-btn layui-btn-warm" lay-submit lay-filter="formSubmit">
+                                    <i class="layui-icon">&#xe615;</i>搜索
+                                </button>
+                            </div>
+                        </form>
+                        <hr class="layui-bg-green">
+                        <!--问题搜索栏结束-->
+                        <div class="layui-card shadow layui-anim layui-anim-scale" v-for="item in documentList">
+                            <div class="layui-card-body">
+                                <div class="layui-col-md4">
+                                    <div class="head-img-box">
+                                        <img class="head-img" :src="item.user.userPhoto" alt="...">
+                                    </div>
+                                </div>
+                                <div class="layui-col-md8">
+                                    <div class="row text-box">
+                                        <h4>{{item.title}}</h4>
+                                        <p class="text-overflow">{{item.summary}}</p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="layui-col-md5">
+                                            <span class="layui-badge layui-bg-orange">{{item.grade.gradeName}}</span>
+                                            <span class="layui-badge layui-bg-blue">{{item.subject.subjectName}}</span>
+                                            <span class="layui-badge layui-bg-green">{{item.documentType==1?'题目资料':item.documentType==2?'复习资料':'杂项资料'}}</span>
+                                            <span class="layui-badge">{{item.integral>0?item.integral+'积分':'免积分'}}</span>
+                                            <span class="layui-badge layui-bg-cyan">{{item.downloadCount+'次下载'}}</span>
+                                        </div>
+                                        <div class="layui-col-md3">
+                                            上传用户：<a
+                                                :href="'/home/index/userinfo/'+item.user.id">{{item.user.nickName}}</a>
+                                        </div>
+                                        <div class="layui-col-md2">
+                                            {{item.createTime | formatDate('yyyy-MM-dd')}}
+                                        </div>
 
-    <div class="layui-row" style="padding: 20px; background-color: #F2F2F2;">
+                                        <div class="layui-col-md2">
+                                            <a class="layui-btn layui-btn-sm layui-btn-warm"
+                                               :href="'/home/document/detial/'+item.id">
+                                                查看详情<i class="layui-icon">&#xe65f;</i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--分页按钮-->
+                        <div class="layui-row text-center">
+                            <div id="laypage"></div>
+                        </div>
+                    </div>
+                    <!--我的上传结束-->
 
-        <div class="layui-card layui-anim layui-anim-scale" v-for="item in documentList">
-            <div class="layui-card-body">
-                <div class="layui-col-md4">
-                    <div class="head-img-box">
-                        <img class="head-img" :src="item.user.userPhoto" alt="...">
+                    <!--积分明细开始-->
+                    <div class="layui-tab-item">
+                        <div class="layui-form">
+                            <table class="layui-table" id="table">
+                                <colgroup>
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col>
+                                </colgroup>
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>积分</th>
+                                    <th>时间</th>
+                                    <th>资料名称</th>
+                                    <th>下载用户</th>
+                                    <th>类型</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(item,index) in commentList">
+                                    <td>{{index+1}}</td>
+                                    <td>{{item.userId==userId?'-':'+'}}{{item.document.integral}}</td>
+                                    <td>{{item.createTime}}</td>
+                                    <td><a target="_blank" :href="'/home/document/detial/'+item.document.id">{{item.document.title}}</a>
+                                    </td>
+                                    <td><a target="_blank" :href="'/home/index/userinfo/'+item.userId">{{item.user.nickName}}</a>
+                                    </td>
+                                    <td>
+                                        <span v-if="item.userId!=userId" class="layui-badge layui-bg-green">资源被下载</span>
+                                        <span v-if="item.userId==userId" class="layui-badge">下载资源</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <div class="layui-col-md8">
-                    <div class="row text-box">
-                        <h4>{{item.title}}</h4>
-                        <p class="text-overflow">{{item.summary}}</p>
-                    </div>
-                    <div class="row">
-                        <div class="layui-col-md5">
-                            <span class="layui-badge layui-bg-orange">{{item.grade.gradeName}}</span>
-                            <span class="layui-badge layui-bg-blue">{{item.subject.subjectName}}</span>
-                            <span class="layui-badge layui-bg-green">{{item.documentType==1?'题目资料':item.documentType==2?'复习资料':'杂项资料'}}</span>
-                            <span class="layui-badge">{{item.integral>0?item.integral+'积分':'免积分'}}</span>
-                            <span class="layui-badge layui-bg-cyan">{{item.downloadCount+'次下载'}}</span>
-                        </div>
-                        <div class="layui-col-md3">
-                            上传用户：<a :href="'/home/index/userinfo/'+item.user.id">{{item.user.nickName}}</a>
-                        </div>
-                        <div class="layui-col-md2">
-                            {{item.createTime | formatDate('yyyy-MM-dd')}}
-                        </div>
+                    <!--积分明细结束-->
 
-                        <div class="layui-col-md2">
-                            <a class="layui-btn layui-btn-sm layui-btn-warm" :href="'/home/document/detial/'+item.id">
-                                查看详情<i class="layui-icon">&#xe65f;</i>
-                            </a>
+                    <!--下载明细开始-->
+                    <div class="layui-tab-item" id="myDowload">
+                        <div class="layui-card layui-anim layui-anim-scale" v-for="item in downloadList">
+                            <div class="layui-card-body download-card-box">
+                                <h4><a :href="'/home/document/detial/'+item.document.id" target="_blank">
+                                    {{item.document.title}}
+                                </a></h4>
+                                <p class="text-summary">{{item.document.summary}}</p>
+                                <div class="layui-col-md3">
+                                    <span class="layui-badge layui-bg-green">
+                                        {{item.document.documentType==1?'题目资料':item.document.documentType==2?'复习资料':'杂项资料'}}
+                                    </span>
+                                    <span class="layui-badge">{{item.document.integral>0?item.document.integral+'积分':'免积分'}}</span>
+                                    <span class="layui-badge layui-bg-cyan">{{item.document.downloadCount}}次下载</span>
+                                </div>
+                                <div class="layui-col-md3">上传时间:{{item.document.createTime}}</div>
+                                <div class="layui-col-md3">
+                                    上传用户：<a :href="'/home/index/userinfo/'+item.user.id">{{item.user.nickName}}</a>
+                                </div>
+                                <div class="layui-col-md2" id="score"></div>
+                                <div class="layui-col-md1" v-if="item.score==null||item.commentContent==null">
+                                    <button class="layui-btn layui-btn-sm">立即评价</button>
+                                </div>
+                            </div>
+                            <div class="layui-card layui-anim layui-anim-scale"
+                                 v-if="item.score!=null&&item.commentContent!=null">
+                                <div class="layui-card-body download-card-box">
+                                    <p class="text-overflow">我的评价：{{item.commentContent}}</p>
+                                    <div class="layui-col-md4">{{item.createTime}}</div>
+                                    <div class="layui-col-md3" :id="'my-score-'+item.id" v-if="item.score!=null"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <!--下载明细结束-->
+
                 </div>
             </div>
         </div>
-        <!--分页按钮-->
-        <div class="layui-row text-center">
-            <div id="laypage"></div>
-        </div>
-
     </div>
-
 
 </div>
 
@@ -161,10 +265,12 @@
 
     var subjectList = [[${subjectList}]];
     var formData={userId:[[${session.user.id}]]};
+    var rate;
     function initLayui() {
-        layui.use(['form', 'laypage'], function () {
+        layui.use(['form', 'laypage', 'rate'], function () {
             var form = layui.form
                 , laypage = layui.laypage;
+            rate = layui.rate;
 
             //执行一个laypage实例
             laypage.render({
@@ -213,7 +319,7 @@
 
     var that = this;
     var app = new Vue({
-        el: "#container",
+        el: "#myUpload",
         data: {
             documentList: null,//教师列表
             initLayui: false//是否可以渲染layui，请求到数据后才可以
@@ -280,6 +386,60 @@
             }
         });
     }
+
+    /**
+     * 获取积分明细列表
+     */
+    function getCommentList() {
+        $.get("/home/document/myUploadAndDownload/" + tableApp.$data.userId, function (res) {
+            tableApp.$data.commentList = res.data;
+        });
+    }
+
+    /**
+     * 评分图片渲染
+     * @param list
+     */
+    function initRate(list) {
+        /*用户评分图标渲染*/
+        for (var i = 0; i < myDowloadApp.$data.downloadList.length; i++) {
+            var id = "#my-score-" + myDowloadApp.$data.downloadList[i].id;
+            rate.render({
+                elem: id
+                , value: myDowloadApp.$data.downloadList[i].score
+                , half: true
+                , text: false
+                , readonly: true
+                , theme: '#FE0000' //自定义主题色
+            });
+        }
+    }
+
+    /**
+     * 获取下载记录列表
+     */
+    function getDownloadList() {
+        $.get("/home/document/myDownloadList/" + myDowloadApp.$data.userId, function (res) {
+            myDowloadApp.$data.downloadList = res.data;
+            setTimeout(initRate, 100);
+        });
+    }
+
+    var tableApp = new Vue({
+        el: "#table",
+        data: {
+            commentList: null,
+            userId: [[${session.user.id}]]
+        }
+    });
+
+    var myDowloadApp = new Vue({
+        el: "#myDowload",
+        data: {
+            userId: [[${session.user.id}]],
+            downloadList: null//我的下载记录
+        }
+    });
 
     /*获取用户列表*/
     pagination(pageIndex, pageSize);

@@ -23,8 +23,7 @@
             <dl class="layui-nav-child">
                 <dd><a href="/home/document/list">搜索资料</a></dd>
                 <dd><a th:href="@{${session.user}==null?'/home/index/login?pagePath=/home/document/add':'/home/document/add'}">上传资料</a></dd>
-                <dd><a href="/home/document/myDocumentList">我的上传</a></dd>
-                <dd><a href="/home/document/myDownloadList">我的下载</a></dd>
+                <dd><a href="/home/document/myDocumentList">我的记录</a></dd>
             </dl>
         </li>
         <li class="layui-nav-item"><a href="/home/index/gift/list">积分兑换</a></li>

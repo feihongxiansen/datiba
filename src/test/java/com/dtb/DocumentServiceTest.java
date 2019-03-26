@@ -30,8 +30,10 @@ public class DocumentServiceTest extends DtbApplicationTests{
         Documents documents = new Documents();
         documents.setId(1);
         documents.setCheckState((byte)1);
-        System.out.println(documentsMapper.selectDocumentListToLimit(documents).get(0).toString());
+//        System.out.println(documentsMapper.selectDocumentListToLimit(documents).get(0).toString());
+//
+//        System.out.println(documentService.findDocumentListToLimit(documents).get(0).getComments().get(0).getCommentContent());
 
-        System.out.println(documentService.findDocumentListToLimit(documents).get(0).getComments().get(0).getCommentContent());
+        System.out.println(documentCommentsMapper.selectListByUserId(1));
     }
 }

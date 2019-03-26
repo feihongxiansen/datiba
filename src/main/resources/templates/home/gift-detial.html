@@ -69,11 +69,6 @@
                         <input type="hidden" name="giftId" th:value="${gift.id}">
                         <input type="hidden" name="userId" th:value="${session.user.id}">
                         <div class="layui-form-item">
-                            <div class="layui-input-block">
-                                <span class="layui-badge layui-bg-gray">请通过选择地址来填充数据，不可自己输入</span>
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
                             <label class="layui-form-label">姓名</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="userName" required lay-verify="required" maxlength="15"

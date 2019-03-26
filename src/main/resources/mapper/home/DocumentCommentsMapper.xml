@@ -1,143 +1,167 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dtb.home.dao.DocumentCommentsMapper">
-  <resultMap id="BaseResultMap" type="com.dtb.entity.DocumentComments">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="document_id" jdbcType="INTEGER" property="documentId" />
-    <result column="score" jdbcType="FLOAT" property="score" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.DocumentComments">
-    <result column="comment_content" jdbcType="LONGVARCHAR" property="commentContent" />
-  </resultMap>
-  <resultMap id="AssociationMap" extends="ResultMapWithBLOBs" type="com.dtb.entity.DocumentCommentsAssociation">
-    <association property="user" column="user_id" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"/>
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.DocumentComments">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="document_id" jdbcType="INTEGER" property="documentId"/>
+        <result column="score" jdbcType="FLOAT" property="score"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.DocumentComments">
+        <result column="comment_content" jdbcType="LONGVARCHAR" property="commentContent"/>
+    </resultMap>
+    <resultMap id="AssociationMap" extends="ResultMapWithBLOBs" type="com.dtb.entity.DocumentCommentsAssociation">
+        <association property="user" column="user_id" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"/>
+        <association property="document" column="document_id"
+                     select="com.dtb.home.dao.DocumentsMapper.selectByPrimaryKey"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, user_id, document_id, score, create_time, delete_time, update_time
   </sql>
-  <sql id="Blob_Column_List">
+    <sql id="Blob_Column_List">
     comment_content
   </sql>
 
-  <select id="selectListByDocumentId" parameterType="java.lang.Integer" resultMap="AssociationMap">
-    select 
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from as_document_comments
-    where document_id = #{documentId,jdbcType=INTEGER}
-    AND score IS NOT NULL
-    AND comment_content IS NOT NULL
-    AND  delete_time IS NULL
-    ORDER BY update_time DESC ,create_time DESC
-  </select>
+    <select id="selectListByDocumentId" parameterType="java.lang.Integer" resultMap="AssociationMap">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from as_document_comments
+        where document_id = #{documentId,jdbcType=INTEGER}
+        AND score IS NOT NULL
+        AND comment_content IS NOT NULL
+        AND delete_time IS NULL
+        ORDER BY update_time DESC ,create_time DESC
+    </select>
 
-  <select id="selectByUserIdAndDocumentId" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"/>
-    from as_document_comments
-    where document_id = #{documentId,jdbcType=INTEGER}
-    and user_id = #{userId,jdbcType=INTEGER}
-    and delete_time is null
-  </select>
+    <select id="selectByUserIdAndDocumentId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from as_document_comments
+        where document_id = #{documentId,jdbcType=INTEGER}
+        and user_id = #{userId,jdbcType=INTEGER}
+        and delete_time is null
+    </select>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from as_document_comments
-    where id = #{id,jdbcType=INTEGER}
-  </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from as_document_comments
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectUploadAndDownloadListByUserId" resultMap="AssociationMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_document_comments
+        WHERE user_id = #{userId}
+        OR document_id
+        IN (SELECT id
+        FROM as_documents
+        WHERE user_id = #{userId})
+        AND delete_time IS NULL
+    </select>
+    <select id="selecDownloadListByUserId" resultMap="AssociationMap">
+        SELECT
+        <include refid="Blob_Column_List"/>
+        ,
+        <include refid="Base_Column_List"/>
+        FROM as_document_comments
+        WHERE user_id = #{userId}
+        AND delete_time IS NULL
+    </select>
 
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from as_document_comments
     where id = #{id,jdbcType=INTEGER}
   </delete>
 
-  <insert id="insertSelective" parameterType="com.dtb.entity.DocumentComments">
-    insert into as_document_comments
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="documentId != null">
-        document_id,
-      </if>
-      <if test="score != null">
-        score,
-      </if>
-        create_time,
-      <if test="deleteTime != null">
-        delete_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="commentContent != null">
-        comment_content,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="documentId != null">
-        #{documentId,jdbcType=INTEGER},
-      </if>
-      <if test="score != null">
-        #{score,jdbcType=INTEGER},
-      </if>
-      CURRENT_TIMESTAMP,
-      <if test="deleteTime != null">
-        #{deleteTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="commentContent != null">
-        #{commentContent,jdbcType=LONGVARCHAR},
-      </if>
-    </trim>
-  </insert>
+    <insert id="insertSelective" parameterType="com.dtb.entity.DocumentComments">
+        insert into as_document_comments
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="documentId != null">
+                document_id,
+            </if>
+            <if test="score != null">
+                score,
+            </if>
+            create_time,
+            <if test="deleteTime != null">
+                delete_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="commentContent != null">
+                comment_content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="documentId != null">
+                #{documentId,jdbcType=INTEGER},
+            </if>
+            <if test="score != null">
+                #{score,jdbcType=INTEGER},
+            </if>
+            CURRENT_TIMESTAMP,
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="commentContent != null">
+                #{commentContent,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
 
-  <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.DocumentComments">
-    update as_document_comments
-    <set>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="documentId != null">
-        document_id = #{documentId,jdbcType=INTEGER},
-      </if>
-      <if test="score != null">
-        score = #{score,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="deleteTime != null">
-        delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      </if>
-      update_time = CURRENT_TIMESTAMP,
-      <if test="commentContent != null">
-        comment_content = #{commentContent,jdbcType=LONGVARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.DocumentComments">
+        update as_document_comments
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="documentId != null">
+                document_id = #{documentId,jdbcType=INTEGER},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deleteTime != null">
+                delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            update_time = CURRENT_TIMESTAMP,
+            <if test="commentContent != null">
+                comment_content = #{commentContent,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.DocumentComments">
+    <update id="updateByPrimaryKey" parameterType="com.dtb.entity.DocumentComments">
     update as_document_comments
     set user_id = #{userId,jdbcType=INTEGER},
       document_id = #{documentId,jdbcType=INTEGER},
