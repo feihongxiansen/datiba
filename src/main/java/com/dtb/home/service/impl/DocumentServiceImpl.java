@@ -1,6 +1,7 @@
 package com.dtb.home.service.impl;
 
 import com.dtb.entity.DocumentComments;
+import com.dtb.entity.DocumentCommentsAssociation;
 import com.dtb.entity.Documents;
 import com.dtb.entity.DocumentsAssociation;
 import com.dtb.home.dao.DocumentCommentsMapper;
@@ -9,6 +10,8 @@ import com.dtb.home.service.DocumentService;
 import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Author：lmx
@@ -47,5 +50,15 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Integer downloadCountAdd(Integer id) {
         return documentsMapper.downloadCountAdd(id);
+    }
+
+    @Override
+    public List<DocumentCommentsAssociation> getUploadAndDownloadListByUserId(Integer userId) {
+        return documentCommentsMapper.selectUploadAndDownloadListByUserId(userId);
+    }
+
+    @Override
+    public List<DocumentCommentsAssociation> getDownloadListByUserId(Integer userId) {
+        return documentCommentsMapper.selecDownloadListByUserId(userId);
     }
 }

@@ -40,6 +40,26 @@ public interface DocumentCommentsMapper {
      */
     List<DocumentCommentsAssociation> selectListByDocumentId(@Param("documentId")Integer documentId);
 
+    /**
+     * 查询自己上传和下载的资料信息
+     *
+     * @param userId 自己的userID
+     * @return java.util.List<com.dtb.entity.DocumentCommentsAssociation>
+     * @author lmx
+     * @date 2019/3/26 22:06
+     */
+    List<DocumentCommentsAssociation> selectUploadAndDownloadListByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 根据用户id获取下载过的资源列表
+     *
+     * @param userId 用户id
+     * @return java.util.List<com.dtb.entity.DocumentCommentsAssociation>
+     * @author lmx
+     * @date 2019/3/26 23:39
+     */
+    List<DocumentCommentsAssociation> selecDownloadListByUserId(@Param("userId") Integer userId);
+
     int updateByPrimaryKeySelective(DocumentComments record);
 
     int updateByPrimaryKey(DocumentComments record);

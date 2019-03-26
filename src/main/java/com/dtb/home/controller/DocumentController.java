@@ -1,9 +1,6 @@
 package com.dtb.home.controller;
 
-import com.dtb.entity.DocumentComments;
-import com.dtb.entity.Documents;
-import com.dtb.entity.DocumentsAssociation;
-import com.dtb.entity.User;
+import com.dtb.entity.*;
 import com.dtb.home.service.DocumentService;
 import com.dtb.home.service.GradeService;
 import com.dtb.home.service.SubjectService;
@@ -25,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -112,8 +110,8 @@ public class DocumentController {
     @RequestMapping("searchListToLimit")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> searchDocumentList(Documents documents,
-                                                            @RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
-                                                            @RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize) {
+                                                            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                                                            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         byte checkStatus = 1;//查询条件，通过审核的文件
         PageHelper.startPage(pageNum, pageSize);
         documents.setCheckState(checkStatus);
@@ -141,14 +139,14 @@ public class DocumentController {
      * @descript 文档详情查看
      */
     @RequestMapping("detial/{documentId}")
-    public String documentDetial(@PathVariable("documentId") Integer documentId, Model model){
+    public String documentDetial(@PathVariable("documentId") Integer documentId, Model model) {
         Documents documents = new Documents();
         documents.setId(documentId);
         byte checkStatus = 1;//查询条件，通过审核的文件
         PageHelper.startPage(1, 1);
         documents.setCheckState(checkStatus);
         Page<DocumentsAssociation> page = documentService.findDocumentListToLimit(documents);
-        model.addAttribute("document",page);
+        model.addAttribute("document", page);
         return "home/document-detial";
     }
 
@@ -221,14 +219,47 @@ public class DocumentController {
 
     /**
      * 我的文档
+     *
+     * @return java.lang.String
      * @author lmx
      * @date 2019/3/25 0:04
-     * @return java.lang.String
      */
     @RequestMapping("myDocumentList")
-    public String myDocumentList(Model model){
+    public String myDocumentList(Model model) {
         model.addAttribute("gradeList", gradeService.findAll());
         model.addAttribute("subjectList", subjectService.findAll());
         return "home/mydocument-list";
+    }
+
+    /**
+     * 获取用户积分明细
+     *
+     * @param userId 用户id
+     * @return com.dtb.utils.resulthandler.ResponseBean<java.util.List < com.dtb.entity.DocumentCommentsAssociation>>
+     * @author lmx
+     * @date 2019/3/26 22:20
+     */
+    @RequestMapping("myUploadAndDownload/{userId}")
+    @ResponseBody
+    public ResponseBean<List<DocumentCommentsAssociation>>
+    getMyUploadAndDownload(@PathVariable("userId") Integer userId) {
+        return new ResponseBean<>(true,
+                documentService.getUploadAndDownloadListByUserId(userId),
+                CommonErrorEnum.SUCCESS_REQUEST);
+    }
+
+    /**
+     * 根据用户id查询下载记录
+     *
+     * @param userId 用户id
+     * @return com.dtb.utils.resulthandler.ResponseBean<java.util.List < com.dtb.entity.DocumentCommentsAssociation>>
+     * @author lmx
+     * @date 2019/3/26 23:48
+     */
+    @RequestMapping("myDownloadList/{userId}")
+    @ResponseBody
+    public ResponseBean<List<DocumentCommentsAssociation>>
+    getDownloadListByUserId(@PathVariable("userId") Integer userId) {
+        return new ResponseBean<>(true, documentService.getDownloadListByUserId(userId));
     }
 }

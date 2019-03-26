@@ -1,9 +1,12 @@
 package com.dtb.home.service;
 
 import com.dtb.entity.DocumentComments;
+import com.dtb.entity.DocumentCommentsAssociation;
 import com.dtb.entity.Documents;
 import com.dtb.entity.DocumentsAssociation;
 import com.github.pagehelper.Page;
+
+import java.util.List;
 
 /**
  * @Author：lmx
@@ -58,5 +61,25 @@ public interface DocumentService {
      * @descript 下载次数自增一
      */
     Integer downloadCountAdd(Integer id);
+
+    /**
+     * 根据用户id查询自己上传和下载的资料信息
+     *
+     * @param userId 用户id
+     * @return java.util.List<com.dtb.entity.DocumentCommentsAssociation>
+     * @author lmx
+     * @date 2019/3/26 22:18
+     */
+    List<DocumentCommentsAssociation> getUploadAndDownloadListByUserId(Integer userId);
+
+    /**
+     * 根据用户id获取下载过的资源列表
+     *
+     * @param userId 用户id
+     * @return java.util.List<com.dtb.entity.DocumentCommentsAssociation>
+     * @author lmx
+     * @date 2019/3/26 23:39
+     */
+    List<DocumentCommentsAssociation> getDownloadListByUserId(Integer userId);
 
 }
