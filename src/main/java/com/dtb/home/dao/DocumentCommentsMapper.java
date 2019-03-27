@@ -60,7 +60,14 @@ public interface DocumentCommentsMapper {
      */
     List<DocumentCommentsAssociation> selecDownloadListByUserId(@Param("userId") Integer userId);
 
-    int updateByPrimaryKeySelective(DocumentComments record);
+    /**
+     * 根据主键修改信息
+     * @author lmx
+     * @date 2019/3/27 21:36
+     * @param record 参数
+     * @return java.lang.Integer
+     */
+    Integer updateByPrimaryKeySelective(DocumentComments record);
 
     int updateByPrimaryKey(DocumentComments record);
 }

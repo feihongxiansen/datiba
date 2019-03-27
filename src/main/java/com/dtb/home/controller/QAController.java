@@ -11,6 +11,7 @@ import com.dtb.utils.resulthandler.ResponseBean;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,9 +37,10 @@ public class QAController {
 
     @Autowired
     private QAService qaService;
-
     @Autowired
     private UserService userService;
+    @Value("${com.dtb.file.baseFilePath}")
+    private String baseFilePath;
 
     /**
      * @auther: lmx
@@ -55,26 +57,26 @@ public class QAController {
     @RequestMapping("getQuestionList")
     @ResponseBody
     public ResponseBean<CommonErrorEnum>
-        getQuestionList(@RequestParam(value = "pageNum",required = true,defaultValue = "0") Integer pageNum,
-                        @RequestParam(value = "pageSize",required = true,defaultValue = "10") Integer pageSize,
-                        @RequestParam(value = "gradeId",required = false)Integer gradeId,
-                        @RequestParam(value = "subjectId",required = false)Integer subjectId,
-                        @RequestParam(value = "questionSummary",required = false)String questionSummary,
-                        @RequestParam(value = "needIntegral",required = false)Boolean needIntegral){
+    getQuestionList(@RequestParam(value = "pageNum", required = true, defaultValue = "0") Integer pageNum,
+                    @RequestParam(value = "pageSize", required = true, defaultValue = "10") Integer pageSize,
+                    @RequestParam(value = "gradeId", required = false) Integer gradeId,
+                    @RequestParam(value = "subjectId", required = false) Integer subjectId,
+                    @RequestParam(value = "questionSummary", required = false) String questionSummary,
+                    @RequestParam(value = "needIntegral", required = false) Boolean needIntegral) {
 
         //启用分页查询
-        PageHelper.startPage(pageNum,pageSize);
-        Page<QuestionsWithBLOBs> page = qaService.findQuestionList(gradeId,subjectId,questionSummary,needIntegral);
+        PageHelper.startPage(pageNum, pageSize);
+        Page<QuestionsWithBLOBs> page = qaService.findQuestionList(gradeId, subjectId, questionSummary, needIntegral);
 
-        Map<String,Object> resultMap = new HashMap<String,Object>();
-        resultMap.put("list",page);
-        Map<String,Object> pageMap = new HashMap<String,Object>();
-        pageMap.put("total",page.getTotal());
-        pageMap.put("pageNum",page.getPageNum());
-        pageMap.put("pageSize",page.getPageSize());
-        pageMap.put("pages",page.getPages());
-        resultMap.put("pageInfo",pageMap);
-        return new ResponseBean(true,resultMap,CommonErrorEnum.SUCCESS_REQUEST);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("list", page);
+        Map<String, Object> pageMap = new HashMap<String, Object>();
+        pageMap.put("total", page.getTotal());
+        pageMap.put("pageNum", page.getPageNum());
+        pageMap.put("pageSize", page.getPageSize());
+        pageMap.put("pages", page.getPages());
+        resultMap.put("pageInfo", pageMap);
+        return new ResponseBean(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
 
@@ -89,117 +91,116 @@ public class QAController {
      */
     @RequestMapping("getAnswerList/{questionId}")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> getAnswerList(@PathVariable("questionId") Integer questionId){
+    public ResponseBean<CommonErrorEnum> getAnswerList(@PathVariable("questionId") Integer questionId) {
         QuestionsAssociation questionAndAnswers = qaService.findAnswerList(questionId);
-        return new ResponseBean(true,questionAndAnswers,CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean(true, questionAndAnswers, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
     /**
+     * @param files
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @auther lmx
      * @date 2019/3/16 11:37
      * @descript 上传问题图片
-     * @param files
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("uploadQuestionImages")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> uploadQuestionImages(@RequestParam("files") MultipartFile[] files)throws IOException {
-        String uploadPath = "/static/upload/images/question";
-        String res = this.uploadImages(files,uploadPath,"question_");
-        return new ResponseBean(true,res,CommonErrorEnum.FILEUPLOAD_SUCCESS);
+    public ResponseBean<CommonErrorEnum> uploadQuestionImages(@RequestParam("files") MultipartFile[] files) throws IOException {
+        String uploadPath = "/upload/images/question";
+        String res = this.uploadImages(files, uploadPath, "question_");
+        return new ResponseBean(true, res, CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 
     /**
+     * @param files       图片数组
+     * @param uploadPath  保存路径
+     * @param fileNamePre 图片名称前缀
+     * @return java.lang.String 返回使用逗号分隔的图片地址字符串
      * @auther lmx
      * @date 2019/3/16 11:42
      * @descript 上传图片方法
-     * @param files 图片数组
-     * @param uploadPath 保存路径
-     * @param fileNamePre 图片名称前缀
-     * @return java.lang.String 返回使用逗号分隔的图片地址字符串
      */
-    public String uploadImages(MultipartFile[] files,String uploadPath,String fileNamePre)throws IOException {
+    public String uploadImages(MultipartFile[] files, String uploadPath, String fileNamePre) throws IOException {
 
-        String rootPath = ResourceUtils.getURL("classpath:").getPath()+uploadPath;
-        String res = FileUploadUtil.uploadFiles(files,rootPath,fileNamePre);
+        String rootPath = this.baseFilePath + uploadPath;
+        String res = FileUploadUtil.uploadFiles(files, rootPath, fileNamePre);
         //存储在数据库中的图片路径地址
-        res = uploadPath + "/" + res;
+        res = "/file" + uploadPath + "/" + res;
         return res;
     }
 
     /**
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @auther lmx
      * @date 2019/3/11 23:56
      * @descript 用户提问
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("addQuestion")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> addQuestion(QuestionsWithBLOBs question, HttpSession session) {
-        if (question.getQuestionPhotos()==null || question.getQuestionPhotos().trim() ==""){
+        if (question.getQuestionPhotos() == null || question.getQuestionPhotos().trim() == "") {
             question.setQuestionPhotos(null);
-        }else{
+        } else {
             question.setQuestionPhotos(question.getQuestionPhotos().substring(1));
         }
 
         //有悬赏积分，扣除悬赏用户的相应积分
-        if (question.getIntegral()!=null && question.getIntegral()> 0){
-            userService.updateIntegralById(-question.getIntegral(),question.getUserId());
+        if (question.getIntegral() != null && question.getIntegral() > 0) {
+            userService.updateIntegralById(-question.getIntegral(), question.getUserId());
             //扣除积分后更新session
             session.setAttribute("user", userService.findById(question.getUserId()));
         }
 
         int affectedLine = qaService.addQuestion(question);
-        if (affectedLine >= 1){
-            return new ResponseBean(true,question,CommonErrorEnum.SUCCESS_OPTION);
-        }else{
-            return new ResponseBean(false,question,CommonErrorEnum.FAILED_QUESTION);
+        if (affectedLine >= 1) {
+            return new ResponseBean(true, question, CommonErrorEnum.SUCCESS_OPTION);
+        } else {
+            return new ResponseBean(false, question, CommonErrorEnum.FAILED_QUESTION);
         }
     }
 
     /**
+     * @param files 图片数组
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @auther lmx
      * @date 2019/3/16 11:47
      * @descript 上传答案图片
-     * @param files 图片数组
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("uploadAnswerImages")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> uploadAnswerImages(@RequestParam("files") MultipartFile[] files)throws IOException {
-        String uploadPath = "/static/upload/images/answer";
-        String res = this.uploadImages(files,uploadPath,"answer_");
-        return new ResponseBean(true,res,CommonErrorEnum.FILEUPLOAD_SUCCESS);
+    public ResponseBean<CommonErrorEnum> uploadAnswerImages(@RequestParam("files") MultipartFile[] files) throws IOException {
+        String uploadPath = "/upload/images/answer";
+        String res = this.uploadImages(files, uploadPath, "answer_");
+        return new ResponseBean(true, res, CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 
 
     /**
+     * @param answer 问题对象
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @auther lmx
      * @date 2019/3/16 11:47
      * @descript 添加答案
-     * @param answer 问题对象
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("addAnswer")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> addAnswer(AnswersWithBLOBs answer){
-        if (answer.getAnswerPhotos()==null || answer.getAnswerPhotos().trim() ==""){
+    public ResponseBean<CommonErrorEnum> addAnswer(AnswersWithBLOBs answer) {
+        if (answer.getAnswerPhotos() == null || answer.getAnswerPhotos().trim() == "") {
             answer.setAnswerPhotos(null);
-        }else{
+        } else {
             answer.setAnswerPhotos(answer.getAnswerPhotos().substring(1));
         }
 
         //对提问者奖励积分
-        userService.updateIntegralById(5,answer.getUserId());
+        userService.updateIntegralById(5, answer.getUserId());
         //插入数据库
         int affectedLine = qaService.addAnswer(answer);
-        if (affectedLine >= 1){
-            return new ResponseBean(true,CommonErrorEnum.SUCCESS_OPTION);
-        }else{
-            return new ResponseBean(false,CommonErrorEnum.FAILED_QUESTION);
+        if (affectedLine >= 1) {
+            return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
+        } else {
+            return new ResponseBean(false, CommonErrorEnum.FAILED_QUESTION);
         }
     }
-
 
 
 }

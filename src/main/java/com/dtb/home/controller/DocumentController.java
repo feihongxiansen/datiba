@@ -11,13 +11,11 @@ import com.dtb.utils.resulthandler.ResponseBean;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
@@ -43,6 +41,8 @@ public class DocumentController {
     private GradeService gradeService;
     @Autowired
     private UserService userService;
+    @Value("${com.dtb.file.baseFilePath}")
+    private String baseFilePath;
 
 
     /**
@@ -85,10 +85,10 @@ public class DocumentController {
     @ResponseBody
     public ResponseBean<CommonErrorEnum> upload(Documents document,
                                                 @RequestParam("file") MultipartFile file) throws Exception {
-        String uploadPath = "/static/upload/document/user-upload";
-        String rootPath = ResourceUtils.getURL("classpath:").getPath() + uploadPath;
+        String uploadPath = "/upload/document/user-upload";
+        String rootPath = this.baseFilePath + uploadPath;
         String filePath = FileUploadUtil.upload(file, rootPath, "document_" + document.getDocumentType() + "_");
-        filePath = uploadPath + "/" + filePath;
+        filePath = "/file"+uploadPath + "/" + filePath;
         document.setFilePath(filePath);
 
         int affectLine = documentService.addDocument(document);
@@ -261,5 +261,31 @@ public class DocumentController {
     public ResponseBean<List<DocumentCommentsAssociation>>
     getDownloadListByUserId(@PathVariable("userId") Integer userId) {
         return new ResponseBean<>(true, documentService.getDownloadListByUserId(userId));
+    }
+
+    /**
+     * 资料评论页面渲染
+     * @param commentId 待评论id
+     * @param model 视图容器
+     */
+    @RequestMapping("comment/{commentId}")
+    public String comment(@PathVariable("commentId") Integer commentId,Model model){
+        model.addAttribute("commentId",commentId);
+        return "home/comment";
+    }
+
+    /**
+     * 添加评论
+     * @author lmx
+     * @date 2019/3/27 21:33
+     * @param comment 评论参数
+     * @return com.dtb.utils.resulthandler.ResponseBean
+     */
+    @RequestMapping("addComment")
+    @ResponseBody
+    public ResponseBean addComment(DocumentComments comment){
+        System.out.println(comment.getId()+comment.getCommentContent()+comment.getScore());
+        documentService.modifySelectiveById(comment);
+        return new ResponseBean<>(true,CommonErrorEnum.SUCCESS_REQUEST);
     }
 }

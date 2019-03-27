@@ -34,6 +34,6 @@ public class DocumentServiceTest extends DtbApplicationTests{
 //
 //        System.out.println(documentService.findDocumentListToLimit(documents).get(0).getComments().get(0).getCommentContent());
 
-        System.out.println(documentCommentsMapper.selectListByUserId(1));
+        System.out.println(documentCommentsMapper.selecDownloadListByUserId(1));
     }
 }

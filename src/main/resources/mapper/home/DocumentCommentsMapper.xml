@@ -67,6 +67,7 @@
         FROM as_documents
         WHERE user_id = #{userId})
         AND delete_time IS NULL
+        ORDER BY create_time DESC
     </select>
     <select id="selecDownloadListByUserId" resultMap="AssociationMap">
         SELECT
@@ -76,6 +77,7 @@
         FROM as_document_comments
         WHERE user_id = #{userId}
         AND delete_time IS NULL
+        ORDER BY create_time DESC
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

@@ -11,6 +11,7 @@ import com.dtb.utils.resulthandler.ResponseBean;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,12 +39,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private Environment environment;
-
     @Autowired
     private EmailUtil emailUtil;
+    @Value("${com.dtb.file.baseFilePath}")
+    private String baseFilePath;
 
 
     /**
@@ -324,10 +325,10 @@ public class UserController {
     @RequestMapping("uploadUserPhoto")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> uploadUserPhoto(@RequestParam("file") MultipartFile file) throws Exception {
-        String uploadPath = "/static/upload/images/avatar";
-        String rootPath = ResourceUtils.getURL("classpath:").getPath() + uploadPath;
+        String uploadPath = "/upload/images/avatar";
+        String rootPath = this.baseFilePath + uploadPath;
         String imgPath = FileUploadUtil.upload(file, rootPath, "avatar_");
-        imgPath = uploadPath + "/" + imgPath;
+        imgPath = "/file" + uploadPath + "/" + imgPath;
         return new ResponseBean(true, imgPath, CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 }

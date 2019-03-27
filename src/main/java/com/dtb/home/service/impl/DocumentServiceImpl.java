@@ -61,4 +61,9 @@ public class DocumentServiceImpl implements DocumentService {
     public List<DocumentCommentsAssociation> getDownloadListByUserId(Integer userId) {
         return documentCommentsMapper.selecDownloadListByUserId(userId);
     }
+
+    @Override
+    public Integer modifySelectiveById(DocumentComments comment) {
+        return documentCommentsMapper.updateByPrimaryKeySelective(comment);
+    }
 }

@@ -6,8 +6,8 @@ import com.dtb.utils.FileUploadUtil;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,6 +26,8 @@ public class FeedbackController {
 
     @Autowired
     private FeedbackService feedbackService;
+    @Value("${com.dtb.file.baseFilePath}")
+    private String baseFilePath;
 
     /**
      * 添加反馈记录
@@ -63,7 +65,7 @@ public class FeedbackController {
     @RequestMapping("upload/images")
     @ResponseBody
     public ResponseBean<String> uploadFeedbackImages(@RequestParam("files") MultipartFile[] files) throws IOException {
-        String uploadPath = "/static/upload/images/feedback";
+        String uploadPath = "/upload/images/feedback";
         String res = this.uploadImages(files, uploadPath, "feedback_");
         return new ResponseBean<>(true, res, CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
@@ -79,10 +81,10 @@ public class FeedbackController {
      * @date 2019/3/24 20:39
      */
     public String uploadImages(MultipartFile[] files, String uploadPath, String fileNamePre) throws IOException {
-        String rootPath = ResourceUtils.getURL("classpath:").getPath() + uploadPath;
+        String rootPath = this.baseFilePath + uploadPath;
         String res = FileUploadUtil.uploadFiles(files, rootPath, fileNamePre);
         //存储在数据库中的图片路径地址
-        res = uploadPath + "/" + res;
+        res = "/file" + uploadPath + "/" + res;
         return res;
     }
 
