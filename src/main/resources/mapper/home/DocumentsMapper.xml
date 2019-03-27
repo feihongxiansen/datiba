@@ -250,4 +250,9 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+    <update id="changeDocumentScoreById">
+      UPDATE as_documents
+      SET score = IF(score IS NULL,#{score},(#{score}+score)/2)
+      WHERE id =#{id}
+    </update>
 </mapper>
