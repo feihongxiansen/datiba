@@ -9,6 +9,7 @@ import com.dtb.utils.FileUploadUtil;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
@@ -31,88 +32,89 @@ public class TeacherController {
 
     @Autowired
     private SubjectService subjectService;
-
     @Autowired
     private TeacherService teacherService;
+    @Value("${com.dtb.file.baseFilePath}")
+    private String baseFilePath;
 
     /**
+     * @param model   视图容器
+     * @param session 会话session
+     * @return java.lang.String
      * @auther lmx
      * @date 2019/3/17 17:09
      * @descript 教师认证页面视图
-     * @param model 视图容器
-     * @param session 会话session
-     * @return java.lang.String
      */
     @RequestMapping("auth")
-    public String teacherAuth(Model model, HttpSession session){
-        model.addAttribute("subjectList",subjectService.findAll());
-        User user = (User)session.getAttribute("user");
+    public String teacherAuth(Model model, HttpSession session) {
+        model.addAttribute("subjectList", subjectService.findAll());
+        User user = (User) session.getAttribute("user");
         TeacherAssociation teacher = this.isApplyed(user.getId());
         //未申请跳转到申请页面，申请过到进度页面
-        if (teacher == null){
+        if (teacher == null) {
             return "home/teacher-auth";
-        }else{
-            model.addAttribute("applyInfo",teacher);
+        } else {
+            model.addAttribute("applyInfo", teacher);
             return "home/teacher-schedule";
         }
 
     }
 
     /**
+     * @param userId 用户id
+     * @return TeacherAssociation
      * @auther lmx
      * @date 2019/3/17 16:52
      * @descript 判断当前用户是否已经申请过认证
-     * @param userId 用户id
-     * @return TeacherAssociation
      */
-    public TeacherAssociation isApplyed(Integer userId){
+    public TeacherAssociation isApplyed(Integer userId) {
         return teacherService.findByUserId(userId);
     }
 
 
     /**
+     * @param teacher        教师信息
+     * @param idCardImg1     身份证正面照
+     * @param idCardImg2     身份证反面照
+     * @param certificateImg 教师资格证照
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @auther lmx
      * @date 2019/3/17 16:14
      * @descript 添加教师认证
-     * @param teacher 教师信息
-     * @param idCardImg1 身份证正面照
-     * @param idCardImg2 身份证反面照
-     * @param certificateImg 教师资格证照
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("add")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> add(Teacher teacher,
                                              @RequestParam("idCardImg1") MultipartFile idCardImg1,
                                              @RequestParam("idCardImg2") MultipartFile idCardImg2,
-                                             @RequestParam("certificateImg") MultipartFile certificateImg)throws Exception{
+                                             @RequestParam("certificateImg") MultipartFile certificateImg) throws Exception {
 
-        String uploadPath = "/static/upload/images/teacher";
-        String rootPath = ResourceUtils.getURL("classpath:").getPath()+uploadPath;
+        String uploadPath = "/upload/images/teacher";
+        String rootPath = this.baseFilePath + uploadPath;
         String paperworkPhotos = "";
 
         //上传身份证正面照
-        String imgPath = FileUploadUtil.upload(idCardImg1,rootPath,"teacher_idcard1_");
-        imgPath = uploadPath + "/" + imgPath;
+        String imgPath = FileUploadUtil.upload(idCardImg1, rootPath, "teacher_idcard1_");
+        imgPath = "/file" + uploadPath + "/" + imgPath;
         paperworkPhotos += imgPath;
 
         //上传身份证反面照
-        imgPath = FileUploadUtil.upload(idCardImg2,rootPath,"teacher_idcard2_");
-        imgPath = uploadPath + "/" + imgPath;
-        paperworkPhotos += ","+imgPath;//用逗号分隔多图
+        imgPath = FileUploadUtil.upload(idCardImg2, rootPath, "teacher_idcard2_");
+        imgPath = "/file" + uploadPath + "/" + imgPath;
+        paperworkPhotos += "," + imgPath;//用逗号分隔多图
 
         //上传教师资格证照
-        imgPath = FileUploadUtil.upload(certificateImg,rootPath,"teacher_certificate_");
-        imgPath = uploadPath + "/" + imgPath;
-        paperworkPhotos += ","+imgPath;//用逗号分隔多图
+        imgPath = FileUploadUtil.upload(certificateImg, rootPath, "teacher_certificate_");
+        imgPath = "/file" + uploadPath + "/" + imgPath;
+        paperworkPhotos += "," + imgPath;//用逗号分隔多图
 
         teacher.setPaperworkPhotos(paperworkPhotos);
 
         int affectedLine = teacherService.addTeacherAuth(teacher);
-        if (affectedLine>=1){
-            return new ResponseBean(true,CommonErrorEnum.WAIT_VERIFY);
-        }else{
-            return new ResponseBean(false,CommonErrorEnum.FAILED_QUESTION);
+        if (affectedLine >= 1) {
+            return new ResponseBean(true, CommonErrorEnum.WAIT_VERIFY);
+        } else {
+            return new ResponseBean(false, CommonErrorEnum.FAILED_QUESTION);
         }
 
     }

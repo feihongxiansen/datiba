@@ -1,0 +1,84 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{},~{})">
+    <title>评论-答题吧</title>
+</head>
+<body style="padding: 20px 20px;">
+
+<form class="layui-form" id="form" action="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">评分</label>
+        <div class="layui-input-block">
+            <div id="rate" style="padding: 0;"></div>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">评价</label>
+        <div class="layui-input-block">
+            <textarea name="commentContent" required lay-verify="required" placeholder="请输入评价内容" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-filter="formComment" lay-submit>立即提交</button>
+        </div>
+    </div>
+</form>
+
+<script th:inline="javascript">
+
+    var score = null;
+    layui.use(['form','rate','layer'],function (e) {
+        var rate = layui.rate
+            ,form = layui.form
+            ,layer = layui.layer;
+
+        /**
+         *评分图标渲染
+         */
+        rate.render({
+            elem: '#rate'
+            ,value: 0 //初始值
+            ,half: true //开启半星
+            ,choose: function(value){
+                score = value;
+                console.log(value);
+            }
+        });
+
+        /**
+         * 监听提交按钮
+         */
+        form.on('submit(formComment)',function (data) {
+            console.log(data.field);
+            if (score==null){
+                layer.msg("请为资料打分",{icon:5});
+                return false;
+            }
+            var formData = new FormData($("#form")[0]);
+            formData.append("score",score);
+            formData.append("id",[[${commentId}]]);
+            $.ajax({
+                url: "/home/document/addComment" ,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success){
+                        layer.msg("评论成功",{icon:1,time:1500});
+                        setTimeout(refreshParent,1500);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+
+</body>
+</html>

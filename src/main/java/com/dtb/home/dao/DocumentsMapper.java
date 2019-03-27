@@ -39,7 +39,14 @@ public interface DocumentsMapper {
 
     Documents selectByPrimaryKey(@Param("id") Integer id);
 
-    int updateByPrimaryKeySelective(Documents record);
+    /**
+     * 根据主键修改信息
+     * @author lmx
+     * @date 2019/3/27 21:34
+     * @param record 参数
+     * @return java.lang.Integer
+     */
+    Integer updateByPrimaryKeySelective(Documents record);
 
     int updateByPrimaryKey(Documents record);
 }

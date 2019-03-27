@@ -234,15 +234,18 @@
                                 </div>
                                 <div class="layui-col-md2" id="score"></div>
                                 <div class="layui-col-md1" v-if="item.score==null||item.commentContent==null">
-                                    <button class="layui-btn layui-btn-sm">立即评价</button>
+                                    <button class="layui-btn layui-btn-sm" @click="openComment(item.id)">立即评价</button>
                                 </div>
                             </div>
                             <div class="layui-card layui-anim layui-anim-scale"
                                  v-if="item.score!=null&&item.commentContent!=null">
                                 <div class="layui-card-body download-card-box">
-                                    <p class="text-overflow">我的评价：{{item.commentContent}}</p>
-                                    <div class="layui-col-md4">{{item.createTime}}</div>
-                                    <div class="layui-col-md3" :id="'my-score-'+item.id" v-if="item.score!=null"></div>
+                                    <p class="text-overflow">
+                                        <span style="font-weight: bolder">我的评价：</span>
+                                        {{item.commentContent}}
+                                    </p>
+                                    <div class="layui-col-md4 layui-col-md-offset6 text-right">{{item.createTime}}</div>
+                                    <div class="layui-col-md2 text-right" :id="'my-score-'+item.id" v-if="item.score!=null"></div>
                                 </div>
                             </div>
                         </div>
@@ -425,6 +428,9 @@
         });
     }
 
+    /**
+     * 积分明细数据
+     */
     var tableApp = new Vue({
         el: "#table",
         data: {
@@ -433,11 +439,30 @@
         }
     });
 
+    /**
+     * 我的下载记录数据
+     */
     var myDowloadApp = new Vue({
         el: "#myDowload",
         data: {
             userId: [[${session.user.id}]],
             downloadList: null//我的下载记录
+        },
+        methods:{
+            /**
+             * 打开评分界面
+             * @param commentId
+             */
+            openComment: function (commentId) {
+                console.log("打开评论界面");
+                layer.open({
+                    type: 2,
+                    title: "评论",
+                    area: ['40%', '35%'],
+                    anim: 1,
+                    content: "/home/document/comment/" + commentId
+                });
+            }
         }
     });
 

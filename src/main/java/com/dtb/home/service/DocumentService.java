@@ -82,4 +82,13 @@ public interface DocumentService {
      */
     List<DocumentCommentsAssociation> getDownloadListByUserId(Integer userId);
 
+    /**
+     * 根据主键修改评论内容（其实就是新增评论，打分和评论语）
+     * @author lmx
+     * @date 2019/3/27 21:36
+     * @param comment 参数
+     * @return java.lang.Integer
+     */
+    Integer modifySelectiveById(DocumentComments comment);
+
 }
