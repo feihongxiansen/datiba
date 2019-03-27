@@ -64,6 +64,8 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Integer modifySelectiveById(DocumentComments comment) {
+        DocumentComments documentComments = documentCommentsMapper.selectByPrimaryKey(comment.getId());
+        documentsMapper.changeDocumentScoreById(documentComments.getDocumentId(),comment.getScore());
         return documentCommentsMapper.updateByPrimaryKeySelective(comment);
     }
 }

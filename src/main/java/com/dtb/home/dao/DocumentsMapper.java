@@ -48,5 +48,15 @@ public interface DocumentsMapper {
      */
     Integer updateByPrimaryKeySelective(Documents record);
 
+    /**
+     * 根据当前用户的评分，计算出此文档的平均分
+     * @author lmx
+     * @date 2019/3/28 0:24
+     * @param id 文档id
+     * @param score 用户评分
+     * @return java.lang.Integer
+     */
+    Integer changeDocumentScoreById(@Param("id") Integer id, @Param("score") Float score);
+
     int updateByPrimaryKey(Documents record);
 }

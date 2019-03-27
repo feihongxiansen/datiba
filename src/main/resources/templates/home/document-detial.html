@@ -97,15 +97,15 @@
 
 <script th:inline="javascript">
 
+    var doc = [[${document[0]}]];
     var comments = [[${document[0]}]].comments;
-    console.log(comments);
     var layer;
     layui.use(['rate', 'layer'], function () {
         var rate = layui.rate;
         layer = layui.layer;
         rate.render({
             elem: '#score'
-            ,value: 3.5
+            ,value: doc.score==null?0:doc.score
             ,half: true
             ,text: false
             ,readonly: true
