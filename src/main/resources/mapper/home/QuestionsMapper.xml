@@ -1,229 +1,279 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dtb.home.dao.QuestionsMapper">
-  <resultMap id="BaseResultMap" type="com.dtb.entity.Questions">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="invita_id" jdbcType="INTEGER" property="invitaId" />
-    <result column="integral" jdbcType="INTEGER" property="integral" />
-    <result column="solve_state" jdbcType="BIT" property="solveState" />
-    <result column="question_state" jdbcType="BIT" property="questionState" />
-    <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
-    <result column="grade_id" jdbcType="INTEGER" property="gradeId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.QuestionsWithBLOBs">
-    <result column="question_summary" jdbcType="LONGVARCHAR" property="questionSummary" />
-    <result column="question_photos" jdbcType="LONGVARCHAR" property="questionPhotos" />
-  </resultMap>
-  <resultMap extends="ResultMapWithBLOBs" id="ResultMapAssociation" type="com.dtb.entity.QuestionsAssociation">
-    <association column="user_id" property="user" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"></association>
-    <association column="invita_id" property="invita" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"></association>
-    <association column="grade_id" property="grade" select="com.dtb.home.dao.GradeMapper.selectByPrimaryKey"></association>
-    <association column="subject_id" property="subject" select="com.dtb.home.dao.SubjectMapper.selectByPrimaryKey"></association>
-  </resultMap>
-  <resultMap extends="ResultMapAssociation" id="ResultMapCollection" type="com.dtb.entity.QuestionsAssociation">
-    <collection column="id" property="answers" ofType="com.dtb.entity.AnswersAssociation" select="com.dtb.home.dao.AnswersMapper.selectByQuestionId"></collection>
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Questions">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="invita_id" jdbcType="INTEGER" property="invitaId"/>
+        <result column="integral" jdbcType="INTEGER" property="integral"/>
+        <result column="solve_state" jdbcType="INTEGER" property="solveState"/>
+        <result column="question_state" jdbcType="BIT" property="questionState"/>
+        <result column="subject_id" jdbcType="INTEGER" property="subjectId"/>
+        <result column="grade_id" jdbcType="INTEGER" property="gradeId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.QuestionsWithBLOBs">
+        <result column="question_summary" jdbcType="LONGVARCHAR" property="questionSummary"/>
+        <result column="question_photos" jdbcType="LONGVARCHAR" property="questionPhotos"/>
+    </resultMap>
+    <resultMap extends="ResultMapWithBLOBs" id="ResultMapAssociation" type="com.dtb.entity.QuestionsAssociation">
+        <association column="user_id" property="user"
+                     select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"></association>
+        <association column="invita_id" property="invita"
+                     select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"></association>
+        <association column="grade_id" property="grade"
+                     select="com.dtb.home.dao.GradeMapper.selectByPrimaryKey"></association>
+        <association column="subject_id" property="subject"
+                     select="com.dtb.home.dao.SubjectMapper.selectByPrimaryKey"></association>
+    </resultMap>
+    <resultMap extends="ResultMapAssociation" id="ResultMapCollection" type="com.dtb.entity.QuestionsAssociation">
+        <collection column="id" property="answers" ofType="com.dtb.entity.AnswersAssociation"
+                    select="com.dtb.home.dao.AnswersMapper.selectByQuestionId"></collection>
+    </resultMap>
 
-  <sql id="Base_Column_List">
+    <sql id="Base_Column_List">
     id, user_id, invita_id, integral, solve_state, question_state, subject_id, grade_id, 
     create_time, delete_time, update_time
   </sql>
 
-  <sql id="Blob_Column_List">
+    <sql id="Blob_Column_List">
     question_summary, question_photos
   </sql>
 
-  <select id="selectAnswerList" resultMap="ResultMapCollection">
-    SELECT
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    FROM as_questions
-    WHERE id=#{questionId,jdbcType=INTEGER}
-  </select>
+    <select id="selectAnswerList" resultMap="ResultMapCollection">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_questions
+        WHERE id=#{questionId,jdbcType=INTEGER}
+    </select>
 
-  <select id="selectQuestionList" resultMap="ResultMapAssociation">
-    select
-    (SELECT COUNT(*) FROM as_answers AS a WHERE a.question_id=as_questions.id ) AS `count`,
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from as_questions
-    <where>
-      <if test="gradeId != null">
-       AND grade_id = #{gradeId,jdbcType=INTEGER}
-      </if>
-      <if test="subjectId != null">
-       AND subject_id = #{subjectId,jdbcType=INTEGER}
-      </if>
-      <if test="questionSummary != null and questionSummary!=''">
-       AND (match (question_summary) against(#{questionSummary,jdbcType=LONGVARCHAR} IN BOOLEAN MODE)
-        OR question_summary LIKE concat('%',#{questionSummary,jdbcType=LONGVARCHAR},'%'))
-      </if>
-      <if test="needIntegral == true">
-       AND integral > 0
-      </if>
-      AND delete_time IS NULL
-    </where>
-  </select>
+    <select id="selectQuestionList" resultMap="ResultMapAssociation">
+        select
+        (SELECT COUNT(*) FROM as_answers AS an WHERE an.question_id=as_questions.id AND an.delete_time is null) AS
+        `count`,
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from as_questions
+        <where>
+            <if test="gradeId != null">
+                AND grade_id = #{gradeId,jdbcType=INTEGER}
+            </if>
+            <if test="subjectId != null">
+                AND subject_id = #{subjectId,jdbcType=INTEGER}
+            </if>
+            <if test="questionSummary != null and questionSummary!=''">
+                AND (match (question_summary) against(#{questionSummary,jdbcType=LONGVARCHAR} IN BOOLEAN MODE)
+                OR question_summary LIKE concat('%',#{questionSummary,jdbcType=LONGVARCHAR},'%'))
+            </if>
+            <if test="needIntegral == true">
+                AND integral > 0
+            </if>
+            AND delete_time IS NULL
+        </where>
+    </select>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapAssociation">
-    select 
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from as_questions
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapAssociation">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from as_questions
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="findQuestionListByState" resultMap="ResultMapCollection">
+        SELECT
+        (SELECT COUNT(*) FROM as_answers AS an WHERE an.question_id=q.id AND an.delete_time is null) AS `count`,
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_questions q
+        WHERE
+        <if test="state == 1">
+            q.solve_state = 0
+            AND q.user_id = #{userId}
+            AND q.question_state = TRUE
+            AND q.delete_time IS NULL
+            AND
+            (SELECT COUNT(*) FROM as_answers a
+            WHERE a.question_id = q.id AND a.delete_time IS NULL) &lt;= 0
+        </if>
+
+        <if test="state == 2">
+            q.solve_state = 0
+            AND q.user_id = #{userId}
+            AND q.question_state = TRUE
+            AND q.delete_time IS NULL
+            AND
+            (SELECT COUNT(*) FROM as_answers a
+            WHERE a.question_id = q.id AND a.delete_time IS NULL) > 0
+        </if>
+
+        <if test="state == 3">
+            q.solve_state != 0
+            AND q.user_id = #{userId}
+            AND q.question_state = FALSE
+            AND q.delete_time IS NULL
+        </if>
+
+        <if test="state == 4">
+            q.solve_state = 0
+            AND q.user_id = #{userId}
+            AND q.question_state = FALSE
+            AND q.delete_time IS NULL
+        </if>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from as_questions
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.dtb.entity.QuestionsWithBLOBs">
+    <insert id="insert" parameterType="com.dtb.entity.QuestionsWithBLOBs">
     insert into as_questions (id, user_id, invita_id, 
       integral, solve_state, question_state, 
       subject_id, grade_id, create_time, 
       delete_time, update_time, question_summary, 
       question_photos)
     values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{invitaId,jdbcType=INTEGER}, 
-      #{integral,jdbcType=INTEGER}, #{solveState,jdbcType=BIT}, #{questionState,jdbcType=BIT},
+      #{integral,jdbcType=INTEGER}, #{solveState,jdbcType=INTEGER}, #{questionState,jdbcType=BIT},
       #{subjectId,jdbcType=INTEGER}, #{gradeId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
       #{deleteTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{questionSummary,jdbcType=LONGVARCHAR}, 
       #{questionPhotos,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.dtb.entity.QuestionsWithBLOBs">
-    insert into as_questions
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="invitaId != null">
-        invita_id,
-      </if>
-      <if test="integral != null">
-        integral,
-      </if>
-      <if test="solveState != null">
-        solve_state,
-      </if>
-      <if test="questionState != null">
-        question_state,
-      </if>
-      <if test="subjectId != null">
-        subject_id,
-      </if>
-      <if test="gradeId != null">
-        grade_id,
-      </if>
-        create_time,
-      <if test="deleteTime != null">
-        delete_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="questionSummary != null">
-        question_summary,
-      </if>
-      <if test="questionPhotos != null">
-        question_photos,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="invitaId != null">
-        #{invitaId,jdbcType=INTEGER},
-      </if>
-      <if test="integral != null">
-        #{integral,jdbcType=INTEGER},
-      </if>
-      <if test="solveState != null">
-        #{solveState,jdbcType=BIT},
-      </if>
-      <if test="questionState != null">
-        #{questionState,jdbcType=BIT},
-      </if>
-      <if test="subjectId != null">
-        #{subjectId,jdbcType=INTEGER},
-      </if>
-      <if test="gradeId != null">
-        #{gradeId,jdbcType=INTEGER},
-      </if>
-        CURRENT_TIMESTAMP,
-      <if test="deleteTime != null">
-        #{deleteTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="questionSummary != null">
-        #{questionSummary,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="questionPhotos != null">
-        #{questionPhotos,jdbcType=LONGVARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.QuestionsWithBLOBs">
-    update as_questions
-    <set>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="invitaId != null">
-        invita_id = #{invitaId,jdbcType=INTEGER},
-      </if>
-      <if test="integral != null">
-        integral = #{integral,jdbcType=INTEGER},
-      </if>
-      <if test="solveState != null">
-        solve_state = #{solveState,jdbcType=BIT},
-      </if>
-      <if test="questionState != null">
-        question_state = #{questionState,jdbcType=BIT},
-      </if>
-      <if test="subjectId != null">
-        subject_id = #{subjectId,jdbcType=INTEGER},
-      </if>
-      <if test="gradeId != null">
-        grade_id = #{gradeId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="deleteTime != null">
-        delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="questionSummary != null">
-        question_summary = #{questionSummary,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="questionPhotos != null">
-        question_photos = #{questionPhotos,jdbcType=LONGVARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.QuestionsWithBLOBs">
+    <insert id="insertSelective" parameterType="com.dtb.entity.QuestionsWithBLOBs">
+        insert into as_questions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="invitaId != null">
+                invita_id,
+            </if>
+            <if test="integral != null">
+                integral,
+            </if>
+            <if test="solveState != null">
+                solve_state,
+            </if>
+            <if test="questionState != null">
+                question_state,
+            </if>
+            <if test="subjectId != null">
+                subject_id,
+            </if>
+            <if test="gradeId != null">
+                grade_id,
+            </if>
+            create_time,
+            <if test="deleteTime != null">
+                delete_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="questionSummary != null">
+                question_summary,
+            </if>
+            <if test="questionPhotos != null">
+                question_photos,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="invitaId != null">
+                #{invitaId,jdbcType=INTEGER},
+            </if>
+            <if test="integral != null">
+                #{integral,jdbcType=INTEGER},
+            </if>
+            <if test="solveState != null">
+                #{solveState,jdbcType=BIT},
+            </if>
+            <if test="questionState != null">
+                #{questionState,jdbcType=BIT},
+            </if>
+            <if test="subjectId != null">
+                #{subjectId,jdbcType=INTEGER},
+            </if>
+            <if test="gradeId != null">
+                #{gradeId,jdbcType=INTEGER},
+            </if>
+            CURRENT_TIMESTAMP,
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="questionSummary != null">
+                #{questionSummary,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="questionPhotos != null">
+                #{questionPhotos,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.QuestionsWithBLOBs">
+        update as_questions
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="invitaId != null">
+                invita_id = #{invitaId,jdbcType=INTEGER},
+            </if>
+            <if test="integral != null">
+                integral = #{integral,jdbcType=INTEGER},
+            </if>
+            <if test="solveState != null">
+                solve_state = #{solveState,jdbcType=INTEGER},
+            </if>
+            <if test="questionState != null">
+                question_state = #{questionState,jdbcType=BIT},
+            </if>
+            <if test="subjectId != null">
+                subject_id = #{subjectId,jdbcType=INTEGER},
+            </if>
+            <if test="gradeId != null">
+                grade_id = #{gradeId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deleteTime != null">
+                delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="questionSummary != null">
+                question_summary = #{questionSummary,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="questionPhotos != null">
+                question_photos = #{questionPhotos,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.QuestionsWithBLOBs">
     update as_questions
     set user_id = #{userId,jdbcType=INTEGER},
       invita_id = #{invitaId,jdbcType=INTEGER},
       integral = #{integral,jdbcType=INTEGER},
-      solve_state = #{solveState,jdbcType=BIT},
+      solve_state = #{solveState,jdbcType=INTEGER},
       question_state = #{questionState,jdbcType=BIT},
       subject_id = #{subjectId,jdbcType=INTEGER},
       grade_id = #{gradeId,jdbcType=INTEGER},
@@ -234,12 +284,12 @@
       question_photos = #{questionPhotos,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Questions">
+    <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Questions">
     update as_questions
     set user_id = #{userId,jdbcType=INTEGER},
       invita_id = #{invitaId,jdbcType=INTEGER},
       integral = #{integral,jdbcType=INTEGER},
-      solve_state = #{solveState,jdbcType=BIT},
+      solve_state = #{solveState,jdbcType=INTEGER},
       question_state = #{questionState,jdbcType=BIT},
       subject_id = #{subjectId,jdbcType=INTEGER},
       grade_id = #{gradeId,jdbcType=INTEGER},

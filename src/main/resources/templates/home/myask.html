@@ -1,0 +1,228 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>我的提问-答题吧</title>
+    <style>
+        .head-img-box {
+            height: 190px;
+        }
+
+        .head-img {
+            height: 100%;
+            width: 90%;
+        }
+
+        .text-box {
+            width: 100%;
+            height: 165px;
+        }
+
+        .text-overflow {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 4;
+            overflow: hidden;
+            font-size: 15px;
+            line-height: 26px;
+        }
+
+        .layui-card-body {
+            height: 230px;
+            padding: 20px 20px;
+        }
+
+        .layui-badge {
+            margin-right: 5px;
+        }
+
+        .layui-card {
+            margin-bottom: 20px;
+        }
+
+        .shadow {
+            -webkit-box-shadow: #666 3px 3px 10px;
+            -moz-box-shadow: #666 3px 3px 10px;
+            box-shadow: #666 3px 3px 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<div class="layui-container" id="container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div class="layui-tab layui-tab-card">
+                <ul class="layui-tab-title">
+                    <li class="layui-this" @click="findState(1)">待解答</li>
+                    <li @click="findState(2)">待采纳</li>
+                    <li @click="findState(3)">已采纳</li>
+                    <li @click="findState(4)">已关闭</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <!--代解答开始-->
+                    <div id="myUpload" v-cloak class="layui-tab-item layui-show">
+                        <div class="layui-card shadow layui-anim layui-anim-scale" v-for="item in questionList">
+                            <div class="layui-card-body">
+                                <div class="layui-col-md4">
+                                    <div class="head-img-box">
+                                        <img class="head-img"
+                                             :src="item.questionPhotoList==null?'/static/home/images/system/question.jpg':item.questionPhotoList[0]"
+                                             alt="...">
+                                    </div>
+                                </div>
+                                <div class="layui-col-md8">
+                                    <div class="row text-box">
+                                        <p class="text-overflow">{{item.questionSummary}}</p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="layui-col-md4">
+                                            <span class="layui-badge layui-bg-orange">{{item.grade.gradeName}}</span>
+                                            <span class="layui-badge layui-bg-blue">{{item.subject.subjectName}}</span>
+                                            <span class="layui-badge">{{item.integral>0?item.integral+'积分':'无悬赏'}}</span>
+                                            <span class="layui-badge layui-bg-green">{{item.count+'次解答'}}</span>
+                                        </div>
+                                        <div class="layui-col-md3">
+                                            邀约解答：
+                                            <a :href="'/home/index/userinfo/'+item.invitaId" v-if="item.invitaId!=null">{{item.invita.nickName}}</a>
+                                            <span v-if="item.invitaId==null">无邀约</span>
+                                        </div>
+                                        <div class="layui-col-md2">
+                                            {{item.createTime | formatDate('yyyy-MM-dd')}}
+                                        </div>
+
+                                        <div class="layui-col-md3">
+                                            <a class="layui-btn layui-btn-xs layui-btn-warm"
+                                               :href="'/home/index/answer/'+item.id">
+                                                查看详情<i class="layui-icon">&#xe65f;</i>
+                                            </a>
+                                            <button v-if="state==1" class="layui-btn layui-btn-xs layui-btn-danger">
+                                                关闭问题
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--分页按钮-->
+                        <div class="layui-row text-center">
+                            <div id="laypage"></div>
+                        </div>
+                    </div>
+                    <!--代解答结束-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 底部导航栏 start-->
+<footer th:replace="home/public/footer::footer"></footer>
+<!-- 底部导航栏end -->
+
+<script th:src="@{/static/home/plugs/vue/vue.js}"></script>
+<!--vue相关js-->
+<script th:inline="javascript">
+
+    function initLayui() {
+        layui.use(['laypage'], function () {
+            var laypage = layui.laypage;
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
+                , count: app.$data.total //数据总数，从服务端得到
+                , limit: app.$data.pageSize //每页显示的条数。laypage将会借助 count 和 limit 计算出分页数。
+                , limits: [5, 10, 20, 40, 50, 100] //每页条数的选择项。如果 layout 参数开启了 limit，则会出现每页条数的select选择框
+                , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+                , jump: function (obj, first) {
+                    //obj包含了当前分页的所有参数，比如：
+                    app.$data.pageSize = obj.limit;
+                    app.$data.pageNum = obj.curr;
+                    //首次不执行
+                    if (!first) {
+                        getQuestionList();
+                    }
+                }
+            });
+        });
+    }
+
+    var that = this;
+    var app = new Vue({
+        el: "#container",
+        data: {
+            questionList: null
+            , initLayui: false
+            , state: 1//问题状态，默认1，待解决
+            , total: 0
+            , pages: 0
+            , pageNum: 1
+            , pageSize: 5
+        },
+        watch: {//监听data中的数据变化
+            'initLayui': function (newVal) {
+                if (newVal)
+                    that.initLayui();
+            }
+        },
+        filters: {
+            formatDate: function (date, fmt) {
+                return new Date(date).Format(fmt);
+            }
+        },
+        methods: {
+            findState: function (state) {
+                app.$data.state = state;
+                app.$data.initLayui = false;
+                getQuestionList();
+            }
+        }
+    });
+
+    //日期格式化
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1,                 //月份
+            "d+": this.getDate(),                    //日
+            "h+": this.getHours(),                   //小时
+            "m+": this.getMinutes(),                 //分
+            "s+": this.getSeconds(),                 //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds()             //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    };
+
+    /**
+     * 获取问题列表
+     */
+    function getQuestionList() {
+        var requestData = {
+            state: app.$data.state,
+            pageNum: app.$data.pageNum,
+            pageSize: app.$data.pageSize
+        };
+        $.post("/home/question/getQuestionListByState", requestData, function (res) {
+            console.log("获取到的问题列表数据：", res.data);
+            //更新数据前把原来的viewer销毁，防止失效或者错乱
+            app.$data.questionList = res.data.list;
+            app.$data.total = res.data.pageInfo.total;
+            app.$data.pages = res.data.pageInfo.pages;
+            app.$data.initLayui = true;
+        });
+    }
+
+    getQuestionList();
+
+</script>
+</body>
+</html>

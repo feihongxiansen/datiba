@@ -23,6 +23,13 @@
         .layui-card-body{
             height: 332px;
         }
+
+        .text-summary {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
+            overflow: hidden;
+        }
     </style>
 </head>
 
@@ -115,23 +122,27 @@
 
 
     <!-- 两栏列表start -->
-    <div class="container" style="margin-top:15px;">
+    <div class="layui-container" style="margin-top:15px;">
         <div class="row" style="background-color:#FFFFFF;padding-bottom:15px ">
             <div class="col-md-6 col-xs-12;" style="margin-top:15px;">
                 <div class="list-group-item active">热门文档</div>
-                <a href="#" class="list-group-item">24*7 支持</a>
-                <a href="#" class="list-group-item">免费 Window 空间托管</a>
-                <a href="#" class="list-group-item">图像的数量</a>
-                <a href="#" class="list-group-item">每年更新成本</a>
-                <a href="#" class="list-group-item">图像的数量</a>
-                <a href="#" class="list-group-item">每年更新成本</a>
+                <a :href="'/home/document/detial/'+item.id" class="list-group-item" v-for="item in documentList">
+                    <span class="text-summary">
+                    <span class="layui-badge layui-bg-orange">{{item.grade.gradeName}}</span>
+                    <span class="layui-badge layui-bg-green">{{item.subject.subjectName}}</span>
+                    <span>{{item.title}}</span>
+                    </span>
+                </a>
             </div>
             <div class="col-md-6 col-xs-12;" style="margin-top:15px;">
                 <div href="#" class="list-group-item active">热门题目</div>
-                <a href="#" class="list-group-item">24*7 支持</a>
-                <a href="#" class="list-group-item">免费 Window 空间托管</a>
-                <a href="#" class="list-group-item">图像的数量</a>
-                <a href="#" class="list-group-item">每年更新成本</a>
+                <a :href="'/home/index/answer/'+item.id" class="list-group-item" v-for="item in questionList">
+                    <span class="text-summary">
+                    <span class="layui-badge layui-bg-orange">{{item.grade.gradeName}}</span>
+                    <span class="layui-badge layui-bg-green">{{item.subject.subjectName}}</span>
+                    <span>{{item.questionSummary}}</span>
+                    </span>
+                </a>
             </div>
         </div>
     </div>
@@ -164,6 +175,8 @@
         data:{
             teacherList: ""//教师列表
             ,studentList: ""//学生列表
+            , documentList: ""//文档列表
+            , questionList: ""//资料列表
         },
         methods:{
             /**
@@ -184,6 +197,22 @@
                             break;
                     }
                 });
+            },
+            /**
+             * 获取热门文档
+             */
+            getDoumentList: function () {
+                $.get("/home/document/searchListToLimit", {pageNum: 1, pageSize: 10}, function (res) {
+                    indexApp.$data.documentList = res.data.documentList;
+                });
+            },
+            /**
+             * 获取热门问题
+             */
+            getQuestionList: function () {
+                $.get("/home/question/getQuestionList", {pageNum: 1, pageSize: 10}, function (res) {
+                    indexApp.$data.questionList = res.data.list;
+                });
             }
         }
     });
@@ -192,6 +221,8 @@
     indexApp.getUserListToLimit("teacher");
     /*获取答题明星列表*/
     indexApp.getUserListToLimit("student");
+    indexApp.getDoumentList();
+    indexApp.getQuestionList();
 </script>
 </body>
 </html>

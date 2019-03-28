@@ -24,6 +24,17 @@ public interface QuestionsMapper {
                                      @Param("needIntegral")Boolean needIntegral);
 
     /**
+     * 分页查询问题列表
+     *
+     * @param state  问题状态
+     * @param userId 用户id
+     * @return com.github.pagehelper.Page<com.dtb.entity.QuestionsAssociation>
+     * @author lmx
+     * @date 2019/3/28 20:37
+     */
+    Page<QuestionsAssociation> findQuestionListByState(@Param("state") Integer state, @Param("userId") Integer userId);
+
+    /**
      * @auther: lmx
      * @date: 2019/3/6 23:23
      * @descript: 根据问题id获取答案信息

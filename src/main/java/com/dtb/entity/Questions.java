@@ -11,7 +11,7 @@ public class Questions {
 
     private Integer integral;
 
-    private Boolean solveState;
+    private Integer solveState;
 
     private Boolean questionState;
 
@@ -59,11 +59,11 @@ public class Questions {
         this.integral = integral;
     }
 
-    public Boolean getSolveState() {
+    public Integer getSolveState() {
         return solveState;
     }
 
-    public void setSolveState(Boolean solveState) {
+    public void setSolveState(Integer solveState) {
         this.solveState = solveState;
     }
 

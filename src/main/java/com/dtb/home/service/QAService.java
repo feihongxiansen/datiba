@@ -29,6 +29,17 @@ public interface QAService {
                                               Boolean needIntegral);
 
     /**
+     * 分页查询问题列表
+     *
+     * @param state  问题状态，枚举值：1待解决，2待采纳，3已采纳，4已关闭
+     * @param userId 用户id
+     * @return com.github.pagehelper.Page<com.dtb.entity.QuestionsAssociation>
+     * @author lmx
+     * @date 2019/3/28 20:37
+     */
+    Page<QuestionsAssociation> findQuestionListByState(Integer state, Integer userId);
+
+    /**
      * @auther: lmx
      * @date: 2019/3/6 23:23
      * @descript: 根据问题id获取答案信息
@@ -38,20 +49,20 @@ public interface QAService {
     QuestionsAssociation findAnswerList(Integer questionId);
 
     /**
+     * @param question
+     * @return int
      * @auther lmx
      * @date 2019/3/11 23:52
      * @descript 添加问题
-     * @param question
-     * @return int
      */
     int addQuestion(QuestionsWithBLOBs question);
 
     /**
+     * @param answer
+     * @return int
      * @auther lmx
      * @date 2019/3/16 11:33
      * @descript 添加答案
-     * @param answer
-     * @return int
      */
     int addAnswer(AnswersWithBLOBs answer);
 

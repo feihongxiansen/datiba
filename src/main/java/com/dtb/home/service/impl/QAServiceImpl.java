@@ -1,7 +1,6 @@
 package com.dtb.home.service.impl;
 
 import com.dtb.entity.AnswersWithBLOBs;
-import com.dtb.entity.Questions;
 import com.dtb.entity.QuestionsAssociation;
 import com.dtb.entity.QuestionsWithBLOBs;
 import com.dtb.home.dao.AnswersMapper;
@@ -50,6 +49,20 @@ public class QAServiceImpl implements QAService {
     }
 
     @Override
+    public Page<QuestionsAssociation> findQuestionListByState(Integer state, Integer userId) {
+        Page<QuestionsAssociation> questionList = questionsMapper.findQuestionListByState(state, userId);
+        //把图片路径字符串分割为数组
+        for (int i = 0; i < questionList.size(); i++) {
+            if (questionList.getResult().get(i).getQuestionPhotos() == null) {
+                continue;
+            }
+            String photosStr = questionList.getResult().get(i).getQuestionPhotos();
+            questionList.getResult().get(i).setQuestionPhotoList(photosStr.split(","));
+        }
+        return questionList;
+    }
+
+    @Override
     public QuestionsAssociation findAnswerList(Integer questionId) {
         QuestionsAssociation questionDetial = questionsMapper.selectAnswerList(questionId);
 
@@ -78,8 +91,9 @@ public class QAServiceImpl implements QAService {
      */
     public Page<QuestionsWithBLOBs> photosStrToStrArr(Page<QuestionsWithBLOBs> questionsList){
         for (int i=0; i<questionsList.size(); i++){
-            if (questionsList.getResult().get(i).getQuestionPhotos()==null)
+            if (questionsList.getResult().get(i).getQuestionPhotos() == null) {
                 continue;
+            }
             String photosStr = questionsList.getResult().get(i).getQuestionPhotos();
             questionsList.getResult().get(i).setQuestionPhotoList(photosStr.split(","));
         }

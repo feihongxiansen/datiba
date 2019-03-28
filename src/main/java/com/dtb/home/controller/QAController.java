@@ -3,6 +3,7 @@ package com.dtb.home.controller;
 import com.dtb.entity.AnswersWithBLOBs;
 import com.dtb.entity.QuestionsAssociation;
 import com.dtb.entity.QuestionsWithBLOBs;
+import com.dtb.entity.User;
 import com.dtb.home.service.QAService;
 import com.dtb.home.service.UserService;
 import com.dtb.utils.FileUploadUtil;
@@ -13,7 +14,6 @@ import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,8 +57,8 @@ public class QAController {
     @RequestMapping("getQuestionList")
     @ResponseBody
     public ResponseBean<CommonErrorEnum>
-    getQuestionList(@RequestParam(value = "pageNum", required = true, defaultValue = "0") Integer pageNum,
-                    @RequestParam(value = "pageSize", required = true, defaultValue = "10") Integer pageSize,
+    getQuestionList(@RequestParam(value = "pageNum", required = false, defaultValue = "0") Integer pageNum,
+                    @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                     @RequestParam(value = "gradeId", required = false) Integer gradeId,
                     @RequestParam(value = "subjectId", required = false) Integer subjectId,
                     @RequestParam(value = "questionSummary", required = false) String questionSummary,
@@ -201,6 +201,53 @@ public class QAController {
             return new ResponseBean(false, CommonErrorEnum.FAILED_QUESTION);
         }
     }
+
+    /**
+     * 我的提问
+     *
+     * @return java.lang.String
+     * @author lmx
+     * @date 2019/3/28 19:43
+     */
+    @RequestMapping("myAsk")
+    public String myAsk() {
+        return "home/myask";
+    }
+
+    /**
+     * 分页搜索问题列表
+     *
+     * @param state    问题状态，枚举值：1待解决，2待采纳，3已采纳，4已关闭
+     * @param pageNum  当前页码
+     * @param pageSize 每页显示条数
+     * @param session  会话session
+     * @return com.dtb.utils.resulthandler.ResponseBean
+     * @author lmx
+     * @date 2019/3/28 20:34
+     */
+    @RequestMapping("getQuestionListByState")
+    @ResponseBody
+    public ResponseBean<Map<String, Object>> getQuestionListByState(@RequestParam Integer state,
+                                                                    @RequestParam Integer pageNum,
+                                                                    @RequestParam Integer pageSize,
+                                                                    HttpSession session) {
+        //启用分页查询
+        PageHelper.startPage(pageNum, pageSize);
+        User user = (User) session.getAttribute("user");
+        Page<QuestionsAssociation> page = qaService.findQuestionListByState(state, user.getId());
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("list", page);
+        Map<String, Object> pageMap = new HashMap<String, Object>();
+        pageMap.put("total", page.getTotal());
+        pageMap.put("pageNum", page.getPageNum());
+        pageMap.put("pageSize", page.getPageSize());
+        pageMap.put("pages", page.getPages());
+        resultMap.put("pageInfo", pageMap);
+        return new ResponseBean<Map<String, Object>>(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
+    }
+
+
 
 
 }
