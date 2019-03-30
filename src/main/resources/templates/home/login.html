@@ -88,7 +88,7 @@
                                placeholder="验证码" id="verifyCode" name="verifyCode" maxlength="4"/>
                     </div>
                     <div class="form-group">
-                        <img id="verify" onclick="refreshVerify()" th:src="@{/home/index/getVerifyCode}">
+                        <img id="verify" onclick="refreshVerify()" th:src="@{/common/verifyCode/getVerifyCode}">
                         <button onclick="refreshVerify()" type="button" class="layui-btn">刷新</button>
                     </div>
                     <div class="form-group col-md-offset-9">
@@ -99,7 +99,6 @@
         </form>
     </div>
 </div>
-<script th:src="@{/static/home/plugs/layui/layui.js}"></script>
 <script th:inline="javascript">
     layui.use('form', function () {
         var form = layui.form;
@@ -147,7 +146,7 @@
     function refreshVerify() {
         var myData = new Date();
         var times = myData.getTime();
-        $("#verify").attr("src", "/home/index/getVerifyCode?times=" + times);
+        $("#verify").attr("src", "/common/verifyCode/getVerifyCode?times=" + times);
     }
 
 </script>

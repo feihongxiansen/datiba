@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{::style},~{})">
+    <title>错误信息-答题吧后台管理系统</title>
+    <style>
+        .layui-fluid {
+            margin-left: 30%;
+            padding-top: 20%;
+            width: 100%;
+            height: 100%;
+        }
+
+        .layadmin-tips {
+            margin-top: 30px;
+            text-align: center
+        }
+
+        .layadmin-tips .layui-icon[face] {
+            display: inline-block;
+            font-size: 300px;
+            color: #393D49
+        }
+
+        .layadmin-tips .layui-text {
+            width: 500px;
+            margin: 30px auto;
+            padding-top: 20px;
+            border-top: 5px solid #009688;
+            font-size: 16px
+        }
+
+        .layadmin-tips {
+            font-size: 100px;
+            line-height: 100px;
+            color: #009688;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layadmin-tips">
+        <i class="layui-icon" face>&#xe664;</i>
+
+        <div class="layui-text" style="font-size: 20px;">
+            好像出错了呢
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

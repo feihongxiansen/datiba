@@ -50,7 +50,6 @@ public class MD5Util {
         String md5Text = md5(text, key);
         if(md5Text.equalsIgnoreCase(md5))
         {
-//            System.out.println("MD5验证通过");
             return true;
         }
 

@@ -1,5 +1,6 @@
 package com.dtb.config;
 
+import com.dtb.config.intercepors.AdminLoginInterceptor;
 import com.dtb.config.intercepors.HomeLoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfigurer implements WebMvcConfigurer {
 
     @Autowired
-    private HomeLoginInterceptor loginInterceptor;
+    private HomeLoginInterceptor homeLoginInterceptor;
+    @Autowired
+    private AdminLoginInterceptor adminLoginInterceptor;
 
     // 这个方法是用来配置静态资源的，比如html，js，css，等等
     @Override
@@ -30,7 +33,8 @@ public class WebConfigurer implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // addPathPatterns("/**") 表示拦截所有的请求，
         // excludePathPatterns("/login", "/register") 表示除了登陆与注册之外，因为登陆注册不需要登陆也可以访问
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns("/static/home/**"
+        //前台拦截器
+        registry.addInterceptor(homeLoginInterceptor).addPathPatterns("/home/**").excludePathPatterns("/static/**"
                 , "/static/upload/images/**"    //上传图片路径
                 , "/home/user/checkLogin"    //登录验证
                 , "/home/user/getUserList"    //获取用户列表
@@ -52,13 +56,12 @@ public class WebConfigurer implements WebMvcConfigurer {
                 , "/home/document/detial/**"  //文件详情
                 , "/home/document/downloadCheck/**"  //文件下载检查
                 , "/home/gift/queryGiftList/**"  //积分兑换区列表查询
-//                , "/home/gift/detial/**"  //兑换物品详情
-//                ,"/home/index/register"     //注册页面
-//                ,"/home/index/login"        //登录页面
-//                ,"/home/index/about"     //联系我们页面
-//                ,"/home/index/getVerifyCode"//获取验证码图片
-//                ,"/home/index/index"
-//                ,"/home/document/**"  //临时免拦截，教师认证
-        );       //主页
+        );
+
+        //后台管理系统拦截器
+        registry.addInterceptor(adminLoginInterceptor).addPathPatterns("/admin/**").excludePathPatterns(
+                "/admin/index/login"    //后台管理系统登录页面不拦截
+                , "/admin/admin/checkLogin" //登录检测
+        );
     }
 }

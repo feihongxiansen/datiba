@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.AdminMapper">
+  <resultMap id="BaseResultMap" type="com.dtb.entity.Admin">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <id column="admin_type" jdbcType="INTEGER" property="adminType"/>
+    <result column="admin_nick" jdbcType="VARCHAR" property="adminNick" />
+    <result column="admin_name" jdbcType="VARCHAR" property="adminName" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="login_state" jdbcType="BIT" property="loginState" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, admin_type, admin_nick, admin_name, password, email, phone, login_state, create_time, update_time,
+    delete_time
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from as_admin
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectOne" parameterType="com.dtb.entity.Admin" resultType="com.dtb.entity.Admin">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM as_admin
+    <where>
+      <if test="admin.id != null">
+        AND id = #{admin.id}
+      </if>
+      <if test="admin.adminType != null">
+        AND admin_type = #{admin.adminType}
+      </if>
+      <if test="admin.adminNick !=null &amp;&amp; admin.adminNick != ''">
+        AND admin_nick = #{admin.adminNick}
+      </if>
+      <if test="admin.adminName !=null &amp;&amp; admin.adminName != ''">
+        AND admin_name = #{admin.adminName}
+      </if>
+      <if test="admin.password !=null &amp;&amp; admin.password != ''">
+        AND password = #{admin.password}
+      </if>
+      <if test="admin.email !=null &amp;&amp; admin.email != ''">
+        AND email = #{admin.email}
+      </if>
+      <if test="admin.phone !=null &amp;&amp; admin.phone != ''">
+        AND phone = #{admin.phone}
+      </if>
+      <if test="admin.loginState !=null">
+        AND login_state = ${admin.loginState}
+      </if>
+      AND delete_time IS NULL
+    </where>
+    LIMIT 1
+  </select>
+
+  <select id="selectPageAdminList" parameterType="com.dtb.entity.Admin" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM as_admin
+    <where>
+      <if test="admin.id != null">
+        AND id = #{admin.id}
+      </if>
+      <if test="admin.adminType != null">
+        AND admin_type = #{admin.adminType}
+      </if>
+      <if test="admin.adminNick !=null &amp;&amp; admin.adminNick != ''">
+        AND admin_nick = #{admin.adminNick}
+      </if>
+      <if test="admin.adminName !=null &amp;&amp; admin.adminName != ''">
+        AND admin_name = #{admin.adminName}
+      </if>
+      <if test="admin.password !=null &amp;&amp; admin.password != ''">
+        AND password = #{admin.password}
+      </if>
+      <if test="admin.email !=null &amp;&amp; admin.email != ''">
+        AND email = #{admin.email}
+      </if>
+      <if test="admin.phone !=null &amp;&amp; admin.phone != ''">
+        AND phone = #{admin.phone}
+      </if>
+      <if test="admin.loginState !=null">
+        AND login_state = ${admin.loginState}
+      </if>
+      AND delete_time IS NULL
+    </where>
+  </select>
+
+  <select id="selectPageAdminListByVague" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM as_admin
+    <where>
+      <if test="param !=null &amp;&amp; param != ''">
+        AND (admin_nick LIKE CONCAT('%',#{param},'%')
+        OR admin_name LIKE CONCAT('%',#{param},'%')
+        OR email LIKE CONCAT('%',#{param},'%')
+        OR phone LIKE CONCAT('%',#{param},'%'))
+      </if>
+      <if test="loginState !=null">
+        AND login_state = ${loginState}
+      </if>
+      AND delete_time IS NULL
+    </where>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from as_admin
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" parameterType="com.dtb.entity.Admin">
+    insert into as_admin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="admin.id != null">
+        id,
+      </if>
+      <if test="admin.adminType != null">
+        admin_type,
+      </if>
+      <if test="admin.adminNick != null">
+        admin_nick,
+      </if>
+      <if test="admin.adminName != null">
+        admin_name,
+      </if>
+      <if test="admin.password != null">
+        password,
+      </if>
+      <if test="admin.email != null">
+        email,
+      </if>
+      <if test="admin.phone != null">
+        phone,
+      </if>
+      <if test="admin.loginState != null">
+        login_state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="admin.id != null">
+        #{admin.id,jdbcType=INTEGER},
+      </if>
+      <if test="admin.adminType != null">
+        admin_type = #{admin.adminType,jdbcType=INTEGER}
+      </if>
+      <if test="admin.adminNick != null">
+        #{admin.adminNick,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.adminName != null">
+        #{admin.adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.password != null">
+        #{admin.password,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.email != null">
+        #{admin.email,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.phone != null">
+        #{admin.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.loginState != null">
+        #{admin.loginState,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.Admin">
+    update as_admin
+    <set>
+      <if test="admin.adminNick != null">
+        admin_nick = #{admin.adminNick,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.adminName != null">
+        admin_name = #{admin.adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.password != null">
+        password = #{admin.password,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.email != null">
+        email = #{admin.email,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.phone != null">
+        phone = #{admin.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.loginState != null">
+        login_state = #{admin.loginState,jdbcType=BIT},
+      </if>
+      <if test="admin.deleteTime != null">
+        delete_time = #{admin.deleteTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{admin.id,jdbcType=INTEGER}
+  </update>
+</mapper>

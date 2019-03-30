@@ -5,6 +5,8 @@ import java.util.Date;
 public class Admin {
     private Integer id;
 
+    private Integer adminType;
+
     private String adminNick;
 
     private String adminName;
@@ -29,6 +31,14 @@ public class Admin {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getAdminType() {
+        return adminType;
+    }
+
+    public void setAdminType(Integer adminType) {
+        this.adminType = adminType;
     }
 
     public String getAdminNick() {

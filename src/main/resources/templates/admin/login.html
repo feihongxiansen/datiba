@@ -1,0 +1,68 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{},~{})">
+    <title>管理员登录-答题吧后台管理系统</title>
+</head>
+<body class="login-bg">
+
+<div class="login">
+    <div class="message">答题吧-后台管理系统</div>
+    <div id="darkbannerwrap"></div>
+    <form method="post" class="layui-form">
+        <input name="email" placeholder="邮箱" type="text" lay-verify="required|email" class="layui-input">
+        <hr class="hr15">
+        <input name="password" lay-verify="required|password" placeholder="密码" type="password" class="layui-input">
+        <hr class="hr15">
+        <input name="verifyCode" class="layui-input" placeholder="验证码" lay-verify="required|verify_code" type="text">
+        <hr class="hr15">
+        <img id="verify" onclick="refreshVerify()" th:src="@{/common/verifyCode/getVerifyCode}">
+        <button onclick="refreshVerify('verify')" type="button" class="layui-btn">刷新</button>
+        <hr class="hr15">
+        <input class="loginin" value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
+
+        <hr class="hr20">
+        <div>
+            前端静态展示，请随意输入，即可登录。
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    layui.extend({
+        admin: '/static/admin/js/admin'
+    });
+    layui.use(['form', 'admin'], function () {
+        var form = layui.form
+            , admin = layui.admin;
+
+        form.on('submit(login)', function (data) {
+            $.post("/admin/admin/checkLogin", data.field, function (res) {
+                console.log(res);
+                if (!res.success) {
+                    layer.msg(res.errMsg, {icon: 2, time: 1500});
+                    return false;
+                }
+                location.href = '/admin/index/index';
+            });
+            return false;
+        });
+
+        //自定义表单验证
+        form.verify({
+            //我们既支持上述函数式的方式，也支持下述数组的形式
+            //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+            password: [
+                /^[\S]{6,16}$/
+                , '密码必须6到16位，且不能出现空格'
+            ],
+            verify_code: [
+                /^.{4}$/
+                , '验证码为4位字符！'
+            ]
+        });
+    });
+</script>
+<!-- 底部结束 -->
+</body>
+</html>

@@ -76,7 +76,7 @@ public class UserController {
             return new ResponseBean(false, CommonErrorEnum.ERROR_VERIFYCODE);
         }
 
-        //根据手机号查找用户
+        //根据邮箱查找用户
         User user = userService.findByEmail(email);
         //判断是否存在当前用户
         if (user == null) {

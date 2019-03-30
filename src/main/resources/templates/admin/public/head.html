@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title,links,styles)">
+
+    <title th:replace="${title}">答题吧后台管理系统</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="shortcut icon" href="/static/admin/images/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="/static/admin/css/font.css">
+    <link rel="stylesheet" href="/static/admin/css/weadmin.css">
+    <link rel="stylesheet" href="/static/common/plugs/layui/css/layui.css">
+    <script type="text/javascript" src="/static/common/plugs/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/admin/js/public.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/common/plugs/jquery/jquery-3.3.1.min.js" charset="utf-8"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+    <!--/* 页面独有的js文件引入 */-->
+    <th:block th:replace="${links}"/>
+    <!--/* 页面独有的css文件引入 */-->
+    <th:block th:replace="${styles}"/>
+</head>
+</html>

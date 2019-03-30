@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{},~{})">
+    <title>管理员编辑-答题吧后台管理系统</title>
+</head>
+
+<body>
+<div class="weadmin-body">
+    <form class="layui-form">
+        <input type="hidden" name="id" th:value="${admin.id}">
+        <div class="layui-form-item">
+            <label for="adminName" class="layui-form-label">
+                <span class="we-red">*</span>姓名
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="adminName" name="adminName" required lay-verify="required"
+                       placeholder="姓名" autocomplete="off" th:value="${admin.adminName}" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="adminNick" class="layui-form-label">
+                <span class="we-red">*</span>昵称
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="adminNick" name="adminNick" required lay-verify="required"
+                       placeholder="昵称" autocomplete="off" th:value="${admin.adminNick}" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="email" class="layui-form-label">
+                <span class="we-red">*</span>邮箱
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" th:value="${admin.email}" id="email" name="email" required lay-verify="email"
+                       placeholder="邮箱账号" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <span class="we-red">*</span>将会成为您唯一的登入名
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="phone" class="layui-form-label">
+                <span class="we-red">*</span>手机
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" th:value="${admin.phone}" id="phone" name="phone" required lay-verify="phone"
+                       placeholder="手机号码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="we-red">*</span>角色</label>
+            <div class="layui-input-block">
+                <input type="radio" th:if="${admin.adminType==0}" checked disabled value="0" name="adminType"
+                       lay-skin="primary" title="超级管理员">
+                <input type="radio" th:if="${admin.adminType==1}" checked disabled value="1" name="adminType"
+                       lay-skin="primary" title="普通管理员">
+            </div>
+        </div>
+        <div class="layui-form-item" th:if="${admin.adminType==1}">
+            <label class="layui-form-label"><span class="we-red">*</span>状态</label>
+            <div class="layui-input-block">
+                <input type="radio" th:checked="${admin.loginState}" value="true" name="loginState"
+                       lay-skin="primary" title="启用">
+                <input type="radio" th:checked="!${admin.loginState}" value="false" name="loginState"
+                       lay-skin="primary" title="停用">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="L_pass" class="layui-form-label">
+                <span class="we-red">*</span>密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" id="L_pass" name="password"
+                       placeholder="登录密码，不填写则不更改" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                6到16个字符
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+                <span class="we-red">*</span>确认密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" id="L_repass" required lay-verify="repass"
+                       placeholder="再次输入新密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+            </label>
+            <button class="layui-btn" lay-filter="edit" lay-submit>修改</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    layui.extend({
+        admin: '/static/admin/js/admin'
+    });
+    layui.use(['form', 'layer', 'jquery', 'admin'], function () {
+        var form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            nikename: function (value) {
+                if (value.length < 5) {
+                    return '昵称至少得5个字符啊';
+                }
+            }
+            , pass: [/(.+){6,12}$/, '密码必须6到12位']
+            , repass: function (value) {
+                if ($('#L_pass').val() != $('#L_repass').val()) {
+                    return '两次密码不一致';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(edit)', function (data) {
+            console.log(data.field);
+            $.post("/admin/admin/edit", data.field, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.alert("修改成功", {icon: 6}, function () {
+                        refreshParent();
+                    });
+                } else {
+                    layer.msg(res.errMsg, {icon: 5, time: 1500});
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+
+</html>

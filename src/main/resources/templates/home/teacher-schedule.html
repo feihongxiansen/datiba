@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="home/public/head::head(~{::title},~{::link},~{})">
     <title>认证进度-答题吧</title>
-    <link rel="stylesheet" type="text/css" href="/static/home/plugs/time-line/jquery.eeyellow.Timeline.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/plugs/time-line/jquery.eeyellow.Timeline.css">
 </head>
 
 <body>
@@ -129,7 +129,7 @@
 <footer th:replace="home/public/footer::footer"></footer>
 <!-- 底部导航栏end -->
 
-<script type="text/javascript" src="/static/home/plugs/time-line/jquery.eeyellow.Timeline.js"></script>
+<script type="text/javascript" src="/static/common/plugs/time-line/jquery.eeyellow.Timeline.js"></script>
 <script th:inline="javascript">
     $(document).ready(function () {
         $('.VivaTimeline').vivaTimeline({

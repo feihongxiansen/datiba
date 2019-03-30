@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="home/public/head::head(~{::title},~{::style},~{::link})">
     <title>解答详情-答题吧</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/home/plugs/viewer/viewer.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/common/plugs/viewer/viewer.css}"/>
     <style>
         [v-cloak] {
             display: none;
@@ -180,8 +180,8 @@
 <footer th:replace="home/public/footer::footer"></footer>
 <!-- 底部导航栏end -->
 
-<script th:src="@{/static/home/plugs/vue/vue.js}"></script>
-<script th:src="@{/static/home/plugs/viewer/viewer.js}"></script>
+<script th:src="@{/static/common/plugs/vue/vue.js}"></script>
+<script th:src="@{/static/common/plugs/viewer/viewer.js}"></script>
 
 <!--vue相关js-->
 <script th:inline="javascript">

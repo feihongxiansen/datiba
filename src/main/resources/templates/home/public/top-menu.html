@@ -41,7 +41,7 @@
                 <dd><a href="javascript:void(0);" id="JsSignOut">退了</a></dd>
             </dl>
         </li>
-        <script src="/static/home/plugs/vue/vue.js"></script>
+        <script src="/static/common/plugs/vue/vue.js"></script>
         <script th:inline="javascript">
             //安全退出
             $('#JsSignOut').click(function(){
@@ -50,11 +50,13 @@
                     btn: ['确定','取消']
                 }, function(){
                     $.post("/home/user/logOut",function (res) {
-                        if (res.success == false){
-                            layer.msg(res.errMsg, {icon: 2,time:1500});
+                        console.log(res);
+                        if (res.success) {
+                            layer.msg(res.errMsg, {icon: 1, time: 1500});
+                            setTimeout(goTo(res.data), 1500);
+                            return;
                         }
-                        layer.msg(res.errMsg, {icon: 1,time:1500});
-                        setTimeout(goTo(res.data),1500);
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
                     })
                 });
             });
