@@ -25,6 +25,10 @@
         p {
             line-height: 30px;
         }
+
+        .adopt {
+            background-color: #F5F5F5;
+        }
     </style>
 </head>
 
@@ -116,8 +120,9 @@
 
                         <div id="myTabContent" class="tab-content" style="padding: 20px;">
                             <div class="tab-pane fade in active" id="home">
-                                <div class="row" th:each="item : ${questionInfo.answers}"
-                                     style="border-bottom: #D0C8C8 1px solid;margin-top: 15px;">
+                                <div th:class="${item.adoptionState}?'row adopt':'row'"
+                                     th:each="item : ${questionInfo.answers}"
+                                     style="border-bottom: #D0C8C8 1px solid;padding: 15px;">
                                     <a class="col-md-2" th:href="@{'/home/index/userinfo/'+${item?.user?.id}}">
                                         <img th:src="@{${item?.user?.userPhoto}}" style="width: 100%;"
                                              class="img-rounded"/>
@@ -127,6 +132,8 @@
                                     <div class="col-md-10">
                                         <div class="row">
                                             <div class="col-md-12" th:id="'answer'+${item.id}">
+                                                <span th:if="${item.adoptionState}"
+                                                      class="label label-success">已采纳</span>
                                                 <p class="text-left" th:text="${item.answerSummary}"></p>
                                                 <img th:each="photo:${item.answerPhotoList}" th:src="${photo}"
                                                      th:data-original="${photo}" class="img-thumbnail">
@@ -139,14 +146,22 @@
                                             </div>
 
                                             <div class="col-md-6 text-right">
-                                                <button class="col-md-3 col-md-offset-5 btn btn-info"><span
-                                                        class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
-                                                    999
+                                                <button type="button" class="btn btn-success btn-sm">
+                                                    <span class="glyphicon glyphicon-thumbs-up"></span> <span
+                                                        th:text="${item.approvalNum}"></span>
                                                 </button>
-                                                <button class="col-md-3 col-md-offset-1 btn btn-warning"><span
-                                                        class="glyphicon glyphicon-thumbs-down"
-                                                        aria-hidden="true"></span> 23
+                                                <button type="button" class="btn btn-warning btn-sm">
+                                                    <span class="glyphicon glyphicon-thumbs-down"></span> <span
+                                                        th:text="${item.opposeNum}"></span>
                                                 </button>
+                                                <span th:if="${questionInfo.solveState}==0">
+                                                    <span th:if="${questionInfo.questionState}">
+                                                        <button th:if="${session?.user?.id} == ${questionInfo.userId}"
+                                                                th:onclick="'javascript:adopt('+${questionInfo.id}+','+${item.id}+');'"
+                                                                class="layui-btn layui-btn-sm">采纳</button>
+                                                    </span>
+                                                </span>
+
                                             </div>
                                         </div>
                                     </div>
@@ -193,12 +208,13 @@
 
     //图片上传接口地址
     var uploadUrl = "/home/question/uploadAnswerImages";
+    var layer;
     /*layui插件模块加载开始*/
     layui.use(['laypage', 'layer', 'form', 'upload'], function () {
         var laypage = layui.laypage
-            , layer = layui.layer
             , form = layui.form
             , upload = layui.upload;
+        layer = layui.layer;
         var load;
         //图片上传
         var uploadInst = upload.render({
@@ -309,6 +325,25 @@
             }
         }
     });
+
+    /**
+     * 采纳问题
+     */
+    function adopt(questionId, answerId) {
+        console.log(questionId, answerId);
+        layer.confirm("确定要采纳当前答案吗？", {
+            btn: ['采纳', '取消']
+        }, function () {
+            var requestUrl = "/home/question/adoptAnswer/" + questionId + "/" + answerId;
+            $.post(requestUrl, function (res) {
+                if (res.success) {
+                    layer.msg("采纳成功！", {icon: 1, time: 1500});
+                    setTimeout(refresh, 1500);
+                }
+            })
+        }, function () {
+        })
+    }
 
 
     /*初始化问题图片的viewer*/

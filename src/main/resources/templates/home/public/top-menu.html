@@ -37,8 +37,7 @@
         <li class="layui-nav-item" th:if="${session.user} != null">
             <a href="javascript:;"><img th:src="@{${session.user.userPhoto}==null?'/static/home/images/user-head/1.jpg':${session.user.userPhoto}}" class="layui-nav-img" th:text="${session.user.userName}"></a>
             <dl class="layui-nav-child">
-                <dd><a href="javascript:;">个人中心</a></dd>
-                <dd><a th:href="@{${session.user}==null?'/home/index/login?pagePath=/home/document/myinfo':'/home/document/myinfo'}">我的资料</a></dd>
+                <dd><a href="/home/user/personalCenter">个人中心</a></dd>
                 <dd><a href="javascript:void(0);" id="JsSignOut">退了</a></dd>
             </dl>
         </li>

@@ -1,6 +1,5 @@
 package com.dtb.home.dao;
 
-import com.dtb.entity.Answers;
 import com.dtb.entity.AnswersAssociation;
 import com.dtb.entity.AnswersWithBLOBs;
 import com.github.pagehelper.Page;
@@ -30,8 +29,6 @@ public interface AnswersMapper {
 
     int deleteByPrimaryKey(Integer id);
 
-    int insert(AnswersWithBLOBs record);
-
     /**
      * @auther lmx
      * @date 2019/3/16 11:32
@@ -44,8 +41,4 @@ public interface AnswersMapper {
     AnswersWithBLOBs selectByPrimaryKey(@Param("id") Integer id);
 
     int updateByPrimaryKeySelective(AnswersWithBLOBs record);
-
-    int updateByPrimaryKeyWithBLOBs(AnswersWithBLOBs record);
-
-    int updateByPrimaryKey(Answers record);
 }

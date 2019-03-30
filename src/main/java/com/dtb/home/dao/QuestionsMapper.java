@@ -1,6 +1,5 @@
 package com.dtb.home.dao;
 
-import com.dtb.entity.Questions;
 import com.dtb.entity.QuestionsAssociation;
 import com.dtb.entity.QuestionsWithBLOBs;
 import com.github.pagehelper.Page;
@@ -46,8 +45,6 @@ public interface QuestionsMapper {
 
     int deleteByPrimaryKey(Integer id);
 
-    int insert(QuestionsWithBLOBs record);
-
     /**
      * @auther lmx
      * @date 2019/3/11 23:50
@@ -60,8 +57,4 @@ public interface QuestionsMapper {
     QuestionsWithBLOBs selectByPrimaryKey(Integer id);
 
     int updateByPrimaryKeySelective(QuestionsWithBLOBs record);
-
-    int updateByPrimaryKeyWithBLOBs(QuestionsWithBLOBs record);
-
-    int updateByPrimaryKey(Questions record);
 }

@@ -247,7 +247,79 @@ public class QAController {
         return new ResponseBean<Map<String, Object>>(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
+    /**
+     * 关闭提问状态
+     *
+     * @param id      问题id
+     * @param session 会话session
+     * @return com.dtb.utils.resulthandler.ResponseBean
+     * @author lmx
+     * @date 2019/3/29 20:07
+     */
+    @RequestMapping("closeQuestion/{id}")
+    @ResponseBody
+    public ResponseBean<String> closeQuestion(@PathVariable Integer id, HttpSession session) {
+        //获取登录用户id
+        User user = (User) session.getAttribute("user");
+        //查询待关闭问题的积分情况，如果有悬赏积分，则把积分归还给用户后关闭问题
+        QuestionsWithBLOBs dbQuestion = qaService.findById(id);
+        String msg = "问题已关闭！";
+        if (dbQuestion.getIntegral() > 0) {
+            userService.updateIntegralById(dbQuestion.getIntegral(), user.getId());
+            //更新session数据，防止积分数据有误差
+            session.setAttribute("user", userService.findById(user.getId()));
+            msg = "问题已关闭，积分已退还当前账号！";
+        }
 
+        QuestionsWithBLOBs question = new QuestionsWithBLOBs();
+        question.setId(id);
+        question.setUserId(user.getId());
+        question.setQuestionState(false);
+        int res = qaService.updateQuestionSelectiveById(question);
+        if (res <= 0) {
+            msg = "更新失败";
+            return new ResponseBean<String>(false, msg, CommonErrorEnum.FAILED_QUESTION);
+        }
+        return new ResponseBean<String>(true, msg, CommonErrorEnum.SUCCESS_OPTION);
+    }
 
+    /**
+     * 采纳答案
+     *
+     * @param questionId 问题id
+     * @param answerId   采纳的答案id
+     * @param session    会话session
+     * @return com.dtb.utils.resulthandler.ResponseBean<java.lang.String>
+     * @author lmx
+     * @date 2019/3/29 21:50
+     */
+    @RequestMapping("adoptAnswer/{questionId}/{answerId}")
+    @ResponseBody
+    public ResponseBean<String> adoptAnswer(@PathVariable Integer questionId,
+                                            @PathVariable Integer answerId,
+                                            HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        QuestionsWithBLOBs question = qaService.findById(questionId);
+        AnswersWithBLOBs answer = qaService.findByAnswerId(answerId);
+        if (!user.getId().equals(question.getUserId())) {
+            return new ResponseBean<>(false, "请求错误！", CommonErrorEnum.FAILED_QUESTION);
+        }
+        //如果有悬赏积分，将积分添加到答题者账号
+        if (question.getIntegral() > 0) {
+            userService.updateIntegralById(question.getIntegral(), answer.getUserId());
+        }
 
+        //修改答案的采纳状态
+        answer.setAdoptionState(true);
+        qaService.updateAnswerSelectiveById(answer);
+
+        //修改问题的采纳状态并且关闭问题
+        question.setSolveState(answerId);
+        question.setQuestionState(false);
+        int result = qaService.updateQuestionSelectiveById(question);
+        if (result > 0) {
+            return new ResponseBean<>(true, "采纳成功！", CommonErrorEnum.SUCCESS_OPTION);
+        }
+        return new ResponseBean<>(false, "采纳失败！", CommonErrorEnum.SUCCESS_OPTION);
+    }
 }

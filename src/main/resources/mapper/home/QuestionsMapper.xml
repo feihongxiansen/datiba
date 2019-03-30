@@ -49,6 +49,7 @@
         <include refid="Blob_Column_List"/>
         FROM as_questions
         WHERE id=#{questionId,jdbcType=INTEGER}
+        AND delete_time IS NULL
     </select>
 
     <select id="selectQuestionList" resultMap="ResultMapAssociation">
@@ -127,24 +128,13 @@
             AND q.question_state = FALSE
             AND q.delete_time IS NULL
         </if>
+        ORDER BY create_time DESC
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from as_questions
     where id = #{id,jdbcType=INTEGER}
   </delete>
-    <insert id="insert" parameterType="com.dtb.entity.QuestionsWithBLOBs">
-    insert into as_questions (id, user_id, invita_id, 
-      integral, solve_state, question_state, 
-      subject_id, grade_id, create_time, 
-      delete_time, update_time, question_summary, 
-      question_photos)
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{invitaId,jdbcType=INTEGER}, 
-      #{integral,jdbcType=INTEGER}, #{solveState,jdbcType=INTEGER}, #{questionState,jdbcType=BIT},
-      #{subjectId,jdbcType=INTEGER}, #{gradeId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{deleteTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{questionSummary,jdbcType=LONGVARCHAR}, 
-      #{questionPhotos,jdbcType=LONGVARCHAR})
-  </insert>
     <insert id="insertSelective" parameterType="com.dtb.entity.QuestionsWithBLOBs">
         insert into as_questions
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -250,14 +240,8 @@
             <if test="gradeId != null">
                 grade_id = #{gradeId,jdbcType=INTEGER},
             </if>
-            <if test="createTime != null">
-                create_time = #{createTime,jdbcType=TIMESTAMP},
-            </if>
             <if test="deleteTime != null">
                 delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime,jdbcType=TIMESTAMP},
             </if>
             <if test="questionSummary != null">
                 question_summary = #{questionSummary,jdbcType=LONGVARCHAR},
@@ -268,34 +252,4 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.QuestionsWithBLOBs">
-    update as_questions
-    set user_id = #{userId,jdbcType=INTEGER},
-      invita_id = #{invitaId,jdbcType=INTEGER},
-      integral = #{integral,jdbcType=INTEGER},
-      solve_state = #{solveState,jdbcType=INTEGER},
-      question_state = #{questionState,jdbcType=BIT},
-      subject_id = #{subjectId,jdbcType=INTEGER},
-      grade_id = #{gradeId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      question_summary = #{questionSummary,jdbcType=LONGVARCHAR},
-      question_photos = #{questionPhotos,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-    <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Questions">
-    update as_questions
-    set user_id = #{userId,jdbcType=INTEGER},
-      invita_id = #{invitaId,jdbcType=INTEGER},
-      integral = #{integral,jdbcType=INTEGER},
-      solve_state = #{solveState,jdbcType=INTEGER},
-      question_state = #{questionState,jdbcType=BIT},
-      subject_id = #{subjectId,jdbcType=INTEGER},
-      grade_id = #{gradeId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
 </mapper>

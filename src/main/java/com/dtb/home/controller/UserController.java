@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -330,5 +329,18 @@ public class UserController {
         String imgPath = FileUploadUtil.upload(file, rootPath, "avatar_");
         imgPath = "/file" + uploadPath + "/" + imgPath;
         return new ResponseBean(true, imgPath, CommonErrorEnum.FILEUPLOAD_SUCCESS);
+    }
+
+    /**
+     * 个人中心
+     *
+     * @return java.lang.String
+     * @author lmx
+     * @date 2019/3/29 23:58
+     */
+    @RequestMapping("personalCenter")
+    @ResponseBody
+    public String personalCenter() {
+        return "home/personal-center";
     }
 }

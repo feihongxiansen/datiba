@@ -20,7 +20,7 @@
         .text-overflow {
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 6;
             overflow: hidden;
             font-size: 15px;
             line-height: 26px;
@@ -99,7 +99,8 @@
                                                :href="'/home/index/answer/'+item.id">
                                                 查看详情<i class="layui-icon">&#xe65f;</i>
                                             </a>
-                                            <button v-if="state==1" class="layui-btn layui-btn-xs layui-btn-danger">
+                                            <button v-if="state==1||state==2" @click="closeQuestion(item.id)"
+                                                    class="layui-btn layui-btn-xs layui-btn-danger">
                                                 关闭问题
                                             </button>
                                         </div>
@@ -128,9 +129,11 @@
 <!--vue相关js-->
 <script th:inline="javascript">
 
+    var layer;
     function initLayui() {
-        layui.use(['laypage'], function () {
+        layui.use(['laypage', 'layer'], function () {
             var laypage = layui.laypage;
+            layer = layui.layer;
             //执行一个laypage实例
             laypage.render({
                 elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
@@ -175,10 +178,32 @@
             }
         },
         methods: {
+            /**
+             * 修改待查找问题类型
+             * @param state
+             */
             findState: function (state) {
                 app.$data.state = state;
                 app.$data.initLayui = false;
                 getQuestionList();
+            },
+            /**
+             * 关闭问题
+             * @param questionId
+             */
+            closeQuestion: function (questionId) {
+                layer.confirm("关闭后不再通知您有新回答，确认要关闭吗？", {
+                    btn: ['确定', '取消']
+                }, function () {
+                    $.post("/home/question/closeQuestion/" + questionId, function (res) {
+                        console.log(res);
+                        if (res.success) {
+                            layer.msg(res.data, {icon: 1, time: 1500});
+                            setTimeout(refresh, 1500);
+                        }
+                    })
+                }, function () {
+                })
             }
         }
     });

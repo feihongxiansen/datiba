@@ -11,6 +11,8 @@ import com.hankcs.hanlp.HanLP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,21 +33,21 @@ public class QAServiceImpl implements QAService {
     @Override
     public Page<QuestionsWithBLOBs> findQuestionList(Integer gradeId, Integer subjectId, String questionSummary, Boolean needIntegral) {
 
-        if (questionSummary!=null && questionSummary!=""){
+        if (questionSummary != null && questionSummary != "") {
             //关键词提取
             List<String> keywordList = HanLP.extractKeyword(questionSummary, 100);
-            System.out.println("关键词提取结果："+keywordList);
-            String keySummary="";
-            if (keywordList.size()>0){
-                for (int i=0; i<keywordList.size(); i++) {
-                    keySummary += "*"+keywordList.get(i)+"* ";
+            System.out.println("关键词提取结果：" + keywordList);
+            String keySummary = "";
+            if (keywordList.size() > 0) {
+                for (int i = 0; i < keywordList.size(); i++) {
+                    keySummary += "*" + keywordList.get(i) + "* ";
                 }
-            }else{
-                keySummary += "*"+questionSummary+"*";
+            } else {
+                keySummary += "*" + questionSummary + "*";
             }
-            return this.photosStrToStrArr(questionsMapper.selectQuestionList(gradeId,subjectId,questionSummary,needIntegral));
+            return this.photosStrToStrArr(questionsMapper.selectQuestionList(gradeId, subjectId, questionSummary, needIntegral));
         }
-        return this.photosStrToStrArr(questionsMapper.selectQuestionList(gradeId,subjectId,questionSummary,needIntegral));
+        return this.photosStrToStrArr(questionsMapper.selectQuestionList(gradeId, subjectId, questionSummary, needIntegral));
     }
 
     @Override
@@ -67,18 +69,36 @@ public class QAServiceImpl implements QAService {
         QuestionsAssociation questionDetial = questionsMapper.selectAnswerList(questionId);
 
         //把问题图片字符串转为数组返回
-        if (questionDetial.getQuestionPhotos()!=null){
+        if (questionDetial.getQuestionPhotos() != null) {
             questionDetial.setQuestionPhotoList(questionDetial.getQuestionPhotos().split(","));
         }
 
         List<AnswersWithBLOBs> answerList = questionDetial.getAnswers();
-        for (int j=0; j<answerList.size(); j++){
+        for (int j = 0; j < answerList.size(); j++) {
             String photosStr = answerList.get(j).getAnswerPhotos();
-            if (photosStr==null)
+            if (photosStr == null) {
                 continue;
+            }
             answerList.get(j).setAnswerPhotoList(photosStr.split(","));
         }
+        //对答案集合根据赞同人数倒序排序
+        Collections.sort(answerList, new Comparator<AnswersWithBLOBs>() {
+            @Override
+            public int compare(AnswersWithBLOBs o1, AnswersWithBLOBs o2) {
+                return o1.getApprovalNum() > o2.getApprovalNum() ? -1
+                        : o1.getApprovalNum().equals(o2.getApprovalNum()) ? 0 : 1;
+            }
+        });
         questionDetial.setAnswers(answerList);
+        //被采纳的排第一
+        for (int i = 0; i < answerList.size(); i++) {
+            if (answerList.get(i).getAdoptionState()) {
+                AnswersWithBLOBs temp = answerList.get(0);
+                answerList.set(0, answerList.get(i));
+                answerList.set(i, temp);
+                break;
+            }
+        }
         return questionDetial;
     }
 
@@ -89,8 +109,8 @@ public class QAServiceImpl implements QAService {
      * @param: questionsList
      * @return: com.github.pagehelper.Page<com.dtb.entity.QuestionsWithBLOBs>
      */
-    public Page<QuestionsWithBLOBs> photosStrToStrArr(Page<QuestionsWithBLOBs> questionsList){
-        for (int i=0; i<questionsList.size(); i++){
+    public Page<QuestionsWithBLOBs> photosStrToStrArr(Page<QuestionsWithBLOBs> questionsList) {
+        for (int i = 0; i < questionsList.size(); i++) {
             if (questionsList.getResult().get(i).getQuestionPhotos() == null) {
                 continue;
             }
@@ -108,5 +128,25 @@ public class QAServiceImpl implements QAService {
     @Override
     public int addAnswer(AnswersWithBLOBs answer) {
         return answersMapper.insertSelective(answer);
+    }
+
+    @Override
+    public Integer updateQuestionSelectiveById(QuestionsWithBLOBs question) {
+        return questionsMapper.updateByPrimaryKeySelective(question);
+    }
+
+    @Override
+    public QuestionsWithBLOBs findById(Integer id) {
+        return questionsMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public AnswersWithBLOBs findByAnswerId(Integer id) {
+        return answersMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public Integer updateAnswerSelectiveById(AnswersWithBLOBs answer) {
+        return answersMapper.updateByPrimaryKeySelective(answer);
     }
 }

@@ -66,4 +66,43 @@ public interface QAService {
      */
     int addAnswer(AnswersWithBLOBs answer);
 
+    /**
+     * 更新问题信息
+     *
+     * @param questions 参数
+     * @return java.lang.Integer
+     * @author lmx
+     * @date 2019/3/29 20:11
+     */
+    Integer updateQuestionSelectiveById(QuestionsWithBLOBs questions);
+
+    /**
+     * 根据问题id查询问题信息
+     *
+     * @param id 问题id
+     * @return com.dtb.entity.QuestionsWithBLOBs
+     * @author lmx
+     * @date 2019/3/29 20:37
+     */
+    QuestionsWithBLOBs findById(Integer id);
+
+    /**
+     * 根据答案id查询
+     *
+     * @param id 答案id
+     * @return com.dtb.entity.AnswersWithBLOBs
+     * @author lmx
+     * @date 2019/3/29 21:53
+     */
+    AnswersWithBLOBs findByAnswerId(Integer id);
+
+    /**
+     * 根据答案id修改信息
+     *
+     * @param answer 参数
+     * @return java.lang.Integer
+     * @author lmx
+     * @date 2019/3/29 22:01
+     */
+    Integer updateAnswerSelectiveById(AnswersWithBLOBs answer);
 }
