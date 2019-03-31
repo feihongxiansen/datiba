@@ -18,7 +18,7 @@ import java.util.List;
  * @ModifyBy：
  */
 @Controller("subjectController")
-@RequestMapping("home/subject")
+@RequestMapping("/home/subject")
 public class SubjectController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class SubjectController {
      * @param:
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("getSubjectList")
+    @RequestMapping("/getSubjectList")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> getSubjectList(){
 

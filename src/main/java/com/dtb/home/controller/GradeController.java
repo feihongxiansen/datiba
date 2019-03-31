@@ -18,7 +18,7 @@ import java.util.List;
  * @ModifyBy：
  */
 @Controller("gradeController")
-@RequestMapping("home/grade")
+@RequestMapping("/home/grade")
 public class GradeController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class GradeController {
      * @param:
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("getGradeList")
+    @RequestMapping("/getGradeList")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> getGradeList(){
 

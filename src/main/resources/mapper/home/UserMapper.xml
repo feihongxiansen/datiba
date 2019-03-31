@@ -132,26 +132,7 @@
     delete from as_user
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.dtb.entity.User">
-    insert into as_user (id, user_name, nick_name, 
-      login_state, password, comment_state, 
-      question_state, answer_state, user_type, 
-      sex, province, city, 
-      area, email, phone, 
-      user_photo, integral, email_code, 
-      phone_verify, email_verify, login_time, 
-      create_time, update_time, delete_time, 
-      user_summary)
-    values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, 
-      #{loginState,jdbcType=BIT}, #{password,jdbcType=VARCHAR}, #{commentState,jdbcType=BIT}, 
-      #{questionState,jdbcType=BIT}, #{answerState,jdbcType=BIT}, #{userType,jdbcType=TINYINT}, 
-      #{sex,jdbcType=TINYINT}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
-      #{area,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
-      #{userPhoto,jdbcType=VARCHAR}, #{integral,jdbcType=INTEGER}, #{emailCode,jdbcType=CHAR}, 
-      #{phoneVerify,jdbcType=BIT}, #{emailVerify,jdbcType=BIT}, #{loginTime,jdbcType=TIMESTAMP}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{deleteTime,jdbcType=TIMESTAMP}, 
-      #{userSummary,jdbcType=LONGVARCHAR})
-  </insert>
+
   <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.dtb.entity.User">
     insert into as_user
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -375,62 +356,6 @@
         user_summary = #{userSummary,jdbcType=LONGVARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.User">
-    update as_user
-    set user_name = #{userName,jdbcType=VARCHAR},
-      nick_name = #{nickName,jdbcType=VARCHAR},
-      login_state = #{loginState,jdbcType=BIT},
-      password = #{password,jdbcType=VARCHAR},
-      comment_state = #{commentState,jdbcType=BIT},
-      question_state = #{questionState,jdbcType=BIT},
-      answer_state = #{answerState,jdbcType=BIT},
-      user_type = #{userType,jdbcType=TINYINT},
-      sex = #{sex,jdbcType=TINYINT},
-      province = #{province,jdbcType=VARCHAR},
-      city = #{city,jdbcType=VARCHAR},
-      area = #{area,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      user_photo = #{userPhoto,jdbcType=VARCHAR},
-      integral = #{integral,jdbcType=INTEGER},
-      email_code = #{emailCode,jdbcType=CHAR},
-      phone_verify = #{phoneVerify,jdbcType=BIT},
-      email_verify = #{emailVerify,jdbcType=BIT},
-      login_time = #{loginTime,jdbcType=TIMESTAMP},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      user_summary = #{userSummary,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.User">
-    update as_user
-    set user_name = #{userName,jdbcType=VARCHAR},
-      nick_name = #{nickName,jdbcType=VARCHAR},
-      login_state = #{loginState,jdbcType=BIT},
-      password = #{password,jdbcType=VARCHAR},
-      comment_state = #{commentState,jdbcType=BIT},
-      question_state = #{questionState,jdbcType=BIT},
-      answer_state = #{answerState,jdbcType=BIT},
-      user_type = #{userType,jdbcType=TINYINT},
-      sex = #{sex,jdbcType=TINYINT},
-      province = #{province,jdbcType=VARCHAR},
-      city = #{city,jdbcType=VARCHAR},
-      area = #{area,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      user_photo = #{userPhoto,jdbcType=VARCHAR},
-      integral = #{integral,jdbcType=INTEGER},
-      email_code = #{emailCode,jdbcType=CHAR},
-      phone_verify = #{phoneVerify,jdbcType=BIT},
-      email_verify = #{emailVerify,jdbcType=BIT},
-      login_time = #{loginTime,jdbcType=TIMESTAMP},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

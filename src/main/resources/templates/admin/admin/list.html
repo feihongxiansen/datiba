@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="admin/public/head::head(~{::title},~{::script},~{})">
-    <title>管理员列表-WeAdmin Frame型后台管理系统-WeAdmin 1.0</title>
+    <title>管理员列表-答题吧后台管理系统</title>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
     <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -167,14 +167,7 @@
     window.softDel = function (id) {
         layer.confirm('确认要删除吗？', function (index) {
             //发异步删除数据
-            var date = new Date();
-            var nowTime = date.getFullYear() + '-'
-                + (date.getMonth() + 1) + '-'
-                + date.getDate() + ' '
-                + date.getHours() + ':'
-                + date.getMinutes() + ':'
-                + date.getSeconds();
-            $.get("/admin/admin/updateAdminById", {id: id, deleteTime: nowTime}, function (res) {
+            $.get("/admin/admin/updateAdminById", {id: id, deleteTime: getNowTimeStr()}, function (res) {
                 console.log(res);
                 if (res.success) {
                     layer.msg('已删除!', {

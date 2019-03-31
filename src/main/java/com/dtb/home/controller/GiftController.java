@@ -22,7 +22,7 @@ import java.util.Map;
  * @create 2019/3/23-18:24
  */
 @Controller("giftController")
-@RequestMapping("home/gift")
+@RequestMapping("/home/gift")
 public class GiftController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class GiftController {
      * @author lmx
      * @date 2019/3/23 18:40
      */
-    @RequestMapping("queryGiftList/{pageNum}/{pageSize}")
+    @RequestMapping("/queryGiftList/{pageNum}/{pageSize}")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> queryGiftList(@PathVariable("pageNum") Integer pageNum,
                                                        @PathVariable("pageSize") Integer pageSize) {
@@ -60,10 +60,10 @@ public class GiftController {
      * @author lmx
      * @date 2019/3/23 22:00
      */
-    @RequestMapping("detial/{giftId}")
+    @RequestMapping("/detial/{giftId}")
     public String detial(@PathVariable("giftId") Integer giftId, Model model) {
         model.addAttribute("gift", giftService.findById(giftId));
-        return "home/gift-detial";
+        return "/home/gift-detial";
     }
 
 }

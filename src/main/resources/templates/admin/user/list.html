@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{::script},~{::style})">
+    <title>用户列表-答题吧后台管理系统</title>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        .avatar {
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">用户管理</a>
+        <a>
+          <cite>用户列表</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#xe666;</i></a>
+</div>
+<div class="weadmin-body" id="app" v-cloak>
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 we-search">
+            <div class="layui-input-inline">
+                <select name="loginState" v-model="searchParam.loginState">
+                    <option value="">全部（登录状态）</option>
+                    <option value="true">允许登录</option>
+                    <option value="false">禁止登录</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="commentState" v-model="searchParam.commentState">
+                    <option value="">全部（评论状态）</option>
+                    <option value="true">允许评论</option>
+                    <option value="false">禁止评论</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="questionState" v-model="searchParam.questionState">
+                    <option value="">全部（提问状态）</option>
+                    <option value="true">允许提问</option>
+                    <option value="false">禁止提问</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="answerState" v-model="searchParam.answerState">
+                    <option value="">全部（解答状态）</option>
+                    <option value="true">允许解答</option>
+                    <option value="false">禁止解答</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="sex" v-model="searchParam.sex">
+                    <option value="">全部（性别）</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="userType" v-model="searchParam.userType">
+                    <option value="">全部（用户类型）</option>
+                    <option value="1">用户</option>
+                    <option value="2">教师</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="emailVerify" v-model="searchParam.emailVerify">
+                    <option value="">全部（激活状态）</option>
+                    <option value="true">已激活</option>
+                    <option value="false">待激活</option>
+                </select>
+            </div>
+            <div class="layui-inline">
+                <input type="text" v-model="searchParam.vagueParam" name="vagueParam" placeholder="昵称、姓名、邮箱或电话"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <button class="layui-btn" lay-submit lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <div class="weadmin-block layui-form">
+        <button class="layui-btn layui-btn-danger" onclick="updateAll('delete')"><i class="layui-icon"></i>批量删除
+        </button>
+        <div class="layui-input-inline">
+            <select name="updateType">
+                <option value="">批量更新状态</option>
+                <optgroup label="登录状态">
+                    <option value="allow-login">批量允许登录</option>
+                    <option value="ban-login">批量禁止登录</option>
+                </optgroup>
+                <optgroup label="评论状态">
+                    <option value="allow-comment">批量允许评论</option>
+                    <option value="ban-comment">批量禁止评论</option>
+                </optgroup>
+                <optgroup label="提问状态">
+                    <option value="allow-question">批量允许提问</option>
+                    <option value="ban-question">批量禁止提问</option>
+                </optgroup>
+                <optgroup label="解答状态">
+                    <option value="allow-answer">批量允许解答</option>
+                    <option value="ban-answer">批量禁止解答</option>
+                </optgroup>
+                <optgroup label="账号状态">
+                    <option value="allow-email-verify">批量激活账号</option>
+                    <option value="ban-email-verify">批量未激活</option>
+                </optgroup>
+            </select>
+        </div>
+        <button class="layui-btn layui-btn-warm" lay-submit lay-filter="batchUpdateBtn"><i class="layui-icon"></i>批量修改
+        </button>
+        <span class="fr" style="line-height:40px">共有数据：{{total}} 条</span>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary">
+                    <i class="layui-icon">&#xe605;</i>
+                </div>
+            </th>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>昵称</th>
+            <th>用户类型</th>
+            <th>性别</th>
+            <th>邮箱</th>
+            <th>手机</th>
+            <th>积分</th>
+            <th>上次登录</th>
+            <th>加入时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+        <tr v-for="item in userList">
+            <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" :data-id="item.id">
+                    <i class="layui-icon">&#xe605;</i>
+                </div>
+            </td>
+            <td>{{item.id}}</td>
+            <td><a @click="showAvatar(item.userPhoto)" href="javascript:void(0);">{{item.userName}}</a></td>
+            <td><a @click="showAvatar(item.userPhoto)" href="javascript:void(0);">{{item.nickName}}</a></td>
+            <td>{{item.userType==1?'普通用户':'教师'}}</td>
+            <td>{{item.sex==1?'男':'女'}}</td>
+            <td>{{item.email}}</td>
+            <td>{{item.phone}}</td>
+            <td>{{item.integral}} 分</td>
+            <td>{{item.loginTime}}</td>
+            <td>{{item.createTime}}</td>
+            <td class="td-status layui-form" v-if="item.emailVerify">
+                <span @click="changeState('loginState',item.loginState,item.id)" class="layui-btn layui-btn-xs"
+                      :class="item.loginState?'':'layui-btn-disabled'">
+                    {{item.loginState?'允许登录':'禁止登录'}}
+                </span>
+                <span @click="changeState('commentState',item.commentState,item.id)"
+                      class="layui-btn layui-btn-normal layui-btn-xs"
+                      :class="item.commentState?'':'layui-btn-disabled'">
+                    {{item.commentState?'允许评论':'禁止评论'}}
+                </span>
+                <span @click="changeState('questionState',item.questionState,item.id)"
+                      class="layui-btn layui-btn-warm layui-btn-xs" :class="item.questionState?'':'layui-btn-disabled'">
+                    {{item.questionState?'允许提问':'禁止提问'}}
+                </span>
+                <span @click="changeState('answerState',item.answerState,item.id)"
+                      class="layui-btn layui-btn-danger layui-btn-xs" :class="item.answerState?'':'layui-btn-disabled'">
+                    {{item.answerState?'允许解答':'禁止解答'}}
+                </span>
+            </td>
+            <td class="td-status" v-else>
+                <span class="layui-btn layui-btn-xs layui-btn-disabled">
+                    账号待激活
+                </span>
+            </td>
+            <td class="td-manage">
+                <a title="编辑" @click="open('编辑','/admin/user/editPage/'+item.id)" href="javascript:;">
+                    <i class="layui-icon">&#xe642;</i>
+                </a>
+                <a title="删除" @click="softDel(item.id)" v-if="item.adminType!=0" href="javascript:;">
+                    <i class="layui-icon">&#xe640;</i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="page">
+        <div id="laypage"></div>
+    </div>
+</div>
+</body>
+<script src="/static/common/plugs/vue/vue.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    function initLayui() {
+        layui.extend({
+            admin: '/static/admin/js/admin'
+        });
+        layui.use(['jquery', 'admin', 'form', 'laypage'], function () {
+            var laydate = layui.laydate
+                , $ = layui.jquery
+                , laypage = layui.laypage
+                , form = layui.form;
+
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
+                , count: app.$data.total //数据总数，从服务端得到
+                , limits: [10, 20, 40, 60, 80, 100] //每页条数的选择项。如果 layout 参数开启了 limit，则会出现每页条数的select选择框
+                , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+                , jump: function (obj, first) {
+                    app.$data.pageSize = obj.limit;
+                    app.$data.pageNum = obj.curr;
+                    //首次不执行
+                    if (!first) {
+                        getUserList();
+                    }
+                }
+            });
+
+            /**
+             * 监听搜索按钮
+             */
+            form.on("submit(sreach)", function (data) {
+                console.log(data.field);
+                app.$data.searchParam = data.field;
+                app.$data.initLayui = false;
+                getUserList();
+                return false;
+            });
+
+            /**
+             * 监听批量更新操作按钮
+             */
+            form.on("submit(batchUpdateBtn)", function (data) {
+                if (data.field.updateType == "") {
+                    layer.msg("请选择批量操作的类型", {icon: 2, time: 1000});
+                    return false;
+                } else {
+                    updateAll(data.field.updateType);
+                }
+            })
+        });
+    }
+
+    /*启用/停用*/
+    window.changeState = function (field, state, id) {
+        console.log(field, state, id);
+        var title = state == true ? '禁止' : '允许';
+        var param;
+        switch (field) {
+            case 'loginState'://修改登录状态
+                param = {id: id, loginState: !state};
+                title += '登录';
+                break;
+            case 'commentState'://修改评论状态
+                param = {id: id, commentState: !state};
+                title += '评论';
+                break;
+            case 'questionState'://修改提问状态
+                param = {id: id, questionState: !state};
+                title += '提问';
+                break;
+            case 'answerState'://修改解答状态
+                param = {id: id, answerState: !state};
+                title += '解答';
+                break;
+        }
+        layer.confirm('确认要' + title + '吗？', function (index) {
+            $.get("/admin/user/updateUserById", param, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.msg('已' + title + '！', {
+                        icon: 6,
+                        time: 1000
+                    });
+                    setTimeout(refresh, 1000);
+                } else {
+                    layer.msg(title + "失败", {
+                        icon: 5,
+                        time: 1000
+                    });
+                }
+            });
+
+        });
+    };
+
+    /*软删除*/
+    window.softDel = function (id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            $.post("/admin/user/updateUserById", {id: id, deleteTime: getNowTimeStr()}, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.msg('已删除!', {
+                        icon: 1,
+                        time: 1000
+                    });
+                    setTimeout(refresh, 1000);
+                } else {
+                    layer.msg(res.errMsg, {
+                        icon: 2,
+                        time: 1000
+                    });
+                }
+            });
+        });
+    };
+
+    /*批量操作*/
+    window.updateAll = function (argument) {
+        var data = tableCheck.getData();
+        var requestData;
+        var title;
+        switch (argument) {
+            //批量删除
+            case 'delete':
+                requestData = {
+                    idList: data.join(',')
+                    , deleteTime: getNowTimeStr()
+                };
+                title = "删除";
+                break;
+            //批量允许登录
+            case 'allow-login':
+                requestData = {
+                    idList: data.join(',')
+                    , loginState: true
+                };
+                title = '允许登录';
+                break;
+            //批量禁止登录
+            case 'ban-login':
+                requestData = {
+                    idList: data.join(',')
+                    , loginState: false
+                };
+                title = '禁止登录';
+                break;
+            //批量允许
+            case 'allow-comment':
+                requestData = {
+                    idList: data.join(',')
+                    , commentState: true
+                };
+                title = '允许评论';
+                break;
+
+            case 'ban-comment':
+                requestData = {
+                    idList: data.join(',')
+                    , commentState: false
+                };
+                title = '禁止评论';
+                break;
+
+            case 'allow-question':
+                requestData = {
+                    idList: data.join(',')
+                    , questionState: true
+                };
+                title = '允许提问';
+                break;
+
+            case 'ban-question':
+                requestData = {
+                    idList: data.join(',')
+                    , questionState: false
+                };
+                title = '禁止提问';
+                break;
+
+            case 'allow-answer':
+                requestData = {
+                    idList: data.join(',')
+                    , answerState: true
+                };
+                title = '允许解答';
+                break;
+
+            case 'ban-answer':
+                requestData = {
+                    idList: data.join(',')
+                    , answerState: false
+                };
+                title = '禁止解答';
+                break;
+
+            case 'allow-email-verify':
+                requestData = {
+                    idList: data.join(',')
+                    , emailVerify: true
+                };
+                title = '账号激活';
+                break;
+
+            case 'ban-email-verify':
+                requestData = {
+                    idList: data.join(',')
+                    , emailVerify: false
+                };
+                title = '账号未激活';
+                break;
+        }
+        if (data.length <= 0) {
+            return layer.msg("请选择要批量" + title + "的用户！", {icon: 2, time: 1500});
+        }
+
+        layer.confirm('确认要批量' + title + data.length + '个用户吗？', function (index) {
+            //捉到所有被选中的，发异步进行删除
+            $.post("/admin/user/updateBatchByIds", requestData, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.msg('批量' + title + '成功', {
+                        icon: 1, time: 1500
+                    });
+                    if (argument == 'delete') {
+                        $(".layui-form-checked").not('.header').parents('tr').remove();
+                    } else {
+                        setTimeout(refresh, 1500)
+                    }
+
+                }
+            });
+        });
+    };
+
+
+    /**
+     * 服务器获取管理员列表
+     * @param pageNum 当前页码
+     * @param paeSize 页面大小
+     */
+    function getUserList() {
+        var requestUrl = "/admin/user/getUserPageListVague/" + app.$data.pageNum + "/" + app.$data.pageSize;
+        console.log("搜索条件：", app.$data.searchParam);
+        console.log(app.$data.searchParam.vagueParam);
+        $.post(requestUrl, app.$data.searchParam, function (res) {
+            console.log(res);
+            if (res.success) {
+                app.$data.total = res.data.pageInfo.total;
+                app.$data.userList = res.data.userList;
+                app.$data.initLayui = true;
+            }
+        })
+    }
+
+    var that = this;
+    var app = new Vue({
+        el: "#app",
+        data: {
+            userList: null //管理员列表
+            , total: 0 //数据总数
+            , initLayui: false //是否可以初始化layui
+            , pageSize: 10
+            , pageNum: 1
+            , searchParam: {//搜索条件
+                loginState: null
+                , commentState: null
+                , questionState: null
+                , answerState: null
+                , sex: null
+                , userType: null
+                , emailVerify: null
+                , vagueParam: null
+            }
+        },
+        watch: {
+            'initLayui': function (newVal) {
+                console.log("change initLayui value:", newVal);
+                if (newVal)
+                    that.initLayui();
+            }
+        },
+        methods: {
+            /**
+             * 修改管理员启用/停用状态
+             * @param state
+             * @param id
+             */
+            changeState: function (field, state, id) {
+                changeState(field, state, id);
+            },
+            /**
+             * 软删除数据
+             */
+            softDel: function (id) {
+                softDel(id);
+            },
+            /**
+             * 打开弹窗
+             * @param title
+             * @param url
+             */
+            open: function (title, url) {
+                WeAdminShow(title, url);
+            },
+            /**
+             * 查看用户头像
+             * @param imgSrc
+             */
+            showAvatar: function (imgSrc) {
+                layer.open({
+                    title: "用户头像",
+                    type: 1,
+                    area: ['auto', '45%'], //宽高
+                    shadeClose: true,//点击遮罩关闭
+                    content: "<img style='height: 100%;' src='" + imgSrc + "'/>"
+                });
+            }
+        }
+    });
+    getUserList();
+</script>
+</html>

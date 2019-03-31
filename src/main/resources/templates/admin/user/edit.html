@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{},~{})">
+    <title>用户信息编辑-答题吧后台管理系统</title>
+</head>
+
+<body>
+<div class="weadmin-body">
+    <form class="layui-form">
+        <input type="hidden" name="id" th:value="${user.id}">
+        <div class="layui-form-item">
+            <label for="userName" class="layui-form-label">
+                <span class="we-red">*</span>姓名
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="userName" name="userName" required lay-verify="required"
+                       placeholder="姓名" autocomplete="off" th:value="${user.userName}" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="nickName" class="layui-form-label">
+                <span class="we-red">*</span>昵称
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="nickName" name="nickName" required lay-verify="required"
+                       placeholder="昵称" autocomplete="off" th:value="${user.nickName}" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="email" class="layui-form-label">
+                <span class="we-red">*</span>邮箱
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" th:value="${user.email}" id="email" disabled required lay-verify="email"
+                       placeholder="邮箱账号" autocomplete="off" class="layui-input layui-disabled">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <span class="we-red">*</span>将会成为用户唯一的登入名
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="phone" class="layui-form-label">
+                <span class="we-red">*</span>手机
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" th:value="${user.phone}" id="phone" name="phone" required lay-verify="phone"
+                       placeholder="手机号码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="phone" class="layui-form-label">
+                <span class="we-red">*</span>头像
+            </label>
+            <div class="layui-input-inline">
+                <img th:src="${user.userPhoto}" style="height: 150px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="userName" class="layui-form-label">
+                <span class="we-red">*</span>登录状态
+            </label>
+            <div class="layui-input-lock">
+                <input type="radio" th:checked="${user.loginState}" value="true" name="loginState" lay-skin="primary"
+                       title="允许登录">
+                <input type="radio" th:checked="!${user.loginState}" value="false" name="loginState" lay-skin="primary"
+                       title="禁止登录">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="userName" class="layui-form-label">
+                <span class="we-red">*</span>评论状态
+            </label>
+            <div class="layui-input-lock">
+                <input type="radio" th:checked="${user.commentState}" value="true" name="commentState"
+                       lay-skin="primary" title="允许评论">
+                <input type="radio" th:checked="!${user.commentState}" value="false" name="commentState"
+                       lay-skin="primary" title="禁止评论">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="userName" class="layui-form-label">
+                <span class="we-red">*</span>提问状态
+            </label>
+            <div class="layui-input-lock">
+                <input type="radio" th:checked="${user.questionState}" value="true" name="questionState"
+                       lay-skin="primary" title="允许提问">
+                <input type="radio" th:checked="!${user.questionState}" value="false" name="questionState"
+                       lay-skin="primary" title="禁止提问">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="userName" class="layui-form-label">
+                <span class="we-red">*</span>解答状态
+            </label>
+            <div class="layui-input-lock">
+                <input type="radio" th:checked="${user.answerState}" value="true" name="answerState" lay-skin="primary"
+                       title="允许解答">
+                <input type="radio" th:checked="!${user.answerState}" value="false" name="answerState"
+                       lay-skin="primary" title="禁止解答">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="userName" class="layui-form-label">
+                <span class="we-red">*</span>性别
+            </label>
+            <div class="layui-input-lock">
+                <input th:checked="${user.sex}==1" value="1" type="radio" name="sex" lay-skin="primary" title="男">
+                <input th:checked="${user.sex}==2" value="2" type="radio" name="sex" lay-skin="primary" title="女">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="userName" class="layui-form-label">
+                <span class="we-red">*</span>用户类型
+            </label>
+            <div class="layui-input-lock">
+                <input th:checked="${user.userType}==1" value="1" type="radio" name="userType" lay-skin="primary"
+                       title="用户">
+                <input th:checked="${user.userType}==2" value="2" type="radio" name="userType" lay-skin="primary"
+                       title="教师">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="userName" class="layui-form-label">
+                <span class="we-red">*</span>账号状态
+            </label>
+            <div class="layui-input-lock">
+                <input th:checked="${user.emailVerify}" value="true" type="radio" name="emailVerify" lay-skin="primary"
+                       title="已激活">
+                <input th:checked="!${user.emailVerify}" value="false" type="radio" name="emailVerify"
+                       lay-skin="primary" title="待激活">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="L_pass" class="layui-form-label">
+                <span class="we-red">*</span>密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" id="L_pass" name="password"
+                       placeholder="登录密码，不填写则不更改" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                6到16个字符
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+                <span class="we-red">*</span>确认密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" id="L_repass" required lay-verify="repass"
+                       placeholder="再次输入新密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+            </label>
+            <button class="layui-btn" lay-filter="edit" lay-submit>修改</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    layui.extend({
+        admin: '/static/admin/js/admin'
+    });
+    layui.use(['form', 'layer', 'jquery', 'admin'], function () {
+        var form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            nikename: function (value) {
+                if (value.length < 5) {
+                    return '昵称至少得5个字符啊';
+                }
+            }
+            , pass: [/(.+){6,12}$/, '密码必须6到12位']
+            , repass: function (value) {
+                if ($('#L_pass').val() != $('#L_repass').val()) {
+                    return '两次密码不一致';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(edit)', function (data) {
+            console.log(data.field);
+            $.post("/admin/user/updateUserById", data.field, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.alert("修改成功", {icon: 6}, function () {
+                        refreshParent();
+                    });
+                } else {
+                    layer.msg(res.errMsg, {icon: 5, time: 1500});
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+
+</html>

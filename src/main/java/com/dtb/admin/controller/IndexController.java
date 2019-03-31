@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
  * @version 1.0.0
  * @create 2019/3/30-10:46
  */
-@RequestMapping("admin/index")
+@RequestMapping("/admin/index")
 @Controller("adminIndexController")
 public class IndexController {
 
@@ -21,12 +21,12 @@ public class IndexController {
      * @author lmx
      * @date 2019/3/30 10:48
      */
-    @RequestMapping("login")
+    @RequestMapping("/login")
     public String login(HttpSession session) {
         if (session.getAttribute("admin") != null) {
             return "redirect:/admin/index/index";
         }
-        return "admin/login";
+        return "/admin/login";
     }
 
     /**
@@ -36,9 +36,9 @@ public class IndexController {
      * @author lmx
      * @date 2019/3/30 11:14
      */
-    @RequestMapping("index")
+    @RequestMapping("/index")
     public String index() {
-        return "admin/index";
+        return "/admin/index";
     }
 
     /**
@@ -48,9 +48,9 @@ public class IndexController {
      * @author lmx
      * @date 2019/3/30 11:18
      */
-    @RequestMapping("welcome")
+    @RequestMapping("/welcome")
     public String welcome() {
-        return "admin/welcome";
+        return "/admin/welcome";
     }
 
     /**
@@ -60,9 +60,9 @@ public class IndexController {
      * @author lmx
      * @date 2019/3/30 21:19
      */
-    @RequestMapping("notFound")
+    @RequestMapping("/notFound")
     public String notFound() {
-        return "admin/404";
+        return "/admin/404";
     }
 
     /**
@@ -72,8 +72,8 @@ public class IndexController {
      * @author lmx
      * @date 2019/3/30 21:19
      */
-    @RequestMapping("error")
+    @RequestMapping("/error")
     public String error() {
-        return "admin/500";
+        return "/admin/500";
     }
 }

@@ -27,7 +27,7 @@ import java.util.Map;
  * @version 1.0.0
  * @create 2019/3/30-13:15
  */
-@RequestMapping("admin/admin")
+@RequestMapping("/admin/admin")
 @Controller("adminAdminController")
 public class AdminController {
 
@@ -48,7 +48,7 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 14:01
      */
-    @RequestMapping("checkLogin")
+    @RequestMapping("/checkLogin")
     @ResponseBody
     public ResponseBean checkLogin(Admin admin,
                                    HttpSession session,
@@ -96,7 +96,7 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 15:07
      */
-    @RequestMapping("logOut")
+    @RequestMapping("/logOut")
     @ResponseBody
     public ResponseBean logOut(HttpSession session) {
         session.removeAttribute("admin");
@@ -110,9 +110,9 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 16:10
      */
-    @RequestMapping("adminListPage")
+    @RequestMapping("/adminListPage")
     public String adminListPage() {
-        return "admin/admin/list";
+        return "/admin/admin/list";
     }
 
     /**
@@ -125,7 +125,7 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 16:13
      */
-    @RequestMapping("getAdminListLimit/{pageNum}/{pageSize}")
+    @RequestMapping("/getAdminListLimit/{pageNum}/{pageSize}")
     @ResponseBody
     public ResponseBean getAdminListLimit(@PathVariable Integer pageNum,
                                           @PathVariable Integer pageSize,
@@ -157,7 +157,7 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 18:15
      */
-    @RequestMapping("getAdminListVagueLimit/{pageNum}/{pageSize}")
+    @RequestMapping("/getAdminListVagueLimit/{pageNum}/{pageSize}")
     @ResponseBody
     public ResponseBean getAdminListVagueLimit(@PathVariable Integer pageNum,
                                                @PathVariable Integer pageSize,
@@ -187,7 +187,7 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 18:48
      */
-    @RequestMapping("updateAdminById")
+    @RequestMapping("/updateAdminById")
     @ResponseBody
     public ResponseBean updateAdminById(Admin admin) {
         if (null == admin) {
@@ -205,12 +205,12 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 20:58
      */
-    @RequestMapping("editPage/{adminId}")
+    @RequestMapping("/editPage/{adminId}")
     public String editPage(@PathVariable Integer adminId, Model model) {
         Admin admin = new Admin();
         admin.setId(adminId);
         model.addAttribute("admin", adminService.findOne(admin));
-        return "admin/admin/edit";
+        return "/admin/admin/edit";
     }
 
     /**
@@ -221,7 +221,7 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 22:48
      */
-    @RequestMapping("edit")
+    @RequestMapping("/edit")
     @ResponseBody
     public ResponseBean edit(Admin admin) {
         //检测邮箱是否可用
@@ -255,7 +255,7 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 23:31
      */
-    @RequestMapping("emailExist")
+    @RequestMapping("/emailExist")
     @ResponseBody
     public ResponseBean emailExist(@RequestParam(value = "email", required = true) String email) {
         Admin queryParam = new Admin();
@@ -275,7 +275,7 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/30 23:46
      */
-    @RequestMapping("addPage")
+    @RequestMapping("/addPage")
     public String addPage() {
         return "/admin/admin/add";
     }
@@ -288,7 +288,7 @@ public class AdminController {
      * @author lmx
      * @date 2019/3/31 0:08
      */
-    @RequestMapping("add")
+    @RequestMapping("/add")
     @ResponseBody
     public ResponseBean add(Admin admin) {
         boolean isExist = this.emailExist(admin.getEmail()).isSuccess();

@@ -23,3 +23,18 @@ function refreshVerify(id) {
     var times = myData.getTime();
     $("#" + id).attr("src", "/common/verifyCode/getVerifyCode?times=" + times);
 }
+
+/**
+ * 获取当前日期时间字符串
+ * @returns {string}
+ */
+function getNowTimeStr() {
+    var date = new Date();
+    var nowTime = date.getFullYear() + '-'
+        + (date.getMonth() + 1) + '-'
+        + date.getDate() + ' '
+        + date.getHours() + ':'
+        + date.getMinutes() + ':'
+        + date.getSeconds();
+    return nowTime;
+}

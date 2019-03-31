@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,7 +25,7 @@ import javax.servlet.http.HttpSession;
  * @Date：Created on 14:44 2019/3/17.
  * @ModifyBy：教师认证相关控制器
  */
-@RequestMapping("home/teacher")
+@RequestMapping("/home/teacher")
 @Controller("teacherController")
 public class TeacherController {
 
@@ -45,17 +44,17 @@ public class TeacherController {
      * @date 2019/3/17 17:09
      * @descript 教师认证页面视图
      */
-    @RequestMapping("auth")
+    @RequestMapping("/auth")
     public String teacherAuth(Model model, HttpSession session) {
         model.addAttribute("subjectList", subjectService.findAll());
         User user = (User) session.getAttribute("user");
         TeacherAssociation teacher = this.isApplyed(user.getId());
         //未申请跳转到申请页面，申请过到进度页面
         if (teacher == null) {
-            return "home/teacher-auth";
+            return "/home/teacher-auth";
         } else {
             model.addAttribute("applyInfo", teacher);
-            return "home/teacher-schedule";
+            return "/home/teacher-schedule";
         }
 
     }
@@ -82,7 +81,7 @@ public class TeacherController {
      * @date 2019/3/17 16:14
      * @descript 添加教师认证
      */
-    @RequestMapping("add")
+    @RequestMapping("/add")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> add(Teacher teacher,
                                              @RequestParam("idCardImg1") MultipartFile idCardImg1,

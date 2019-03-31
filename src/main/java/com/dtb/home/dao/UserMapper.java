@@ -83,15 +83,9 @@ public interface UserMapper {
      */
     Map<String,Object> selectUserInfoById(@Param("userId")Integer userId);
 
-    int insert(User record);
-
     int insertSelective(User record);
 
     User selectByPrimaryKey(@Param("id") Integer id);
 
     int updateByPrimaryKeySelective(User record);
-
-    int updateByPrimaryKeyWithBLOBs(User record);
-
-    int updateByPrimaryKey(User record);
 }

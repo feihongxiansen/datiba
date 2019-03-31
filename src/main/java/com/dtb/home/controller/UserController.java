@@ -33,7 +33,7 @@ import java.util.Map;
  * @ModifyBy：
  */
 @Controller("userController")
-@RequestMapping("home/user")
+@RequestMapping("/home/user")
 public class UserController {
 
     @Autowired
@@ -57,7 +57,7 @@ public class UserController {
      * @param: session 会话session
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("checkLogin")
+    @RequestMapping("/checkLogin")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> checkLogin(@RequestParam(value = "email", required = true) String email,
                                                     @RequestParam(value = "password", required = true) String password,
@@ -113,7 +113,7 @@ public class UserController {
      * @param: session 会话session
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("logOut")
+    @RequestMapping("/logOut")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> logOut(HttpSession session) {
         session.removeAttribute("user");
@@ -128,7 +128,7 @@ public class UserController {
      * @param: email 邮箱地址
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("checkEmailExist")
+    @RequestMapping("/checkEmailExist")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> checkEmailExist(@RequestParam(value = "email", required = true) String email) {
         User user = userService.findByEmail(email);
@@ -147,7 +147,7 @@ public class UserController {
      * @date 2019/3/17 12:52
      * @descript 注册用户
      */
-    @RequestMapping("register")
+    @RequestMapping("/register")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> register(User user, @RequestParam("file") MultipartFile file) throws Exception {
 
@@ -191,10 +191,10 @@ public class UserController {
      * @param: emailCode 邮箱验证码
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("activation/{id}/{emailCode}")
+    @RequestMapping("/activation/{id}/{emailCode}")
     public String activation(@PathVariable Integer id, @PathVariable String emailCode, Model model) {
         User user = userService.findById(id);
-        String page = "home/activation";
+        String page = "/home/activation";
 
         //检测用户是否存在
         if (user == null) {
@@ -235,7 +235,7 @@ public class UserController {
      * @param: id 用户id
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("resetEmailCode/{id}")
+    @RequestMapping("/resetEmailCode/{id}")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> resetEmailCode(@PathVariable Integer id) {
         User user = userService.findById(id);
@@ -276,7 +276,7 @@ public class UserController {
      * @date 2019/3/10 17:43
      * @descript 获取用户列表，返回字段仅有用户id，用户名和昵称
      */
-    @RequestMapping("getUserList")
+    @RequestMapping("/getUserList")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> getUserList() {
         List<User> userList = userService.findUserList();
@@ -292,7 +292,7 @@ public class UserController {
      * @date 2019/3/10 23:02
      * @descript 根据用户类型获取用户列表
      */
-    @RequestMapping("getUserListToLimit/{pageNum}/{pageSize}/{userType}")
+    @RequestMapping("/getUserListToLimit/{pageNum}/{pageSize}/{userType}")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> getUserListToLimit(@PathVariable Integer pageNum,
                                                             @PathVariable Integer pageSize,
@@ -321,7 +321,7 @@ public class UserController {
      * @date 2019/3/17 1:37
      * @descript 上传用户头像
      */
-    @RequestMapping("uploadUserPhoto")
+    @RequestMapping("/uploadUserPhoto")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> uploadUserPhoto(@RequestParam("file") MultipartFile file) throws Exception {
         String uploadPath = "/upload/images/avatar";
@@ -338,9 +338,9 @@ public class UserController {
      * @author lmx
      * @date 2019/3/29 23:58
      */
-    @RequestMapping("personalCenter")
+    @RequestMapping("/personalCenter")
     @ResponseBody
     public String personalCenter() {
-        return "home/personal-center";
+        return "/home/personal-center";
     }
 }

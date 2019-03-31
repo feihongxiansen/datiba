@@ -24,7 +24,7 @@ import java.util.Map;
  * @ModifyBy：
  */
 @Controller("indexController")
-@RequestMapping("home/index")
+@RequestMapping("/home/index")
 public class IndexController {
 
     @Autowired
@@ -43,11 +43,11 @@ public class IndexController {
      * @date 2019/3/11 0:35
      * @descript 渲染主页视图
      */
-    @RequestMapping("index")
+    @RequestMapping("/index")
     public String index(Model model) {
         List<Carousel> resultList = carouselService.findCarouselList();
         model.addAttribute("carouselList", resultList);
-        return "home/index";
+        return "/home/index";
     }
 
     /**
@@ -57,9 +57,9 @@ public class IndexController {
      * @param: []
      * @return: java.lang.String
      */
-    @RequestMapping("register")
+    @RequestMapping("/register")
     public String register() {
-        return "home/register";
+        return "/home/register";
     }
 
     /**
@@ -70,7 +70,7 @@ public class IndexController {
      * @date 2019/3/10 0:54
      * @descript 渲染登录页视图渲染
      */
-    @RequestMapping("login")
+    @RequestMapping("/login")
     public String login(@RequestParam(value = "pagePath", required = false, defaultValue = "/home/index/index") String pagePath,
                         Model model,
                         HttpSession session) {
@@ -78,7 +78,7 @@ public class IndexController {
             return "redirect:/home/index/index";
         }
         model.addAttribute("pagePath", pagePath);
-        return "home/login";
+        return "/home/login";
     }
 
     /**
@@ -88,9 +88,9 @@ public class IndexController {
      * @param:
      * @return: java.lang.String
      */
-    @RequestMapping("about")
+    @RequestMapping("/about")
     public String about() {
-        return "home/about";
+        return "/home/about";
     }
 
     /**
@@ -100,9 +100,9 @@ public class IndexController {
      * @param:
      * @return: java.lang.String
      */
-    @RequestMapping("question")
+    @RequestMapping("/question")
     public String question() {
-        return "home/question";
+        return "/home/question";
     }
 
     /**
@@ -112,11 +112,11 @@ public class IndexController {
      * @param:
      * @return: java.lang.String
      */
-    @RequestMapping("answer/{questionId}")
+    @RequestMapping("/answer/{questionId}")
     public String answer(@PathVariable("questionId") Integer questionId, Model model) {
         QuestionsAssociation questionAndAnswers = qaService.findAnswerList(questionId);
         model.addAttribute("questionInfo", questionAndAnswers);
-        return "home/answer";
+        return "/home/answer";
     }
 
     /**
@@ -126,12 +126,12 @@ public class IndexController {
      * @date 2019/3/14 23:43
      * @descript 提问页面
      */
-    @RequestMapping("ask")
+    @RequestMapping("/ask")
     public String ask(@RequestParam(value = "invitaId", required = false, defaultValue = "") Integer invitaId, Model model) {
         model.addAttribute("invitaId", invitaId);
         List<User> userList = userService.findUserList();
         model.addAttribute("userList", userList);
-        return "home/ask";
+        return "/home/ask";
     }
 
     /**
@@ -142,11 +142,11 @@ public class IndexController {
      * @date 2019/3/16 17:52
      * @descript 用户信息查看
      */
-    @RequestMapping("userinfo/{userId}")
+    @RequestMapping("/userinfo/{userId}")
     public String userInfo(@PathVariable("userId") Integer userId, Model model) {
         Map<String, Object> userInfoMap = userService.findUserInfoById(userId);
         model.addAttribute("userInfo", userInfoMap);
-        return "home/userinfo";
+        return "/home/userinfo";
     }
 
     /**
@@ -157,10 +157,10 @@ public class IndexController {
      * @date 2019/3/16 22:47
      * @descript 教师/学生用户列表
      */
-    @RequestMapping("user/list/{userType}")
+    @RequestMapping("/user/list/{userType}")
     public String userList(@PathVariable("userType") Byte userType, Model model) {
         model.addAttribute("userType", userType);
-        return "home/user-list";
+        return "/home/user-list";
     }
 
     /**
@@ -170,9 +170,9 @@ public class IndexController {
      * @author lmx
      * @date 2019/3/23 18:35
      */
-    @RequestMapping("gift/list")
+    @RequestMapping("/gift/list")
     public String list() {
-        return "home/gift-list";
+        return "/home/gift-list";
     }
 
 }

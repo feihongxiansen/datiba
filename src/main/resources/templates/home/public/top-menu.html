@@ -31,7 +31,7 @@
         <li class="layui-nav-item"><a href="/home/feedback/add">意见反馈</a></li>
         <li class="layui-nav-item"><a href="/home/index/about">联系我们</a></li>
 
-        <li class="layui-nav-item" th:if="${session.user} == null"><a href="home/index/login">登录</a></li>
+        <li class="layui-nav-item" th:if="${session.user} == null"><a href="/home/index/login">登录</a></li>
         <li class="layui-nav-item" th:if="${session.user} == null"><a href="/home/index/register">注册</a></li>
 
         <li class="layui-nav-item" th:if="${session.user} != null">

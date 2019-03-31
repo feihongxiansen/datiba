@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
@@ -30,7 +32,7 @@ import java.util.Map;
  * @ModifyBy：
  */
 @Controller("documentController")
-@RequestMapping("home/document")
+@RequestMapping("/home/document")
 public class DocumentController {
 
     @Autowired
@@ -52,11 +54,11 @@ public class DocumentController {
      * @date 2019/3/17 21:33
      * @descript 文档列表页渲染
      */
-    @RequestMapping("list")
+    @RequestMapping("/list")
     public String list(Model model) {
         model.addAttribute("gradeList", gradeService.findAll());
         model.addAttribute("subjectList", subjectService.findAll());
-        return "home/document-list";
+        return "/home/document-list";
     }
 
     /**
@@ -66,11 +68,11 @@ public class DocumentController {
      * @date 2019/3/17 21:37
      * @descript 添加文档页面渲染
      */
-    @RequestMapping("add")
+    @RequestMapping("/add")
     public String add(Model model) {
         model.addAttribute("gradeList", gradeService.findAll());
         model.addAttribute("subjectList", subjectService.findAll());
-        return "home/document-add";
+        return "/home/document-add";
     }
 
     /**
@@ -81,7 +83,7 @@ public class DocumentController {
      * @date 2019/3/18 23:50
      * @descript 用户上传文档
      */
-    @RequestMapping("upload")
+    @RequestMapping("/upload")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> upload(Documents document,
                                                 @RequestParam("file") MultipartFile file) throws Exception {
@@ -107,7 +109,7 @@ public class DocumentController {
      * @date 2019/3/19 22:29
      * @descript 多条件搜索文档
      */
-    @RequestMapping("searchListToLimit")
+    @RequestMapping("/searchListToLimit")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> searchDocumentList(Documents documents,
                                                             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
@@ -138,7 +140,7 @@ public class DocumentController {
      * @date 2019/3/21 20:56
      * @descript 文档详情查看
      */
-    @RequestMapping("detial/{documentId}")
+    @RequestMapping("/detial/{documentId}")
     public String documentDetial(@PathVariable("documentId") Integer documentId, Model model) {
         Documents documents = new Documents();
         documents.setId(documentId);
@@ -158,7 +160,7 @@ public class DocumentController {
      * @date 2019/3/21 21:07
      * @descript 下载前检测，如果首次下载，需要扣除积分，如果下载过，不需要扣除
      */
-    @RequestMapping("downloadCheck/{documentId}")
+    @RequestMapping("/downloadCheck/{documentId}")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> downloadCheck(@PathVariable("documentId") Integer documentId,
                                                        HttpSession session) {
@@ -187,7 +189,7 @@ public class DocumentController {
      * @date 2019/3/21 22:26
      * @descript 首次下载文档，对积分进行扣除/增加
      */
-    @RequestMapping("changeIntegral")
+    @RequestMapping("/changeIntegral")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> changeIntegral(@RequestParam("addId") Integer addId,
                                                         @RequestParam("lessId") Integer lessId,
@@ -224,11 +226,11 @@ public class DocumentController {
      * @author lmx
      * @date 2019/3/25 0:04
      */
-    @RequestMapping("myDocumentList")
+    @RequestMapping("/myDocumentList")
     public String myDocumentList(Model model) {
         model.addAttribute("gradeList", gradeService.findAll());
         model.addAttribute("subjectList", subjectService.findAll());
-        return "home/mydocument-list";
+        return "/home/mydocument-list";
     }
 
     /**
@@ -239,7 +241,7 @@ public class DocumentController {
      * @author lmx
      * @date 2019/3/26 22:20
      */
-    @RequestMapping("myUploadAndDownload/{userId}")
+    @RequestMapping("/myUploadAndDownload/{userId}")
     @ResponseBody
     public ResponseBean<List<DocumentCommentsAssociation>>
     getMyUploadAndDownload(@PathVariable("userId") Integer userId) {
@@ -256,7 +258,7 @@ public class DocumentController {
      * @author lmx
      * @date 2019/3/26 23:48
      */
-    @RequestMapping("myDownloadList/{userId}")
+    @RequestMapping("/myDownloadList/{userId}")
     @ResponseBody
     public ResponseBean<List<DocumentCommentsAssociation>>
     getDownloadListByUserId(@PathVariable("userId") Integer userId) {
@@ -268,10 +270,10 @@ public class DocumentController {
      * @param commentId 待评论id
      * @param model 视图容器
      */
-    @RequestMapping("comment/{commentId}")
+    @RequestMapping("/comment/{commentId}")
     public String comment(@PathVariable("commentId") Integer commentId,Model model){
         model.addAttribute("commentId",commentId);
-        return "home/comment";
+        return "/home/comment";
     }
 
     /**
@@ -281,7 +283,7 @@ public class DocumentController {
      * @param comment 评论参数
      * @return com.dtb.utils.resulthandler.ResponseBean
      */
-    @RequestMapping("addComment")
+    @RequestMapping("/addComment")
     @ResponseBody
     public ResponseBean addComment(DocumentComments comment){
         System.out.println(comment.getId()+comment.getCommentContent()+comment.getScore());

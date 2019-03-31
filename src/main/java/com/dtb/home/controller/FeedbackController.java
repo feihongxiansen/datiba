@@ -21,7 +21,7 @@ import java.io.IOException;
  * @create 2019/3/24-20:28
  */
 @Controller("feedbackController")
-@RequestMapping("home/feedback")
+@RequestMapping("/home/feedback")
 public class FeedbackController {
 
     @Autowired
@@ -37,7 +37,7 @@ public class FeedbackController {
      * @author lmx
      * @date 2019/3/24 20:31
      */
-    @RequestMapping("addFeedback")
+    @RequestMapping("/addFeedback")
     @ResponseBody
     public ResponseBean<String> addFeedback(FeedbackWithBLOBs feedback) {
         if (feedback.getQuestionPhotos() == null || feedback.getQuestionPhotos().trim() == "") {
@@ -62,7 +62,7 @@ public class FeedbackController {
      * @author lmx
      * @date 2019/3/24 20:41
      */
-    @RequestMapping("upload/images")
+    @RequestMapping("/upload/images")
     @ResponseBody
     public ResponseBean<String> uploadFeedbackImages(@RequestParam("files") MultipartFile[] files) throws IOException {
         String uploadPath = "/upload/images/feedback";
@@ -95,8 +95,8 @@ public class FeedbackController {
      * @author lmx
      * @date 2019/3/24 20:33
      */
-    @RequestMapping("add")
+    @RequestMapping("/add")
     public String feedback() {
-        return "home/feedback";
+        return "/home/feedback";
     }
 }

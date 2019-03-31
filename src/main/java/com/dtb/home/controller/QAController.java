@@ -32,7 +32,7 @@ import java.util.Map;
  * @ModifyBy：
  */
 @Controller("qAController")
-@RequestMapping("home/question")
+@RequestMapping("/home/question")
 public class QAController {
 
     @Autowired
@@ -54,7 +54,7 @@ public class QAController {
      * @param: needIntegral 是否需要积分
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("getQuestionList")
+    @RequestMapping("/getQuestionList")
     @ResponseBody
     public ResponseBean<CommonErrorEnum>
     getQuestionList(@RequestParam(value = "pageNum", required = false, defaultValue = "0") Integer pageNum,
@@ -89,7 +89,7 @@ public class QAController {
      * @param: pageSize
      * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
-    @RequestMapping("getAnswerList/{questionId}")
+    @RequestMapping("/getAnswerList/{questionId}")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> getAnswerList(@PathVariable("questionId") Integer questionId) {
         QuestionsAssociation questionAndAnswers = qaService.findAnswerList(questionId);
@@ -103,7 +103,7 @@ public class QAController {
      * @date 2019/3/16 11:37
      * @descript 上传问题图片
      */
-    @RequestMapping("uploadQuestionImages")
+    @RequestMapping("/uploadQuestionImages")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> uploadQuestionImages(@RequestParam("files") MultipartFile[] files) throws IOException {
         String uploadPath = "/upload/images/question";
@@ -135,7 +135,7 @@ public class QAController {
      * @date 2019/3/11 23:56
      * @descript 用户提问
      */
-    @RequestMapping("addQuestion")
+    @RequestMapping("/addQuestion")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> addQuestion(QuestionsWithBLOBs question, HttpSession session) {
         if (question.getQuestionPhotos() == null || question.getQuestionPhotos().trim() == "") {
@@ -166,7 +166,7 @@ public class QAController {
      * @date 2019/3/16 11:47
      * @descript 上传答案图片
      */
-    @RequestMapping("uploadAnswerImages")
+    @RequestMapping("/uploadAnswerImages")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> uploadAnswerImages(@RequestParam("files") MultipartFile[] files) throws IOException {
         String uploadPath = "/upload/images/answer";
@@ -182,7 +182,7 @@ public class QAController {
      * @date 2019/3/16 11:47
      * @descript 添加答案
      */
-    @RequestMapping("addAnswer")
+    @RequestMapping("/addAnswer")
     @ResponseBody
     public ResponseBean<CommonErrorEnum> addAnswer(AnswersWithBLOBs answer) {
         if (answer.getAnswerPhotos() == null || answer.getAnswerPhotos().trim() == "") {
@@ -209,9 +209,9 @@ public class QAController {
      * @author lmx
      * @date 2019/3/28 19:43
      */
-    @RequestMapping("myAsk")
+    @RequestMapping("/myAsk")
     public String myAsk() {
-        return "home/myask";
+        return "/home/myask";
     }
 
     /**
@@ -225,7 +225,7 @@ public class QAController {
      * @author lmx
      * @date 2019/3/28 20:34
      */
-    @RequestMapping("getQuestionListByState")
+    @RequestMapping("/getQuestionListByState")
     @ResponseBody
     public ResponseBean<Map<String, Object>> getQuestionListByState(@RequestParam Integer state,
                                                                     @RequestParam Integer pageNum,
@@ -256,7 +256,7 @@ public class QAController {
      * @author lmx
      * @date 2019/3/29 20:07
      */
-    @RequestMapping("closeQuestion/{id}")
+    @RequestMapping("/closeQuestion/{id}")
     @ResponseBody
     public ResponseBean<String> closeQuestion(@PathVariable Integer id, HttpSession session) {
         //获取登录用户id
@@ -293,7 +293,7 @@ public class QAController {
      * @author lmx
      * @date 2019/3/29 21:50
      */
-    @RequestMapping("adoptAnswer/{questionId}/{answerId}")
+    @RequestMapping("/adoptAnswer/{questionId}/{answerId}")
     @ResponseBody
     public ResponseBean<String> adoptAnswer(@PathVariable Integer questionId,
                                             @PathVariable Integer answerId,

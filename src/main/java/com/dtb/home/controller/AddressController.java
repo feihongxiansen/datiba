@@ -18,7 +18,7 @@ import java.util.List;
  * @create 2019/3/24-0:09
  */
 @Controller("addressController")
-@RequestMapping("home/address")
+@RequestMapping("/home/address")
 public class AddressController {
 
     @Autowired
@@ -32,7 +32,7 @@ public class AddressController {
      * @author lmx
      * @date 2019/3/24 0:35
      */
-    @RequestMapping("queryAddressListByUserId/{userId}")
+    @RequestMapping("/queryAddressListByUserId/{userId}")
     @ResponseBody
     public ResponseBean<List<Address>> queryAddressListByUserId(@PathVariable("userId") Integer userId) {
         List<Address> addressList = addressService.findAddressListByUserId(userId);
@@ -46,9 +46,9 @@ public class AddressController {
      * @author lmx
      * @date 2019/3/24 13:40
      */
-    @RequestMapping("addressList")
+    @RequestMapping("/addressList")
     public String addressList() {
-        return "home/address-list";
+        return "/home/address-list";
     }
 
     /**
@@ -59,7 +59,7 @@ public class AddressController {
      * @author lmx
      * @date 2019/3/24 16:09
      */
-    @RequestMapping("queryAddressById/{id}")
+    @RequestMapping("/queryAddressById/{id}")
     @ResponseBody
     public ResponseBean<Address> queryAddressById(@PathVariable("id") Integer id) {
         Address address = addressService.findAddressById(id);

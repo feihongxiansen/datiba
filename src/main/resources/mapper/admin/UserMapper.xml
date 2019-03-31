@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.UserMapper">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.User">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+        <result column="login_state" jdbcType="BIT" property="loginState"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="comment_state" jdbcType="BIT" property="commentState"/>
+        <result column="question_state" jdbcType="BIT" property="questionState"/>
+        <result column="answer_state" jdbcType="BIT" property="answerState"/>
+        <result column="user_type" jdbcType="TINYINT" property="userType"/>
+        <result column="sex" jdbcType="TINYINT" property="sex"/>
+        <result column="province" jdbcType="VARCHAR" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="area" jdbcType="VARCHAR" property="area"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="user_photo" jdbcType="VARCHAR" property="userPhoto"/>
+        <result column="integral" jdbcType="INTEGER" property="integral"/>
+        <result column="email_code" jdbcType="CHAR" property="emailCode"/>
+        <result column="phone_verify" jdbcType="BIT" property="phoneVerify"/>
+        <result column="email_verify" jdbcType="BIT" property="emailVerify"/>
+        <result column="login_time" jdbcType="TIMESTAMP" property="loginTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.User">
+        <result column="user_summary" jdbcType="LONGVARCHAR" property="userSummary"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_name, nick_name, login_state, password, comment_state, question_state, answer_state,
+        user_type, sex, province, city, area, email, phone, user_photo, integral, email_code,
+        phone_verify, email_verify, login_time, create_time, update_time, delete_time
+    </sql>
+    <sql id="Blob_Column_List">
+      user_summary
+    </sql>
+
+    <select id="selectPageUserList" resultMap="ResultMapWithBLOBs">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_user
+        <where>
+            <if test="queryParam.id != null">
+                id = #{queryParam.id}
+            </if>
+            <if test="queryParam.userName != null &amp;&amp; queryParam.userName!=''">
+                AND user_name LIKE CONCAT('%',#{queryParam.userName},'%')
+            </if>
+            <if test="queryParam.nickName != null &amp;&amp; queryParam.nickName!=''">
+                AND nick_name LIKE CONCAT('%',#{queryParam.nickName},'%')
+            </if>
+            <if test="queryParam.loginState != null">
+                AND login_state = #{queryParam.loginState}
+            </if>
+            <if test="queryParam.password != null &amp;&amp; queryParam.password!=''">
+                AND password = #{queryParam.password}
+            </if>
+            <if test="queryParam.commentState != null">
+                AND comment_state = #{queryParam.commentState}
+            </if>
+            <if test="queryParam.questionState != null">
+                AND question_state = #{queryParam.questionState}
+            </if>
+            <if test="queryParam.answerState != null">
+                AND answer_state = #{queryParam.answerState}
+            </if>
+            <if test="queryParam.userType != null">
+                AND user_type = #{queryParam.userType}
+            </if>
+            <if test="queryParam.sex != null">
+                AND sex = #{queryParam.sex}
+            </if>
+            <if test="queryParam.province != null &amp;&amp; queryParam.province!=''">
+                AND province = #{queryParam.province}
+            </if>
+            <if test="queryParam.city != null &amp;&amp; queryParam.city!=''">
+                AND city = #{queryParam.city}
+            </if>
+            <if test="queryParam.area != null &amp;&amp; queryParam.area!=''">
+                AND area = #{queryParam.area}
+            </if>
+            <if test="queryParam.email != null &amp;&amp; queryParam.email!=''">
+                AND email LIKE CONCAT('%',#{queryParam.email},'%')
+            </if>
+            <if test="queryParam.phone != null &amp;&amp; queryParam.phone!=''">
+                AND phone LIKE CONCAT('%',#{queryParam.phone},'%')
+            </if>
+            <if test="queryParam.userPhoto != null &amp;&amp; queryParam.userPhoto!=''">
+                AND user_photo = #{queryParam.userPhoto}
+            </if>
+            <if test="queryParam.integral != null">
+                AND integral = #{queryParam.integral}
+            </if>
+            <if test="queryParam.emailCode != null &amp;&amp; queryParam.emailCode!=''">
+                AND email_code = #{queryParam.emailCode}
+            </if>
+            <if test="queryParam.phoneVerify != null">
+                AND phone_verify = #{queryParam.phoneVerify}
+            </if>
+            <if test="queryParam.emailVerify != null">
+                AND email_verify = #{queryParam.emailVerify}
+            </if>
+            <if test="queryParam.loginTime != null">
+                AND login_time = #{queryParam.loginTime}
+            </if>
+            <if test="queryParam.createTime != null">
+                AND create_time = #{queryParam.createTime}
+            </if>
+            <if test="queryParam.updateTime != null">
+                AND update_time = #{queryParam.updateTime}
+            </if>
+            <if test="queryParam.deleteTime != null">
+                AND delete_time = #{queryParam.deleteTime}
+            </if>
+            <if test="queryParam.userSummary != null &amp;&amp; queryParam.userSummary!=''">
+                AND user_summary LIKE CONCAT('%',#{queryParam.userSummary},'%')
+            </if>
+            AND delete_time IS NULL
+        </where>
+        ORDER BY login_time DESC, create_time DESC
+    </select>
+
+    <select id="selectPageUserListVague" resultMap="ResultMapWithBLOBs">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_user
+        <where>
+            <if test="queryParam.id != null">
+                id = #{queryParam.id}
+            </if>
+            <if test="queryParam.userName != null &amp;&amp; queryParam.userName!=''">
+                AND user_name LIKE CONCAT('%',#{queryParam.userName},'%')
+            </if>
+            <if test="queryParam.nickName != null &amp;&amp; queryParam.nickName!=''">
+                AND nick_name LIKE CONCAT('%',#{queryParam.nickName},'%')
+            </if>
+            <if test="queryParam.loginState != null">
+                AND login_state = #{queryParam.loginState}
+            </if>
+            <if test="queryParam.password != null &amp;&amp; queryParam.password!=''">
+                AND password = #{queryParam.password}
+            </if>
+            <if test="queryParam.commentState != null">
+                AND comment_state = #{queryParam.commentState}
+            </if>
+            <if test="queryParam.questionState != null">
+                AND question_state = #{queryParam.questionState}
+            </if>
+            <if test="queryParam.answerState != null">
+                AND answer_state = #{queryParam.answerState}
+            </if>
+            <if test="queryParam.userType != null">
+                AND user_type = #{queryParam.userType}
+            </if>
+            <if test="queryParam.sex != null">
+                AND sex = #{queryParam.sex}
+            </if>
+            <if test="queryParam.province != null &amp;&amp; queryParam.province!=''">
+                AND province = #{queryParam.province}
+            </if>
+            <if test="queryParam.city != null &amp;&amp; queryParam.city!=''">
+                AND city = #{queryParam.city}
+            </if>
+            <if test="queryParam.area != null &amp;&amp; queryParam.area!=''">
+                AND area = #{queryParam.area}
+            </if>
+            <if test="queryParam.email != null &amp;&amp; queryParam.email!=''">
+                AND email LIKE CONCAT('%',#{queryParam.email},'%')
+            </if>
+            <if test="queryParam.phone != null &amp;&amp; queryParam.phone!=''">
+                AND phone LIKE CONCAT('%',#{queryParam.phone},'%')
+            </if>
+            <if test="queryParam.userPhoto != null &amp;&amp; queryParam.userPhoto!=''">
+                AND user_photo = #{queryParam.userPhoto}
+            </if>
+            <if test="queryParam.integral != null">
+                AND integral = #{queryParam.integral}
+            </if>
+            <if test="queryParam.emailCode != null &amp;&amp; queryParam.emailCode!=''">
+                AND email_code = #{queryParam.emailCode}
+            </if>
+            <if test="queryParam.phoneVerify != null">
+                AND phone_verify = #{queryParam.phoneVerify}
+            </if>
+            <if test="queryParam.emailVerify != null">
+                AND email_verify = #{queryParam.emailVerify}
+            </if>
+            <if test="queryParam.loginTime != null">
+                AND login_time = #{queryParam.loginTime}
+            </if>
+            <if test="queryParam.createTime != null">
+                AND create_time = #{queryParam.createTime}
+            </if>
+            <if test="queryParam.updateTime != null">
+                AND update_time = #{queryParam.updateTime}
+            </if>
+            <if test="queryParam.deleteTime != null">
+                AND delete_time = #{queryParam.deleteTime}
+            </if>
+            <if test="queryParam.userSummary != null &amp;&amp; queryParam.userSummary!=''">
+                AND user_summary LIKE CONCAT('%',#{queryParam.userSummary},'%')
+            </if>
+            <if test="vagueParam != null &amp;&amp; vagueParam!=''">
+                AND (nick_name LIKE CONCAT('%',#{vagueParam},'%') OR
+                user_name LIKE CONCAT('%',#{vagueParam},'%') OR
+                phone LIKE CONCAT('%',#{vagueParam},'%') OR
+                email LIKE CONCAT('%',#{vagueParam},'%')
+                )
+            </if>
+            AND delete_time IS NULL
+        </where>
+        ORDER BY login_time DESC, create_time DESC
+    </select>
+
+    <select id="selectById" resultMap="ResultMapWithBLOBs">
+        SELECT
+        <include refid="Blob_Column_List"/>
+        ,
+        <include refid="Base_Column_List"/>
+        FROM as_user
+        WHERE id = #{id}
+    </select>
+
+    <update id="updateByIdSelective" parameterType="com.dtb.entity.User">
+        update as_user
+        <set>
+            <if test="param.userName != null &amp;&amp; param.userName!=''">
+                user_name = #{param.userName,jdbcType=VARCHAR},
+            </if>
+            <if test="param.nickName != null &amp;&amp; param.nickName!=''">
+                nick_name = #{param.nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="param.loginState != null">
+                login_state = #{param.loginState,jdbcType=BIT},
+            </if>
+            <if test="param.password != null &amp;&amp; param.password!=''">
+                password = #{param.password,jdbcType=VARCHAR},
+            </if>
+            <if test="param.commentState != null">
+                comment_state = #{param.commentState,jdbcType=BIT},
+            </if>
+            <if test="param.questionState != null">
+                question_state = #{param.questionState,jdbcType=BIT},
+            </if>
+            <if test="param.answerState != null">
+                answer_state = #{param.answerState,jdbcType=BIT},
+            </if>
+            <if test="param.userType != null">
+                user_type = #{param.userType,jdbcType=TINYINT},
+            </if>
+            <if test="param.sex != null">
+                sex = #{param.sex,jdbcType=TINYINT},
+            </if>
+            <if test="param.province != null &amp;&amp; param.province!=''">
+                province = #{param.province,jdbcType=VARCHAR},
+            </if>
+            <if test="param.city != null &amp;&amp; param.city!=''">
+                city = #{param.city,jdbcType=VARCHAR},
+            </if>
+            <if test="param.area != null &amp;&amp; param.area!=''">
+                area = #{param.area,jdbcType=VARCHAR},
+            </if>
+            <if test="param.email != null &amp;&amp; param.email!=''">
+                email = #{param.email,jdbcType=VARCHAR},
+            </if>
+            <if test="param.phone != null &amp;&amp; param.phone!=''">
+                phone = #{param.phone,jdbcType=VARCHAR},
+            </if>
+            <if test="param.userPhoto != null &amp;&amp; param.userPhoto!=''">
+                user_photo = #{param.userPhoto,jdbcType=VARCHAR},
+            </if>
+            <if test="param.integral != null">
+                integral = #{param.integral,jdbcType=INTEGER},
+            </if>
+            <if test="param.emailCode != null &amp;&amp; param.emailCode!=''">
+                email_code = #{param.emailCode,jdbcType=CHAR},
+            </if>
+            <if test="param.phoneVerify != null">
+                phone_verify = #{param.phoneVerify,jdbcType=BIT},
+            </if>
+            <if test="param.emailVerify != null">
+                email_verify = #{param.emailVerify,jdbcType=BIT},
+            </if>
+            <if test="param.loginTime != null">
+                login_time = #{param.loginTime,jdbcType=TIMESTAMP},
+            </if>
+            update_time = CURRENT_TIMESTAMP,
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="param.userSummary != null &amp;&amp; param.userSummary!=''">
+                user_summary = #{param.userSummary,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{param.id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateBatchByIds">
+        UPDATE as_user
+        <set>
+            <if test="param.loginState != null">
+                login_state = #{param.loginState,jdbcType=BIT},
+            </if>
+            <if test="param.commentState != null">
+                comment_state = #{param.commentState,jdbcType=BIT},
+            </if>
+            <if test="param.questionState != null">
+                question_state = #{param.questionState,jdbcType=BIT},
+            </if>
+            <if test="param.answerState != null">
+                answer_state = #{param.answerState,jdbcType=BIT},
+            </if>
+            <if test="param.emailVerify != null">
+                email_verify = #{param.emailVerify,jdbcType=BIT},
+            </if>
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        WHERE id IN
+        <foreach collection="idList" open="(" close=")" separator="," item="itemId">
+            #{itemId}
+        </foreach>
+    </update>
+
+</mapper>

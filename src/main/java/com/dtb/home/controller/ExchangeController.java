@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession;
  * @version 1.0.0
  * @create 2019/3/24-18:15
  */
-@RequestMapping("home/exchange")
+@RequestMapping("/home/exchange")
 @Controller("exchangeController")
 public class ExchangeController {
 
@@ -39,7 +39,7 @@ public class ExchangeController {
      * @author lmx
      * @date 2019/3/24 18:40
      */
-    @RequestMapping("addExchange")
+    @RequestMapping("/addExchange")
     @ResponseBody
     public ResponseBean<String> addExchange(Exchange exchange, HttpSession session) {
         User user = userService.findById(exchange.getUserId());
