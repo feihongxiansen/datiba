@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{::script},~{::style})">
+    <title>教师认证申请列表-答题吧后台管理系统</title>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        .avatar {
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">用户管理</a>
+        <a href="">教师认证</a>
+        <a>
+          <cite>申请列表</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#xe666;</i></a>
+</div>
+<div class="weadmin-body" id="app" v-cloak>
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 we-search">
+            <div class="layui-input-inline">
+                搜索条件
+            </div>
+            <div class="layui-input-inline">
+                <select name="authState">
+                    <option value="">全部审核状态</option>
+                    <option value="0">待审核</option>
+                    <option value="1">已通过</option>
+                    <option value="2">待补充资料</option>
+                    <option value="3">审核未通过</option>
+                </select>
+            </div>
+            <div class="layui-inline">
+                <input type="text" v-model="searchParam.vagueParam" name="vagueParam" placeholder="昵称、姓名、邮箱或电话"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <button class="layui-btn" lay-submit lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <div class="weadmin-block layui-form">
+        <button class="layui-btn layui-btn-danger" onclick="updateAll('delete')"><i class="layui-icon"></i>批量删除
+        </button>
+        <div class="layui-input-inline">
+            <select name="authState">
+                <option value="">批量更新状态</option>
+                <option value="0">等待审核</option>
+                <option value="1">通过审核</option>
+                <option value="2">材料待完善</option>
+                <option value="3">审核不通过</option>
+            </select>
+        </div>
+        <button class="layui-btn layui-btn-warm" lay-submit lay-filter="batchUpdateBtn">
+            <i class="layui-icon">&#xe6b2;</i>批量审核
+        </button>
+        <span class="fr" style="line-height:40px">共有数据：{{total}} 条</span>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary">
+                    <i class="layui-icon">&#xe605;</i>
+                </div>
+            </th>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>昵称</th>
+            <th>邮箱</th>
+            <th>手机</th>
+            <th>申请时间</th>
+            <th>图片材料</th>
+            <th>备注</th>
+            <th>状态</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+        <tr v-for="item in teacherList">
+            <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" :data-id="item.id">
+                    <i class="layui-icon">&#xe605;</i>
+                </div>
+            </td>
+            <td>{{item.id}}</td>
+            <td><a @click="showAvatar(item.user.userPhoto)" href="javascript:void(0);">{{item.user.userName}}</a></td>
+            <td><a @click="showAvatar(item.user.userPhoto)" href="javascript:void(0);">{{item.user.nickName}}</a></td>
+            <td>{{item.user.email}}</td>
+            <td>{{item.user.phone}}</td>
+            <td>{{item.createTime}}</td>
+            <td>
+                <a @click="showPhotos(item.paperworkPhotoArray)">点击查看图片</a>
+            </td>
+            <td>{{item.reason}}</td>
+            <td class="td-status layui-form">
+                <span v-if="item.authState==0" class="layui-btn layui-btn-xs">待审核</span>
+                <span v-if="item.authState==1" class="layui-btn layui-btn-normal layui-btn-xs">已通过</span>
+                <span v-if="item.authState==2" class="layui-btn layui-btn-warm layui-btn-xs">待完善</span>
+                <span v-if="item.authState==3" class="layui-btn layui-btn-xs layui-btn-danger">不通过</span>
+            </td>
+            <td class="td-manage">
+                <a title="审核" @click="open('教师认证审核','/admin/teacher/editPage/'+item.id)" href="javascript:;">
+                    <i class="layui-icon">&#xe642;</i>
+                </a>
+                <a title="删除" @click="softDel(item.id)" v-if="item.adminType!=0" href="javascript:;">
+                    <i class="layui-icon">&#xe640;</i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="page">
+        <div id="laypage"></div>
+    </div>
+</div>
+</body>
+<script src="/static/common/plugs/vue/vue.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    function initLayui() {
+        layui.extend({
+            admin: '/static/admin/js/admin'
+        });
+        layui.use(['jquery', 'admin', 'form', 'laypage'], function () {
+            var laydate = layui.laydate
+                , $ = layui.jquery
+                , laypage = layui.laypage
+                , form = layui.form;
+
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
+                , count: app.$data.total //数据总数，从服务端得到
+                , limits: [10, 20, 40, 60, 80, 100] //每页条数的选择项。如果 layout 参数开启了 limit，则会出现每页条数的select选择框
+                , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+                , jump: function (obj, first) {
+                    app.$data.pageSize = obj.limit;
+                    app.$data.pageNum = obj.curr;
+                    //首次不执行
+                    if (!first) {
+                        getTeacherList();
+                    }
+                }
+            });
+
+            /**
+             * 监听搜索按钮
+             */
+            form.on("submit(sreach)", function (data) {
+                console.log(data.field);
+                app.$data.searchParam = data.field;
+                app.$data.initLayui = false;
+                getTeacherList();
+                return false;
+            });
+
+            /**
+             * 监听批量更新操作按钮
+             */
+            form.on("submit(batchUpdateBtn)", function (data) {
+                if (data.field.authState == "") {
+                    layer.msg("请选择批量修改的状态", {icon: 2, time: 1000});
+                    return false;
+                } else {
+                    updateAll(data.field.authState);
+                }
+            })
+        });
+    }
+
+    /*软删除*/
+    window.softDel = function (id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            $.post("/admin/teacher/updateBatchByIds", {idList: id, deleteTime: getNowTimeStr()}, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.msg('已删除!', {
+                        icon: 1,
+                        time: 1000
+                    });
+                    setTimeout(refresh, 1000);
+                } else {
+                    layer.msg(res.errMsg, {
+                        icon: 2,
+                        time: 1000
+                    });
+                }
+            });
+        });
+    };
+
+    /*批量操作*/
+    window.updateAll = function (argument) {
+        var data = tableCheck.getData();
+        var requestData;
+        var title;
+        if (data.length <= 0) {
+            return layer.msg("请选择要批量操作的数据！", {icon: 2, time: 1500});
+        }
+        switch (argument) {
+            case 'delete':
+                requestData = {
+                    idList: data.join(',')
+                    , deleteTime: getNowTimeStr()
+                    , adminId: [[${session.admin.id}]]
+                };
+                title = '删除';
+                break;
+            default:
+                layer.prompt({title: '请输入审核备注信息', formType: 2}, function (text, index) {
+                    if (text == null || text == '') {
+                        layer.msg('请输入备注信息' + text, {icon: 2, time: 1500});
+                        return null;
+                    }
+                    requestData = {
+                        idList: data.join(',')
+                        , authState: argument
+                        , adminId: [[${session.admin.id}]]
+                        , reason: text
+                    };
+                    title = '修改审核状态';
+                    sendBatchUpdateRequest(title, data.length, requestData, argument);
+                    layer.close(index);
+                });
+                return;
+        }
+        sendBatchUpdateRequest(title, data.length, requestData, argument);
+    };
+
+    /**
+     * 发请求到服务器端进行批量修改
+     */
+    function sendBatchUpdateRequest(title, len, requestData, argument) {
+        layer.confirm('确认要' + title + len + '条数据吗？', function (index) {
+            //捉到所有被选中的，发异步进行删除
+            $.post("/admin/teacher/updateBatchByIds", requestData, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.msg(title + '成功', {
+                        icon: 1, time: 1500
+                    });
+                    if (argument == 'delete') {
+                        $(".layui-form-checked").not('.header').parents('tr').remove();
+                    } else {
+                        setTimeout(refresh, 1500)
+                    }
+                }
+            });
+        });
+    }
+
+
+    /**
+     * 服务器获取管理员列表
+     * @param pageNum 当前页码
+     * @param paeSize 页面大小
+     */
+    function getTeacherList() {
+        var requestUrl = "/admin/teacher/getPageTeacherList/" + app.$data.pageNum + "/" + app.$data.pageSize;
+        console.log("搜索条件：", app.$data.searchParam);
+        console.log(app.$data.searchParam.vagueParam);
+        $.post(requestUrl, app.$data.searchParam, function (res) {
+            console.log(res);
+            if (res.success) {
+                app.$data.total = res.data.pageInfo.total;
+                app.$data.teacherList = res.data.teacherList;
+                app.$data.initLayui = true;
+            }
+        })
+    }
+
+    var that = this;
+    var app = new Vue({
+        el: "#app",
+        data: {
+            teacherList: null //管理员列表
+            , total: 0 //数据总数
+            , initLayui: false //是否可以初始化layui
+            , pageSize: 10
+            , pageNum: 1
+            , searchParam: {//搜索条件
+                authState: null
+                , vagueParam: null
+            }
+        },
+        watch: {
+            'initLayui': function (newVal) {
+                console.log("change initLayui value:", newVal);
+                if (newVal)
+                    that.initLayui();
+            }
+        },
+        methods: {
+            /**
+             * 软删除数据
+             */
+            softDel: function (id) {
+                softDel(id);
+            },
+            /**
+             * 打开弹窗
+             * @param title
+             * @param url
+             */
+            open: function (title, url) {
+                WeAdminShow(title, url);
+            },
+            /**
+             * 查看用户头像
+             * @param imgSrc
+             */
+            showAvatar: function (imgSrc) {
+                layer.open({
+                    title: "用户头像",
+                    type: 1,
+                    area: ['auto', '45%'], //宽高
+                    shadeClose: true,//点击遮罩关闭
+                    content: "<img style='height: 100%;' src='" + imgSrc + "'/>"
+                });
+            },
+            /**
+             * 查看审核材料图片
+             * @param photoArr
+             */
+            showPhotos: function (photoArr) {
+                var htmlStr = "";
+                for (var i = 0; i < photoArr.length; i++) {
+                    htmlStr += "<img style='height: 80%;' src='" + photoArr[i] + "'/>"
+                }
+                layer.open({
+                    title: "审核材料",
+                    type: 1,
+                    area: ['80%', '80%'], //宽高
+                    shadeClose: true,//点击遮罩关闭
+                    content: htmlStr
+                });
+            }
+        }
+    });
+    getTeacherList();
+</script>
+</html>

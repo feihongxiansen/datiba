@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{::style},~{})">
+    <title>信息审核-答题吧后台管理系统</title>
+    <style>
+        .img-thumbnail {
+            display: inline-block;
+            max-width: 100%;
+            padding: 4px;
+            line-height: 1.42857143;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+            transition: all .2s ease-in-out;
+            height: 300px;
+            width: auto;
+        }
+    </style>
+</head>
+
+<body>
+<div class="weadmin-body">
+    <form class="layui-form">
+        <input type="hidden" name="id" th:value="${teacher.id}">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="we-red">*</span>审核材料
+            </label>
+        </div>
+        <div class="layui-input-inline">
+            <img th:src="${item}" class="img-thumbnail" th:each="item : ${teacher.paperworkPhotoArray}">
+        </div>
+        <div class="layui-form-item">
+            <label for="authState" class="layui-form-label">
+                <span class="we-red">*</span>审核结果
+            </label>
+            <div class="layui-input-inline">
+                <select name="authState" required lay-verify="required" id="authState">
+                    <option value="">审核结果</option>
+                    <option value="0">等待审核</option>
+                    <option value="1">通过审核</option>
+                    <option value="2">材料待完善</option>
+                    <option value="3">审核不通过</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">审核备注</label>
+            <div class="layui-input-block">
+                <textarea name="reason" required lay-verify="required" placeholder="请输入内容"
+                          class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-filter="edit" lay-submit>提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    layui.extend({
+        admin: '/static/admin/js/admin'
+    });
+    layui.use(['form', 'layer', 'jquery', 'admin'], function () {
+        var form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer;
+
+        //监听提交
+        form.on('submit(edit)', function (data) {
+            console.log(data.field);
+            var requestData = {
+                idList: data.field.id
+                , authState: data.field.authState
+                , adminId: [[${session.admin.id}]]
+                , reason: data.field.reason
+            };
+            $.post("/admin/teacher/updateBatchByIds", requestData, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.alert("修改成功", {icon: 6}, function () {
+                        refreshParent();
+                    });
+                } else {
+                    layer.msg(res.errMsg, {icon: 5, time: 1500});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+
+</html>

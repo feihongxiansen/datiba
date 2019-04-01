@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.SubjectMapper">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Subject">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="subject_name" jdbcType="VARCHAR" property="subjectName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, subject_name, create_time, update_time, delete_time
+  </sql>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from as_subject
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+</mapper>

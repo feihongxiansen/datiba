@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.TeacherMapper">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Teacher">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="auth_state" jdbcType="TINYINT" property="authState"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="admin_id" jdbcType="INTEGER" property="adminId"/>
+        <result column="subject_id" jdbcType="INTEGER" property="subjectId"/>
+        <result column="reason" jdbcType="VARCHAR" property="reason"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.Teacher">
+        <result column="paperwork_photos" jdbcType="LONGVARCHAR" property="paperworkPhotos"/>
+    </resultMap>
+    <resultMap extends="ResultMapWithBLOBs" id="ResultMapWithAssociation" type="com.dtb.entity.TeacherAssociation">
+        <association property="user" column="user_id" select="com.dtb.admin.dao.UserMapper.selectById"></association>
+        <association property="subject" column="subject_id"
+                     select="com.dtb.admin.dao.SubjectMapper.selectById"></association>
+        <association property="admin" column="admin_id"
+                     select="com.dtb.admin.dao.AdminMapper.selectByPrimaryKey"></association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, auth_state, user_id, admin_id, subject_id, reason, create_time, delete_time, update_time
+  </sql>
+    <sql id="Blob_Column_List">
+    paperwork_photos
+  </sql>
+
+    <select id="selectPageTeacherListVague" resultMap="ResultMapWithAssociation">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_teacher
+        <where>
+            <if test="queryParam.id != null">
+                id = #{queryParam.id,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.authState != null">
+                AND auth_state = #{queryParam.authState,jdbcType=TINYINT}
+            </if>
+            <if test="queryParam.userId != null">
+                AND user_id = #{queryParam.userId,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.adminId != null">
+                AND admin_id = #{queryParam.adminId,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.subjectId != null">
+                AND subject_id = #{queryParam.subjectId,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.reason != null">
+                AND reason LIKE CONCAT('%',#{queryParam.reason,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="queryParam.createTime != null">
+                AND create_time = #{queryParam.createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="queryParam.deleteTime != null">
+                AND delete_time = #{queryParam.deleteTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="queryParam.updateTime != null">
+                AND update_time = #{queryParam.updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="queryParam.paperworkPhotos != null">
+                AND paperwork_photos = CONCAT('%',#{queryParam.paperworkPhotos,jdbcType=LONGVARCHAR},'%')
+            </if>
+            <if test="vagueParam!=null &amp;&amp; vagueParam!=''">
+                AND user_id IN (SELECT u.id
+                FROM as_user AS u
+                WHERE (u.email LIKE CONCAT('%',#{vagueParam},'%')
+                OR u.phone LIKE CONCAT('%',#{vagueParam},'%')
+                OR u.user_name LIKE CONCAT('%',#{vagueParam},'%')
+                OR u.nick_name LIKE CONCAT('%',#{vagueParam},'%'))
+                AND u.delete_time IS NULL
+                )
+            </if>
+            AND delete_time IS NULL
+        </where>
+        ORDER BY auth_state ASC, create_time DESC
+    </select>
+
+    <select id="selectById" resultType="com.dtb.entity.TeacherAssociation">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_teacher
+        WHERE id = #{id}
+    </select>
+
+    <update id="updateBatchByIds">
+        UPDATE as_teacher
+        <set>
+            <if test="param.authState != null">
+                auth_state = #{param.authState,jdbcType=TINYINT},
+            </if>
+            <if test="param.userId != null">
+                user_id = #{param.userId,jdbcType=INTEGER},
+            </if>
+            <if test="param.adminId != null">
+                admin_id = #{param.adminId,jdbcType=INTEGER},
+            </if>
+            <if test="param.subjectId != null">
+                subject_id = #{param.subjectId,jdbcType=INTEGER},
+            </if>
+            <if test="param.reason != null">
+                reason = #{param.reason,jdbcType=VARCHAR},
+            </if>
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            update_time = CURRENT_TIMESTAMP,
+            <if test="param.paperworkPhotos != null">
+                paperwork_photos = #{param.paperworkPhotos,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        WHERE id IN
+        <foreach collection="idList" open="(" close=")" separator="," item="itemId">
+            #{itemId}
+        </foreach>
+    </update>
+</mapper>
