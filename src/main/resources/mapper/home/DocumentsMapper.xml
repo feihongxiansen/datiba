@@ -252,7 +252,27 @@
   </update>
     <update id="changeDocumentScoreById">
       UPDATE as_documents
-      SET score = IF(score IS NULL,#{score},(#{score}+score)/2)
-      WHERE id =#{id}
+      SET score =
+      IF (
+          score IS NULL,
+          #{score},
+          (
+              (SELECT
+                  SUM(score)
+              FROM
+                  as_document_comments
+              WHERE
+                  document_id = #{id})+#{score}
+                  AND delete_time IS NULL
+          ) / ((SELECT
+                  COUNT(*)
+              FROM
+                  as_document_comments
+              WHERE
+                  document_id = #{id}
+                  AND delete_time IS NULL)+1)
+      )
+      WHERE
+          id = #{id}
     </update>
 </mapper>

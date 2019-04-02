@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.QuestionMapper">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Questions">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="invita_id" jdbcType="INTEGER" property="invitaId"/>
+        <result column="integral" jdbcType="INTEGER" property="integral"/>
+        <result column="solve_state" jdbcType="INTEGER" property="solveState"/>
+        <result column="question_state" jdbcType="BIT" property="questionState"/>
+        <result column="subject_id" jdbcType="INTEGER" property="subjectId"/>
+        <result column="grade_id" jdbcType="INTEGER" property="gradeId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.QuestionsWithBLOBs">
+        <result column="question_summary" jdbcType="LONGVARCHAR" property="questionSummary"/>
+        <result column="question_photos" jdbcType="LONGVARCHAR" property="questionPhotos"/>
+    </resultMap>
+    <resultMap extends="ResultMapWithBLOBs" id="ResultMapAssociation" type="com.dtb.entity.QuestionsAssociation">
+        <association column="user_id" property="user"
+                     select="com.dtb.admin.dao.UserMapper.selectById"></association>
+        <association column="invita_id" property="invita"
+                     select="com.dtb.admin.dao.UserMapper.selectById"></association>
+        <association column="grade_id" property="grade"
+                     select="com.dtb.home.dao.GradeMapper.selectByPrimaryKey"></association>
+        <association column="subject_id" property="subject"
+                     select="com.dtb.home.dao.SubjectMapper.selectByPrimaryKey"></association>
+    </resultMap>
+    <resultMap extends="ResultMapAssociation" id="ResultMapCollection" type="com.dtb.entity.QuestionsAssociation">
+        <collection column="id" property="answers" ofType="com.dtb.entity.AnswersAssociation"
+                    select="com.dtb.home.dao.AnswersMapper.selectByQuestionId"></collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, invita_id, integral, solve_state, question_state, subject_id, grade_id,
+        create_time, delete_time, update_time
+    </sql>
+
+    <sql id="Blob_Column_List">
+      question_summary, question_photos
+    </sql>
+
+    <select id="selectPageQuestionVague" resultMap="ResultMapCollection">
+        SELECT
+        (SELECT COUNT(*) FROM as_answers WHERE question_id = as_questions.id AND delete_time IS NULL) AS `count`,
+        <include refid="Blob_Column_List"/>
+        ,
+        <include refid="Base_Column_List"/>
+        FROM as_questions
+        <where>
+            <if test="queryParam.id != null">
+                id = #{queryParam.}
+            </if>
+            <if test="queryParam.userId != null">
+                AND (user_id = #{queryParam.userId} OR invita_id = #{queryParam.userId})
+            </if>
+            <if test="queryParam.solveState != null">
+                AND IF(#{queryParam.solveState}=0,solve_state = 0,solve_state !=0)
+            </if>
+            <if test="queryParam.questionState != null">
+                AND question_state = #{queryParam.questionState}
+            </if>
+            <if test="queryParam.subjectId != null">
+                AND subject_id = #{queryParam.subjectId}
+            </if>
+            <if test="queryParam.gradeId != null">
+                AND grade_id = #{queryParam.gradeId}
+            </if>
+            <if test="vague != null &amp;&amp; vague!=''">
+                AND user_id IN (
+                SELECT u.id
+                FROM as_user AS u
+                WHERE u.email LIKE CONCAT('%',#{vague},'%')
+                OR u.phone LIKE CONCAT('%',#{vague},'%')
+                AND u.delete_time IS NULL
+                )
+            </if>
+            AND delete_time IS NULL
+        </where>
+        ORDER BY create_time DESC, solve_state DESC
+    </select>
+
+    <select id="findAnswerListById" parameterType="java.lang.Integer" resultMap="ResultMapCollection">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_questions
+        WHERE id = #{questionId,jdbcType=INTEGER}
+        AND delete_time IS NULL
+    </select>
+
+    <update id="updateBatchByIds">
+        update as_questions
+        <set>
+            <if test="param.userId != null">
+                user_id = #{param.userId,jdbcType=INTEGER},
+            </if>
+            <if test="param.invitaId != null">
+                invita_id = #{param.invitaId,jdbcType=INTEGER},
+            </if>
+            <if test="param.integral != null">
+                integral = #{param.integral,jdbcType=INTEGER},
+            </if>
+            <if test="param.solveState != null">
+                solve_state = #{param.solveState,jdbcType=INTEGER},
+            </if>
+            <if test="param.questionState != null">
+                question_state = #{param.questionState,jdbcType=BIT},
+            </if>
+            <if test="param.subjectId != null">
+                subject_id = #{param.subjectId,jdbcType=INTEGER},
+            </if>
+            <if test="param.gradeId != null">
+                grade_id = #{param.gradeId,jdbcType=INTEGER},
+            </if>
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="param.questionSummary != null">
+                question_summary = #{param.questionSummary,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="param.questionPhotos != null">
+                question_photos = #{param.questionPhotos,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id IN
+        <foreach collection="idList" open="(" close=")" separator="," item="itemId">
+            #{itemId}
+        </foreach>
+    </update>
+</mapper>

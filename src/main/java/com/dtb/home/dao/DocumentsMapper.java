@@ -57,6 +57,4 @@ public interface DocumentsMapper {
      * @return java.lang.Integer
      */
     Integer changeDocumentScoreById(@Param("id") Integer id, @Param("score") Float score);
-
-    int updateByPrimaryKey(Documents record);
 }

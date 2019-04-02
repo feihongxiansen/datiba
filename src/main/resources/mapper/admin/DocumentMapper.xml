@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.DocumentMapper">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Documents">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="admin_id" jdbcType="INTEGER" property="adminId"/>
+        <result column="integral" jdbcType="INTEGER" property="integral"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="summary" jdbcType="VARCHAR" property="summary"/>
+        <result column="document_type" jdbcType="TINYINT" property="documentType"/>
+        <result column="grade_id" jdbcType="INTEGER" property="gradeId"/>
+        <result column="subject_id" jdbcType="INTEGER" property="subjectId"/>
+        <result column="check_state" jdbcType="TINYINT" property="checkState"/>
+        <result column="download_count" jdbcType="INTEGER" property="downloadCount"/>
+        <result column="file_path" jdbcType="VARCHAR" property="filePath"/>
+        <result column="reason" jdbcType="VARCHAR" property="reason"/>
+        <result column="score" jdbcType="FLOAT" property="score"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+    </resultMap>
+    <resultMap id="AssociationMap" extends="BaseResultMap" type="com.dtb.entity.DocumentsAssociation">
+        <association property="user" column="user_id" select="com.dtb.home.dao.UserMapper.selectByPrimaryKey"/>
+        <association property="admin" column="admin_id" select="com.dtb.home.dao.AdminMapper.selectByPrimaryKey"/>
+        <association property="grade" column="grade_id" select="com.dtb.home.dao.GradeMapper.selectByPrimaryKey"/>
+        <association property="subject" column="subject_id" select="com.dtb.home.dao.SubjectMapper.selectByPrimaryKey"/>
+        <collection property="comments" column="id"
+                    select="com.dtb.home.dao.DocumentCommentsMapper.selectListByDocumentId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, user_id, admin_id, integral, title, summary, document_type, grade_id, subject_id, check_state, download_count,
+    file_path, reason, score, create_time, update_time, delete_time
+  </sql>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from as_documents
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPageDocument" resultMap="AssociationMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM as_documents
+        <where>
+            <if test="queryParam.id != null">
+                id = #{queryParam.id,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.userId != null">
+                AND user_id = #{queryParam.userId,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.adminId != null">
+                AND admin_id = #{queryParam.adminId,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.integral != null">
+                AND IF(#{queryParam.integral}>0,integral > 0,integral &lt;= 0)
+            </if>
+            <if test="queryParam.title != null">
+                AND title LIKE CONCAT('%',#{queryParam.title,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="queryParam.summary != null">
+                AND summary LIKE CONCAT('%',#{queryParam.summary,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="queryParam.documentType != null">
+                AND document_type = #{queryParam.documentType,jdbcType=TINYINT}
+            </if>
+            <if test="queryParam.gradeId != null">
+                AND grade_id = #{queryParam.gradeId,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.subjectId != null">
+                AND subject_id = #{queryParam.subjectId,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.checkState != null">
+                AND check_state = #{queryParam.checkState,jdbcType=TINYINT}
+            </if>
+            <if test="queryParam.downloadCount != null">
+                AND download_count = #{queryParam.downloadCount,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.reason != null">
+                AND reason LIKE CONCAT('%',#{queryParam.reason,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="queryParam.score != null">
+                AND score = #{queryParam.score,jdbcType=FLOAT}
+            </if>
+            <if test="vagueParam!=null &amp;&amp; vagueParam!=''">
+                AND user_id IN (
+                SELECT u.id
+                FROM as_user u
+                WHERE (u.nick_name LIKE CONCAT('%',#{vagueParam},'%')
+                OR u.user_name LIKE CONCAT('%',#{vagueParam},'%')
+                OR u.email LIKE CONCAT('%',#{vagueParam},'%')
+                OR u.phone LIKE CONCAT('%',#{vagueParam},'%'))
+                AND delete_time IS NULL
+                )
+            </if>
+            AND delete_time IS NULL
+        </where>
+        ORDER BY check_state ASC, create_time DESC
+    </select>
+
+    <update id="updateBatchByIds">
+        update as_documents
+        <set>
+            <if test="param.userId != null">
+                user_id = #{param.userId,jdbcType=INTEGER},
+            </if>
+            <if test="param.adminId != null">
+                admin_id = #{param.adminId,jdbcType=INTEGER},
+            </if>
+            <if test="param.integral != null">
+                integral = #{param.integral,jdbcType=INTEGER},
+            </if>
+            <if test="param.title != null">
+                title = #{param.title,jdbcType=VARCHAR},
+            </if>
+            <if test="param.summary != null">
+                summary = #{param.summary,jdbcType=VARCHAR},
+            </if>
+            <if test="param.documentType != null">
+                document_type = #{param.documentType,jdbcType=TINYINT},
+            </if>
+            <if test="param.gradeId != null">
+                grade_id = #{param.gradeId,jdbcType=INTEGER},
+            </if>
+            <if test="param.subjectId != null">
+                subject_id = #{param.subjectId,jdbcType=INTEGER},
+            </if>
+            <if test="param.checkState != null">
+                check_state = #{param.checkState,jdbcType=TINYINT},
+            </if>
+            <if test="param.downloadCount != null">
+                download_count = #{param.downloadCount,jdbcType=INTEGER},
+            </if>
+            <if test="param.filePath != null">
+                file_path = #{param.filePath,jdbcType=VARCHAR},
+            </if>
+            <if test="param.reason != null">
+                reason = #{param.reason,jdbcType=VARCHAR},
+            </if>
+            <if test="param.score != null">
+                score = #{param.score,jdbcType=FLOAT},
+            </if>
+            update_time = CURRENT_TIMESTAMP,
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id IN
+        <foreach collection="idList" item="itemId" separator="," open="(" close=")">
+            #{itemId}
+        </foreach>
+    </update>
+</mapper>

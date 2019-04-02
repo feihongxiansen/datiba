@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{::style},~{})">
+    <title>问题详情-答题吧后台管理系统</title>
+    <style>
+        .img-thumbnail {
+            display: inline-block;
+            max-width: 100%;
+            padding: 4px;
+            line-height: 1.42857143;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+            transition: all .2s ease-in-out;
+            height: 300px;
+            width: auto;
+        }
+    </style>
+</head>
+
+<body>
+<div class="weadmin-body">
+    <form class="layui-form layui-form-pane">
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">问题详情</label>
+            <div class="layui-input-block">
+                <div disabled class="layui-textarea" th:text="${question.questionSummary}"></div>
+            </div>
+        </div>
+        <div class="layui-input-inline">
+            <img th:src="${item}" class="img-thumbnail" th:each="item : ${question.questionPhotoList}">
+        </div>
+
+        <blockquote class="layui-elem-quote">答案列表</blockquote>
+
+        <th:block th:each="item,state:${question.answers}">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">
+                    <span th:text="'【'+${state.count}+'】'+${item.user.userName}+'-'+${item.user.nickName}"></span>
+                    <span th:if="${item.adoptionState}" class="layui-badge layui-bg-green">已采纳</span>
+                    <button class="layui-btn layui-btn-danger layui-btn-sm" type="button"
+                            th:onclick="'javascript:del('+${item.id}+');'">删除
+                    </button>
+                </label>
+                <div class="layui-input-block">
+                    <div disabled class="layui-textarea" th:text="${item.answerSummary}"></div>
+                </div>
+            </div>
+            <div class="layui-input-inline">
+                <img th:src="${photo}" class="img-thumbnail" th:each="photo:${item?.answerPhotoList}">
+            </div>
+        </th:block>
+
+    </form>
+</div>
+</body>
+<script type="text/javascript">
+
+    var layer;
+    layui.use('layer', function (d) {
+        layer = layui.layer;
+    });
+
+    //删除答案
+    function del(id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            $.post("/admin/question/deleteAnswerById/" + id, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.msg('已删除!', {
+                        icon: 1,
+                        time: 1000
+                    });
+                    setTimeout(refresh, 1000);
+                } else {
+                    layer.msg(res.errMsg, {
+                        icon: 2,
+                        time: 1000
+                    });
+                }
+            });
+        });
+    }
+</script>
+</html>

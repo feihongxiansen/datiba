@@ -58,8 +58,7 @@ public class TeacherController {
     public ResponseBean getPageTeacherList(@PathVariable Integer pageNum,
                                            @PathVariable Integer pageSize,
                                            @RequestParam String vagueParam,
-                                           Teacher teacher
-    ) {
+                                           Teacher teacher) {
         if (teacher == null) {
             return new ResponseBean(false, CommonErrorEnum.BAD_REQUEST);
         }
