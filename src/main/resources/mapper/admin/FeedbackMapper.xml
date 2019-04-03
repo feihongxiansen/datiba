@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.FeedbackMapper">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Feedback">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="admin_id" jdbcType="INTEGER" property="adminId"/>
+        <result column="question_type" jdbcType="VARCHAR" property="questionType"/>
+        <result column="question_state" jdbcType="VARCHAR" property="questionState"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.FeedbackWithBLOBs">
+        <result column="question_summary" jdbcType="LONGVARCHAR" property="questionSummary"/>
+        <result column="question_photos" jdbcType="LONGVARCHAR" property="questionPhotos"/>
+    </resultMap>
+    <resultMap id="ResultAssociation" extends="ResultMapWithBLOBs" type="com.dtb.entity.FeedbackAssociation">
+        <association property="admin" column="admin_id" select="com.dtb.admin.dao.AdminMapper.selectByPrimaryKey"/>
+        <association property="user" column="user_id" select="com.dtb.admin.dao.UserMapper.selectById"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, admin_id, question_type, question_state, create_time, update_time, delete_time
+  </sql>
+    <sql id="Blob_Column_List">
+    question_summary, question_photos
+  </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from as_feedback
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPageFeedbackListVague" resultMap="ResultAssociation">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_feedback
+        <where>
+            <if test="feedback.id != null">
+                id = #{feedback.id}
+            </if>
+            <if test="feedback.userId != null">
+                AND user_id = #{feedback.userId}
+            </if>
+            <if test="feedback.adminId != null">
+                AND admin_id = #{feedback.adminId}
+            </if>
+            <if test="feedback.questionSummary != null &amp;&amp; feedback.questionSummary != ''">
+                AND question_summary LIKE CONCAT('%',#{feedback.questionSummary},'%')
+            </if>
+            <if test="feedback.questionType != null &amp;&amp; feedback.questionType != ''">
+                AND question_type = #{feedback.questionType}
+            </if>
+            <if test="feedback.questionState != null &amp;&amp; feedback.questionState != ''">
+                AND question_state = #{feedback.questionState}
+            </if>
+            <if test="vagueParam != null &amp;&amp; vagueParam != ''">
+                AND user_id IN(
+                SELECT u.id FROM as_user AS u
+                WHERE (
+                u.user_name LIKE CONCAT('%',#{vagueParam},'%') OR
+                u.nick_name LIKE CONCAT('%',#{vagueParam},'%') OR
+                u.email LIKE CONCAT('%',#{vagueParam},'%') OR
+                u.phone LIKE CONCAT('%',#{vagueParam},'%')
+                )
+                )
+            </if>
+            AND delete_time IS NULL
+        </where>
+    </select>
+
+
+    <update id="updateBatchByIds" parameterType="com.dtb.entity.FeedbackWithBLOBs">
+        update as_feedback
+        <set>
+            <if test="param.userId != null">
+                user_id = #{param.userId,jdbcType=INTEGER},
+            </if>
+            <if test="param.adminId != null">
+                admin_id = #{param.adminId,jdbcType=INTEGER},
+            </if>
+            <if test="param.questionType != null">
+                question_type = #{param.questionType,jdbcType=VARCHAR},
+            </if>
+            <if test="param.questionState != null">
+                question_state = #{param.questionState,jdbcType=VARCHAR},
+            </if>
+            update_time = CURRENT_TIMESTAMP,
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="param.questionSummary != null">
+                question_summary = #{param.questionSummary,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="param.questionPhotos != null">
+                question_photos = #{param.questionPhotos,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id IN
+        <foreach collection="idList" open="(" close=")" separator="," item="itemId">
+            #{itemId}
+        </foreach>
+    </update>
+</mapper>
