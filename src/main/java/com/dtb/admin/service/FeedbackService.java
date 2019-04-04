@@ -34,4 +34,14 @@ public interface FeedbackService {
      * @date 2019/4/3 22:47
      */
     Integer updateBatchByIds(List<Integer> idList, FeedbackWithBLOBs param);
+
+    /**
+     * 根据id查找
+     *
+     * @param id 主键
+     * @return com.dtb.entity.FeedbackAssociation
+     * @author lmx
+     * @date 2019/4/4 20:54
+     */
+    FeedbackAssociation findAssociationById(Integer id);
 }

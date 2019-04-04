@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.ExchangeMapper">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Exchange">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="gift_id" jdbcType="INTEGER" property="giftId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_phone" jdbcType="VARCHAR" property="userPhone"/>
+        <result column="address_province" jdbcType="VARCHAR" property="addressProvince"/>
+        <result column="address_city" jdbcType="VARCHAR" property="addressCity"/>
+        <result column="address_district" jdbcType="VARCHAR" property="addressDistrict"/>
+        <result column="address_detial" jdbcType="VARCHAR" property="addressDetial"/>
+        <result column="track_number" jdbcType="VARCHAR" property="trackNumber"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+    </resultMap>
+    <resultMap id="AssociationResultMap" type="com.dtb.entity.ExchangeAssociation">
+        <association property="user" column="user_id" select="com.dtb.admin.dao.UserMapper.selectById"/>
+        <association property="gift" column="gift_id" select="com.dtb.admin.dao.GiftMapper.selectById"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, gift_id, user_name, user_phone, address_province, address_city, address_district, 
+    address_detial, track_number, create_time, update_time, delete_time
+  </sql>
+
+    <select id="selectPageExchangeListVague" resultMap="AssociationResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM as_exchange
+        <where>
+            <if test="queryParam.id !=null">
+                id = #{queryParam.id}
+            </if>
+            <if test="queryParam.userName !=null &amp;&amp; queryParam.userName != ''">
+                AND user_name LIKE CONCAT('%',#{queryParam.userName},'%')
+            </if>
+            <if test="queryParam.userPhone !=null &amp;&amp; queryParam.userPhone != ''">
+                AND user_phone LIKE CONCAT('%',#{queryParam.userPhone},'%')
+            </if>
+            <if test="queryParam.trackNumber != null">
+                AND track_number LIKE CONCAT('%',#{queryParam.trackNumber},'%')
+            </if>
+            <if test="vagueParam != null &amp;&amp; vagueParam != ''">
+                OR gift_id IN (
+                SELECT g.id
+                FROM as_gift AS g
+                WHERE g.gift_name LIKE CONCAT('%',#{vagueParam},'%')
+                AND g.delete_time IS NULL
+                )
+            </if>
+            <if test="vagueParam != null &amp;&amp; vagueParam != ''">
+                OR user_id IN (
+                SELECT u.id
+                FROM as_user AS u
+                WHERE (u.user_name LIKE CONCAT('%',#{vagueParam},'%') OR
+                u.nick_name LIKE CONCAT('%',#{vagueParam},'%') OR
+                u.phone LIKE CONCAT('%',#{vagueParam},'%') OR
+                u.email LIKE CONCAT('%',#{vagueParam},'%')
+                )
+                AND u.delete_time IS NULL
+                )
+            </if>
+            AND delete_time IS NULL
+        </where>
+    </select>
+
+    <update id="updateBatchByIds" parameterType="com.dtb.entity.Exchange">
+        update as_exchange
+        <set>
+            <if test="param.userId != null">
+                user_id = #{param.userId,jdbcType=INTEGER},
+            </if>
+            <if test="param.giftId != null">
+                gift_id = #{param.giftId,jdbcType=INTEGER},
+            </if>
+            <if test="param.userName != null">
+                user_name = #{param.userName,jdbcType=VARCHAR},
+            </if>
+            <if test="param.userPhone != null">
+                user_phone = #{param.userPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="param.addressProvince != null">
+                address_province = #{param.addressProvince,jdbcType=VARCHAR},
+            </if>
+            <if test="param.addressCity != null">
+                address_city = #{param.addressCity,jdbcType=VARCHAR},
+            </if>
+            <if test="param.addressDistrict != null">
+                address_district = #{param.addressDistrict,jdbcType=VARCHAR},
+            </if>
+            <if test="param.addressDetial != null">
+                address_detial = #{param.addressDetial,jdbcType=VARCHAR},
+            </if>
+            <if test="param.trackNumber != null">
+                track_number = #{param.trackNumber,jdbcType=VARCHAR},
+            </if>
+            update_time = CURRENT_TIMESTAMP,
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id IN
+        <foreach collection="idList" item="itemId" open="(" close=")" separator=",">
+            #{itemId}
+        </foreach>
+    </update>
+</mapper>

@@ -42,4 +42,14 @@ public class FeedbackServiceImpl implements FeedbackService {
     public Integer updateBatchByIds(List<Integer> idList, FeedbackWithBLOBs param) {
         return feedbackMapper.updateBatchByIds(idList, param);
     }
+
+    @Override
+    public FeedbackAssociation findAssociationById(Integer id) {
+        FeedbackAssociation feedbackAssociation = feedbackMapper.findAssociationById(id);
+        if (feedbackAssociation.getQuestionPhotos() == null || "".equals(feedbackAssociation.getQuestionPhotos())) {
+            return feedbackAssociation;
+        }
+        feedbackAssociation.setQuestionPhotoArray(feedbackAssociation.getQuestionPhotos().split(","));
+        return feedbackAssociation;
+    }
 }

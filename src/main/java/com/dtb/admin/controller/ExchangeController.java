@@ -1,15 +1,14 @@
 package com.dtb.admin.controller;
 
-import com.dtb.admin.service.FeedbackService;
-import com.dtb.entity.FeedbackAssociation;
-import com.dtb.entity.FeedbackWithBLOBs;
+import com.dtb.admin.service.ExchangeService;
+import com.dtb.entity.Exchange;
+import com.dtb.entity.ExchangeAssociation;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,49 +21,49 @@ import java.util.Map;
 /**
  * @author lmx
  * @version 1.0.0
- * @create 2019/4/3-21:05
+ * @create 2019/4/4-21:34
  */
-@Controller("feedbackAdminController")
-@RequestMapping("/admin/feedback")
-public class FeedbackController {
+@Controller("exchangeAdminController")
+@RequestMapping("/admin/exchange")
+public class ExchangeController {
 
     @Autowired
-    private FeedbackService feedbackService;
+    private ExchangeService exchangeService;
 
     /**
-     * 反馈列表页面
+     * 兑换订单列表页面渲染
      *
      * @return java.lang.String
      * @author lmx
-     * @date 2019/4/3 21:19
+     * @date 2019/4/4 21:43
      */
     @RequestMapping("/listPage")
     public String listPage() {
-        return "/admin/feedback/list";
+        return "/admin/order/list";
     }
 
     /**
-     * 多条件分页模糊搜索
+     * 模糊分页查询
      *
      * @param pageNum    当前页码
-     * @param pageSize   每页显示数据总数
+     * @param pageSize   每页显示数量
      * @param vagueParam 模糊搜索条件
-     * @param feedback   搜索条件
+     * @param exchange   多搜索条件
      * @return com.dtb.utils.resulthandler.ResponseBean
      * @author lmx
-     * @date 2019/4/3 22:45
+     * @date 2019/4/4 22:09
      */
-    @RequestMapping("/getPageFeedbackList/{pageNum}/{pageSize}")
+    @RequestMapping("/getPageOrderListVague/{pageNum}/{pageSize}")
     @ResponseBody
-    public ResponseBean getPageFeedbackList(@PathVariable Integer pageNum,
-                                            @PathVariable Integer pageSize,
-                                            @RequestParam String vagueParam,
-                                            FeedbackWithBLOBs feedback) {
-        if (feedback == null) {
+    public ResponseBean getPageListVague(@PathVariable Integer pageNum,
+                                         @PathVariable Integer pageSize,
+                                         @RequestParam String vagueParam,
+                                         Exchange exchange) {
+        if (exchange == null) {
             return new ResponseBean(false, CommonErrorEnum.BAD_REQUEST);
         }
         PageHelper.startPage(pageNum, pageSize);
-        Page<FeedbackAssociation> pageList = feedbackService.selectPageFeedbackListVague(feedback, vagueParam);
+        Page<ExchangeAssociation> pageList = exchangeService.selectPageExchangeListVague(exchange, vagueParam);
         Map<String, Object> pageInfo = new HashMap<>();
         pageInfo.put("pageNum", pageList.getPageNum());
         pageInfo.put("pageSize", pageList.getPageSize());
@@ -73,7 +72,7 @@ public class FeedbackController {
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("pageInfo", pageInfo);
-        resultMap.put("feedbackList", pageList);
+        resultMap.put("orderList", pageList);
         return new ResponseBean<Map<String, Object>>(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
@@ -89,24 +88,10 @@ public class FeedbackController {
     @RequestMapping("/updateBatchByIds")
     @ResponseBody
     public ResponseBean updateBatchByIds(@RequestParam List<Integer> idList,
-                                         FeedbackWithBLOBs param) {
-        int result = feedbackService.updateBatchByIds(idList, param);
+                                         Exchange param) {
+        int result = exchangeService.updateBatchByIds(idList, param);
         return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
     }
-
-    /**
-     * 查看反馈详情
-     *
-     * @param id 主键
-     * @return java.lang.String
-     * @author lmx
-     * @date 2019/4/4 20:02
-     */
-    @RequestMapping("/detail/{id}")
-    public String detail(@PathVariable Integer id, Model model) {
-        FeedbackAssociation feedback = feedbackService.findAssociationById(id);
-        model.addAttribute("feedback", feedback);
-        return "/admin/feedback/detail";
-    }
-
 }
+
+

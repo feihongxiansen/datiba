@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{::style},~{})">
+    <title>反馈详情-答题吧后台管理系统</title>
+    <style>
+        .img-thumbnail {
+            display: inline-block;
+            max-width: 100%;
+            padding: 4px;
+            line-height: 1.42857143;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+            transition: all .2s ease-in-out;
+            height: 300px;
+            width: auto;
+        }
+    </style>
+</head>
+
+<body>
+<div class="weadmin-body">
+    <form class="layui-form layui-form-pane">
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">反馈详情</label>
+            <div class="layui-input-block">
+                <div disabled class="layui-textarea" th:text="${feedback.questionSummary}"></div>
+            </div>
+        </div>
+        <div class="layui-input-inline">
+            <img th:src="${item}" class="img-thumbnail" th:each="item:${feedback.questionPhotoArray}"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>

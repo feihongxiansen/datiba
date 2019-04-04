@@ -26,15 +26,6 @@
     question_summary, question_photos
   </sql>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-        select
-        <include refid="Base_Column_List"/>
-        ,
-        <include refid="Blob_Column_List"/>
-        from as_feedback
-        where id = #{id,jdbcType=INTEGER}
-    </select>
-
     <select id="selectPageFeedbackListVague" resultMap="ResultAssociation">
         SELECT
         <include refid="Base_Column_List"/>
@@ -58,7 +49,7 @@
                 AND question_type = #{feedback.questionType}
             </if>
             <if test="feedback.questionState != null &amp;&amp; feedback.questionState != ''">
-                AND question_state = #{feedback.questionState}
+                AND IF(#{feedback.questionState}='YES',question_state IS NOT NULL,question_state IS NULL)
             </if>
             <if test="vagueParam != null &amp;&amp; vagueParam != ''">
                 AND user_id IN(
@@ -73,6 +64,16 @@
             </if>
             AND delete_time IS NULL
         </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="findAssociationById" resultMap="ResultAssociation">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_feedback
+        WHERE id = #{id}
     </select>
 
 
