@@ -130,7 +130,7 @@ public class UserController {
      */
     @RequestMapping("/checkEmailExist")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> checkEmailExist(@RequestParam(value = "email", required = true) String email) {
+    public ResponseBean checkEmailExist(@RequestParam(value = "email", required = true) String email) {
         User user = userService.findByEmail(email);
         if (user == null) {
             return new ResponseBean(false, CommonErrorEnum.NOT_EXIST_EMAIL);
@@ -149,11 +149,11 @@ public class UserController {
      */
     @RequestMapping("/register")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> register(User user, @RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseBean<String> register(User user, @RequestParam("file") MultipartFile file) throws Exception {
 
         //判断邮箱地址是否可用
         if (this.checkEmailExist(user.getEmail()).isSuccess()) {
-            ResponseBean<CommonErrorEnum> checkRes = this.checkEmailExist(user.getEmail());
+            ResponseBean checkRes = this.checkEmailExist(user.getEmail());
             checkRes.setSuccess(false);
             return checkRes;
         }
@@ -171,7 +171,7 @@ public class UserController {
 
         //创建用户失败
         if (user.getId() == null) {
-            return new ResponseBean(false, CommonErrorEnum.FAILED_CREATEUSER);
+            return new ResponseBean<>(false, CommonErrorEnum.FAILED_CREATEUSER);
         }
 
         //发送邮件，让用户激活账户
@@ -180,7 +180,7 @@ public class UserController {
         map.put("emailCode", user.getEmailCode());
         emailUtil.sendTemplateMail(user.getEmail(), "【答题吧-账号激活】", map, "email/account_activation");
 
-        return new ResponseBean(true, "/home/user/login", CommonErrorEnum.WAIT_VERIFY_EMAIL);
+        return new ResponseBean<>(true, "/home/user/login", CommonErrorEnum.WAIT_VERIFY_EMAIL);
     }
 
     /**

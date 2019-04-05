@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.CarouselMapper">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Carousel">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="photo_url" jdbcType="VARCHAR" property="photoUrl"/>
+        <result column="detail_url" jdbcType="VARCHAR" property="detailUrl"/>
+        <result column="use_state" jdbcType="TINYINT" property="useState"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, title, photo_url, detail_url, use_state, create_time, update_time, delete_time
+  </sql>
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from as_carousel
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPageList" resultType="com.dtb.entity.Carousel">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM as_carousel
+        <where>
+            <if test="queryParam.id != null">
+                id = #{queryParam.id}
+            </if>
+            <if test="queryParam.title != null &amp;&amp; queryParam.title != ''">
+                AND title LIKE CONCAT('%',#{queryParam.title},'%')
+            </if>
+            <if test="queryParam.photoUrl != null &amp;&amp; queryParam.photoUrl != ''">
+                AND photo_url LIKE CONCAT('%',#{queryParam.photoUrl},'%')
+            </if>
+            <if test="queryParam.detailUrl != null &amp;&amp; queryParam.detailUrl != ''">
+                AND detail_url LIKE CONCAT('%',#{queryParam.detailUrl},'%')
+            </if>
+            <if test="queryParam.useState != null">
+                AND use_state = #{queryParam.useState}
+            </if>
+            AND delete_time IS NULL
+        </where>
+        ORDER BY use_state DESC,create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.dtb.entity.Carousel">
+        insert into as_carousel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="param.id != null">
+                id,
+            </if>
+            <if test="param.title != null">
+                title,
+            </if>
+            <if test="param.photoUrl != null">
+                photo_url,
+            </if>
+            <if test="param.detailUrl != null">
+                detail_url,
+            </if>
+            <if test="param.useState != null">
+                use_state,
+            </if>
+            create_time,
+            <if test="param.updateTime != null">
+                update_time,
+            </if>
+            <if test="param.deleteTime != null">
+                delete_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="param.id != null">
+                #{param.id,jdbcType=INTEGER},
+            </if>
+            <if test="param.title != null">
+                #{param.title,jdbcType=INTEGER},
+            </if>
+            <if test="param.photoUrl != null">
+                #{param.photoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="param.detailUrl != null">
+                #{param.detailUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="param.useState != null">
+                #{param.useState,jdbcType=TINYINT},
+            </if>
+            CURRENT_TIMESTAMP,
+            <if test="param.updateTime != null">
+                #{param.updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="param.deleteTime != null">
+                #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateBatchByIds" parameterType="com.dtb.entity.Carousel">
+        update as_carousel
+        <set>
+            <if test="param.title != null &amp;&amp; param.title != ''">
+                title = #{param.title,jdbcType=VARCHAR},
+            </if>
+            <if test="param.photoUrl != null &amp;&amp; param.photoUrl != ''">
+                photo_url = #{param.photoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="param.detailUrl != null &amp;&amp; param.detailUrl != ''">
+                detail_url = #{param.detailUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="param.useState != null">
+                use_state = #{param.useState,jdbcType=TINYINT},
+            </if>
+            update_time = CURRENT_TIMESTAMP,
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id IN
+        <foreach collection="idList" open="(" close=")" item="itemId" separator=",">
+            #{itemId}
+        </foreach>
+    </update>
+</mapper>

@@ -3,6 +3,7 @@
 <mapper namespace="com.dtb.home.dao.CarouselMapper">
   <resultMap id="BaseResultMap" type="com.dtb.entity.Carousel">
     <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title"/>
     <result column="photo_url" jdbcType="VARCHAR" property="photoUrl" />
     <result column="detail_url" jdbcType="VARCHAR" property="detailUrl" />
     <result column="use_state" jdbcType="TINYINT" property="useState" />
@@ -11,7 +12,7 @@
     <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, photo_url, detail_url, use_state, create_time, update_time, delete_time
+    id, title, photo_url, detail_url, use_state, create_time, update_time, delete_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -19,99 +20,4 @@
     from as_carousel
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from as_carousel
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.dtb.entity.Carousel">
-    insert into as_carousel (id, photo_url, detail_url, 
-      use_state, create_time, update_time, 
-      delete_time)
-    values (#{id,jdbcType=INTEGER}, #{photoUrl,jdbcType=VARCHAR}, #{detailUrl,jdbcType=VARCHAR}, 
-      #{useState,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{deleteTime,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" parameterType="com.dtb.entity.Carousel">
-    insert into as_carousel
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="photoUrl != null">
-        photo_url,
-      </if>
-      <if test="detailUrl != null">
-        detail_url,
-      </if>
-      <if test="useState != null">
-        use_state,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="deleteTime != null">
-        delete_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="photoUrl != null">
-        #{photoUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="detailUrl != null">
-        #{detailUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="useState != null">
-        #{useState,jdbcType=TINYINT},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="deleteTime != null">
-        #{deleteTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.Carousel">
-    update as_carousel
-    <set>
-      <if test="photoUrl != null">
-        photo_url = #{photoUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="detailUrl != null">
-        detail_url = #{detailUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="useState != null">
-        use_state = #{useState,jdbcType=TINYINT},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="deleteTime != null">
-        delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Carousel">
-    update as_carousel
-    set photo_url = #{photoUrl,jdbcType=VARCHAR},
-      detail_url = #{detailUrl,jdbcType=VARCHAR},
-      use_state = #{useState,jdbcType=TINYINT},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
 </mapper>

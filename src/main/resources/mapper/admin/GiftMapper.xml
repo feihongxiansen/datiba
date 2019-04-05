@@ -15,11 +15,65 @@
         <result column="summary" jdbcType="LONGVARCHAR" property="summary"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, gift_name, quantity, integral, create_time, update_time, delete_time
-  </sql>
+        id, gift_name, quantity, integral, create_time, update_time, delete_time
+    </sql>
     <sql id="Blob_Column_List">
-    photos, summary
-  </sql>
+        photos, summary
+      </sql>
+    <insert id="insert">
+        insert into as_gift
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="param.id != null">
+                id,
+            </if>
+            <if test="param.giftName != null">
+                gift_name,
+            </if>
+            <if test="param.quantity != null">
+                quantity,
+            </if>
+            <if test="param.integral != null">
+                integral,
+            </if>
+            create_time,
+            update_time,
+            <if test="param.deleteTime != null">
+                delete_time,
+            </if>
+            <if test="param.photos != null">
+                photos,
+            </if>
+            <if test="param.summary != null">
+                summary,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="param.id != null">
+                #{param.id,jdbcType=INTEGER},
+            </if>
+            <if test="param.giftName != null">
+                #{param.giftName,jdbcType=VARCHAR},
+            </if>
+            <if test="param.quantity != null">
+                #{param.quantity,jdbcType=INTEGER},
+            </if>
+            <if test="param.integral != null">
+                #{param.integral,jdbcType=INTEGER},
+            </if>
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            <if test="param.deleteTime != null">
+                #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="param.photos != null">
+                #{param.photos,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="param.summary != null">
+                #{param.summary,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
     <select id="selectById" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>
@@ -29,31 +83,71 @@
         where id = #{id,jdbcType=INTEGER}
     </select>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.GiftWithBLOBs">
+    <select id="selectPageList" resultType="com.dtb.entity.GiftWithBLOBs">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_gift
+        <where>
+            <if test="queryParam.id != null">
+                id = #{queryParam.id}
+            </if>
+            <if test="queryParam.giftName != null">
+                AND gift_name LIKE CONCAT('%',#{queryParam.giftName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="queryParam.quantity != null">
+                AND quantity = #{queryParam.quantity,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.integral != null">
+                AND integral = #{queryParam.integral,jdbcType=INTEGER}
+            </if>
+            <if test="queryParam.photos != null">
+                AND photos LIKE CONCAT('%',#{queryParam.photos,jdbcType=LONGVARCHAR},'%')
+            </if>
+            <if test="queryParam.summary != null">
+                AND summary LIKE CONCAT('%',#{queryParam.summary,jdbcType=LONGVARCHAR},'%')
+            </if>
+            AND delete_time IS NULL
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="findById" resultType="com.dtb.entity.GiftWithBLOBs">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM as_gift
+        WHERE id = #{id}
+    </select>
+
+    <update id="updateBatchByIds" parameterType="com.dtb.entity.GiftWithBLOBs">
         update as_gift
         <set>
-            <if test="giftName != null">
-                gift_name = #{giftName,jdbcType=VARCHAR},
+            <if test="param.giftName != null &amp;&amp; param.giftName!=''">
+                gift_name = #{param.giftName,jdbcType=VARCHAR},
             </if>
-            <if test="quantity != null">
-                quantity = #{quantity,jdbcType=INTEGER},
+            <if test="param.quantity != null">
+                quantity = #{param.quantity,jdbcType=INTEGER},
             </if>
-            <if test="integral != null">
-                integral = #{integral,jdbcType=INTEGER},
+            <if test="param.integral != null">
+                integral = #{param.integral,jdbcType=INTEGER},
             </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            update_time = CURRENT_TIMESTAMP,
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="deleteTime != null">
-                delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+            <if test="param.photos != null &amp;&amp; param.photos!=''">
+                photos = #{param.photos,jdbcType=LONGVARCHAR},
             </if>
-            <if test="photos != null">
-                photos = #{photos,jdbcType=LONGVARCHAR},
-            </if>
-            <if test="summary != null">
-                summary = #{summary,jdbcType=LONGVARCHAR},
+            <if test="param.summary != null &amp;&amp; param.summary!=''">
+                summary = #{param.summary,jdbcType=LONGVARCHAR},
             </if>
         </set>
-        where id = #{id,jdbcType=INTEGER}
+        where id IN
+        <foreach collection="idList" open="(" separator="," close=")" item="itemId">
+            #{itemId}
+        </foreach>
     </update>
 </mapper>

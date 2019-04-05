@@ -5,11 +5,13 @@ import java.util.Date;
 public class Carousel {
     private Integer id;
 
+    private String title;
+
     private String photoUrl;
 
     private String detailUrl;
 
-    private Byte useState;
+    private Boolean useState;
 
     private Date createTime;
 
@@ -23,6 +25,14 @@ public class Carousel {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getPhotoUrl() {
@@ -41,11 +51,11 @@ public class Carousel {
         this.detailUrl = detailUrl == null ? null : detailUrl.trim();
     }
 
-    public Byte getUseState() {
+    public Boolean getUseState() {
         return useState;
     }
 
-    public void setUseState(Byte useState) {
+    public void setUseState(Boolean useState) {
         this.useState = useState;
     }
 

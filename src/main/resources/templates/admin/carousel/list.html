@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{::script},~{::style})">
+    <title>轮播图列表-答题吧后台管理系统</title>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        .avatar {
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">平台管理</a>
+        <a>
+          <cite>轮播图列表</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#xe666;</i></a>
+</div>
+<div class="weadmin-body" id="app" v-cloak>
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 we-search">
+            <div class="layui-input-inline">
+                搜索条件
+            </div>
+            <div class="layui-input-inline">
+                <select name="useState">
+                    <option value="">全部状态</option>
+                    <option value="true">启用</option>
+                    <option value="false">停用</option>
+                </select>
+            </div>
+            <div class="layui-inline">
+                <input type="text" v-model="searchParam.title" name="title" placeholder="图片标题"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <button class="layui-btn" lay-submit lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <div class="weadmin-block layui-form">
+        <button class="layui-btn layui-btn-danger" onclick="updateAll('delete')"><i class="layui-icon"></i>批量删除
+        </button>
+        <button class="layui-btn layui-btn-normal" onclick="WeAdminShow('添加轮播图','/admin/carousel/addPage')"><i
+                class="layui-icon"></i>添加图片
+        </button>
+        <span class="fr" style="line-height:40px">共有数据：{{total}} 条</span>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary">
+                    <i class="layui-icon">&#xe605;</i>
+                </div>
+            </th>
+            <th>ID</th>
+            <th>标题</th>
+            <th>图片地址</th>
+            <th>详情地址</th>
+            <th>添加时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+        <tr v-for="item in carouselList">
+            <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" :data-id="item.id">
+                    <i class="layui-icon">&#xe605;</i>
+                </div>
+            </td>
+            <td>{{item.id}}</td>
+            <td><a @click="showImg(item.photoUrl)" href="javascript:void(0);">{{item.title}}</a></td>
+            <td>
+                <a @click="showImg(item.photoUrl)" href="javascript:void(0);">{{item.photoUrl}}</a>
+            </td>
+            <td><a target="_blank" :href="item.detailUrl">{{item.detailUrl}}</a></td>
+            <td>{{item.createTime}}</td>
+            <td>
+                <span v-if="item.useState" class="layui-badge layui-bg-green">使用中</span>
+                <span v-if="!item.useState" class="layui-badge layui-bg-gray">已停用</span>
+            </td>
+            <td class="td-manage">
+                <a title="编辑" @click="open('编辑','/admin/carousel/editPage/'+item.id)" href="javascript:;">
+                    <i class="layui-icon">&#xe642;</i>
+                </a>
+                <a title="删除" @click="softDel(item.id)" href="javascript:;">
+                    <i class="layui-icon">&#xe640;</i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="page">
+        <div id="laypage"></div>
+    </div>
+</div>
+</body>
+<script src="/static/common/plugs/vue/vue.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    function initLayui() {
+        layui.extend({
+            admin: '/static/admin/js/admin'
+        });
+        layui.use(['jquery', 'admin', 'form', 'laypage'], function () {
+            var laydate = layui.laydate
+                , $ = layui.jquery
+                , laypage = layui.laypage
+                , form = layui.form;
+
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
+                , count: app.$data.total //数据总数，从服务端得到
+                , limits: [10, 20, 40, 60, 80, 100] //每页条数的选择项。如果 layout 参数开启了 limit，则会出现每页条数的select选择框
+                , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+                , jump: function (obj, first) {
+                    app.$data.pageSize = obj.limit;
+                    app.$data.pageNum = obj.curr;
+                    //首次不执行
+                    if (!first) {
+                        getCarouselList();
+                    }
+                }
+            });
+
+            /**
+             * 监听搜索按钮
+             */
+            form.on("submit(sreach)", function (data) {
+                console.log(data.field);
+                app.$data.searchParam = data.field;
+                app.$data.initLayui = false;
+                getCarouselList();
+                return false;
+            });
+        });
+    }
+
+    /*软删除*/
+    window.softDel = function (id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            $.post("/admin/carousel/updateBatchByIds", {
+                idList: id,
+                deleteTime: getNowTimeStr()
+            }, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.msg('已删除!', {
+                        icon: 1,
+                        time: 1000
+                    });
+                    setTimeout(refresh, 1000);
+                } else {
+                    layer.msg(res.errMsg, {
+                        icon: 2,
+                        time: 1000
+                    });
+                }
+            });
+        });
+    };
+
+    /*批量操作*/
+    window.updateAll = function (argument) {
+        var data = tableCheck.getData();
+        var requestData;
+        var title;
+        if (data.length <= 0) {
+            return layer.msg("请选择要批量操作的数据！", {icon: 2, time: 1500});
+        }
+        switch (argument) {
+            case 'delete':
+                requestData = {
+                    idList: data.join(',')
+                    , deleteTime: getNowTimeStr()
+                };
+                title = '删除';
+                break;
+        }
+        sendBatchUpdateRequest(title, data.length, requestData, argument);
+    };
+
+    /**
+     * 发请求到服务器端进行批量修改
+     */
+    function sendBatchUpdateRequest(title, len, requestData, argument) {
+        layer.confirm('确认要' + title + len + '条数据吗？', function (index) {
+            //捉到所有被选中的，发异步进行删除
+            $.post("/admin/carousel/updateBatchByIds", requestData, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.msg(title + '成功', {
+                        icon: 1, time: 1500
+                    });
+                    if (argument == 'delete') {
+                        $(".layui-form-checked").not('.header').parents('tr').remove();
+                    } else {
+                        setTimeout(refresh, 1500)
+                    }
+                }
+            });
+        });
+    }
+
+
+    /**
+     * 服务器获取管理员列表
+     * @param pageNum 当前页码
+     * @param paeSize 页面大小
+     */
+    function getCarouselList() {
+        var requestUrl = "/admin/carousel/getPageList/" + app.$data.pageNum + "/" + app.$data.pageSize;
+        console.log("搜索条件：", app.$data.searchParam);
+        console.log(app.$data.searchParam.vagueParam);
+        $.post(requestUrl, app.$data.searchParam, function (res) {
+            console.log(res);
+            if (res.success) {
+                app.$data.total = res.data.pageInfo.total;
+                app.$data.carouselList = res.data.carouselList;
+                app.$data.initLayui = true;
+            }
+        })
+    }
+
+    var that = this;
+    var app = new Vue({
+        el: "#app",
+        data: {
+            carouselList: null //管理员列表
+            , total: 0 //数据总数
+            , initLayui: false //是否可以初始化layui
+            , pageSize: 10
+            , pageNum: 1
+            , searchParam: {//搜索条件
+                useState: null
+                , title: null
+            }
+        },
+        watch: {
+            'initLayui': function (newVal) {
+                console.log("change initLayui value:", newVal);
+                if (newVal)
+                    that.initLayui();
+            }
+        },
+        methods: {
+            /**
+             * 软删除数据
+             */
+            softDel: function (id) {
+                softDel(id);
+            },
+            /**
+             * 打开弹窗
+             * @param title
+             * @param url
+             */
+            open: function (title, url) {
+                WeAdminShow(title, url);
+            },
+            /**
+             * 查看图片
+             * @param imgSrc
+             */
+            showImg: function (imgSrc) {
+                layer.open({
+                    title: "图片查看",
+                    type: 1,
+                    area: ['auto', '45%'], //宽高
+                    shadeClose: true,//点击遮罩关闭
+                    content: "<img style='height: 100%;' src='" + imgSrc + "'/>"
+                });
+            }
+        }
+    });
+    getCarouselList();
+</script>
+</html>

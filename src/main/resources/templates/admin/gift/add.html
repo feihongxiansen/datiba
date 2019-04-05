@@ -1,0 +1,131 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>添加物品-答题吧</title>
+    <style>
+        .img-rounded {
+            max-height: 150px;
+            max-width: 180px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container" style="margin-bottom: 5%;">
+    <div class="row">
+        <div class="col-md-12" style="margin-top: 30px;">
+            <form class="layui-form layui-form-pane" id="form" enctype="multipart/form-data" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">物品名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="giftName" required lay-verify="required" placeholder="请输入物品名称"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">库存数量</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="quantity" placeholder="物品库存数量" lay-verify="required|number"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">兑换积分</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="integral" placeholder="兑换物品所需积分" lay-verify="required|number"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图片</label>
+                    <div class="layui-input-inline">
+                        <button type="button" onclick="clearImg();" class="layui-btn" id="uploadimg">
+                            <i class="layui-icon">&#xe67c;</i>选择图片
+                        </button>
+                    </div>
+                    <div class="layui-input-inline" id="imgBox"></div>
+                </div>
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">详细描述</label>
+                    <div class="layui-input-block">
+                        <textarea name="summary" placeholder="请输入物品描述" lay-verify="required"
+                                  class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formRegister">立即提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form
+            , upload = layui.upload;
+
+        //图片上传
+        var uploadInst = upload.render({
+            elem: '#uploadimg'
+            , multiple: false//多图上传，不支持IE8/9
+            , field: 'file'//后台接收字段名
+            , auto: false//不自动上传
+            , acceptMime: 'image/*'//（只显示图片文件）
+            , choose: function (obj) { //选择图片后执行
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                $("#imgBox").empty();
+                obj.preview(function (index, file, result) {
+                    var img = "<img src='" + result + "'alt='' class='img-rounded'>";
+                    $("#imgBox").append(img);
+                });
+            }
+        });
+
+        //监听提交
+        form.on('submit(formRegister)', function (data) {
+            console.log(data.field);
+            var formData = new FormData($("#form")[0]);
+            if (data.field.file == null || data.field.file == "") {
+                layer.msg("请上传图片！", {icon: 2, time: 1500});
+                return false;
+            }
+            //提交表单，登录验证
+            $.ajax({
+                url: "/admin/gift/add",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success == true) {
+                        layer.msg(res.errMsg, {icon: 1, time: 1500});
+                        setTimeout(refresh, 1500);
+                    } else {
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
+                    }
+
+                    console.log(res);
+                },
+                error: function (res) {
+                    layer.msg(res, {icon: 2, time: 1500});
+                },
+                complete: function () {
+                }
+            });
+            return false;
+        });
+    });
+
+    /*清除回显图片*/
+    function clearImg() {
+        $("#imgBox").empty();
+    }
+</script>
+</body>
+</html>

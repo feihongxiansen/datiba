@@ -1,0 +1,105 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>编辑物品-答题吧</title>
+    <style>
+        .img-rounded {
+            max-height: 150px;
+            max-width: 180px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container" style="margin-bottom: 5%;">
+    <div class="row">
+        <div class="col-md-12" style="margin-top: 30px;">
+            <form class="layui-form layui-form-pane" id="form" enctype="multipart/form-data" action="">
+                <input name="id" th:value="${info.id}" type="hidden">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">物品名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="giftName" th:value="${info.giftName}" required lay-verify="required"
+                               placeholder="请输入物品名称"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">库存数量</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="quantity" th:value="${info.quantity}" placeholder="物品库存数量"
+                               lay-verify="required|number"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">兑换积分</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="integral" th:value="${info.integral}" placeholder="兑换物品所需积分"
+                               lay-verify="required|number"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图片</label>
+                    <div class="layui-input-inline">
+                        <img th:src="${info.photos}" alt='' class='img-rounded'>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">详细描述</label>
+                    <div class="layui-input-block">
+                        <textarea name="summary" placeholder="请输入物品描述" th:value="${info.summary}"
+                                  th:text="${info.summary}" lay-verify="required" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formRegister">立即提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formRegister)', function (data) {
+            console.log(data.field);
+            var formData = new FormData($("#form")[0]);
+            //提交表单，登录验证
+            $.ajax({
+                url: "/admin/gift/edit",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success == true) {
+                        layer.msg(res.errMsg, {icon: 1, time: 1500});
+                        setTimeout(refreshParent, 1500);
+                    } else {
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
+                    }
+
+                    console.log(res);
+                },
+                error: function (res) {
+                    layer.msg(res, {icon: 2, time: 1500});
+                },
+                complete: function () {
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>
