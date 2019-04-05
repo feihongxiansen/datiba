@@ -1,6 +1,9 @@
 package com.dtb.admin.controller;
 
+import com.dtb.admin.service.DataAnalysisService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
@@ -13,6 +16,9 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/admin/index")
 @Controller("adminIndexController")
 public class IndexController {
+
+    @Autowired
+    private DataAnalysisService dataAnalysisService;
 
     /**
      * 登录页面渲染
@@ -49,7 +55,12 @@ public class IndexController {
      * @date 2019/3/30 11:18
      */
     @RequestMapping("/welcome")
-    public String welcome() {
+    public String welcome(Model model) {
+        model.addAttribute("count2All", dataAnalysisService.overallStatistics("ALL"));
+        model.addAttribute("count2Today", dataAnalysisService.overallStatistics("TODAY"));
+        model.addAttribute("count2Yesterday", dataAnalysisService.overallStatistics("YESTERDAY"));
+        model.addAttribute("count2ThisWeek", dataAnalysisService.overallStatistics("THISWEEK"));
+        model.addAttribute("count2ThisMonth", dataAnalysisService.overallStatistics("THISMONTH"));
         return "/admin/welcome";
     }
 

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{},~{})">
+    <title>用户统计-答题吧后台管理系统</title>
+</head>
+
+<body>
+<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">统计分析</a>
+        <a>
+          <cite>用户统计</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#xe666;</i></a>
+</div>
+<div class="weadmin-body">
+    <div class="layui-col-md6">
+        <div id="main" style="width: 100%;height:350px;"></div>
+    </div>
+    <div class="layui-col-md6">
+        <div id="sex" style="width: 100%;height:350px;"></div>
+    </div>
+    <div class="layui-col-md6">
+        <div id="loginState" style="width: 100%;height:350px;"></div>
+    </div>
+    <div class="layui-col-md6">
+        <div id="emailVerify" style="width: 100%;height:350px;"></div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/static/common/plugs/echarts/echarts.js"></script>
+<script type="text/javascript">
+    layui.extend({
+        admin: '/static/admin/js/admin'
+    });
+    layui.use(['admin', 'laydate', 'form'], function () {
+    });
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    var sexChart = echarts.init(document.getElementById('sex'));
+    var loginStateChart = echarts.init(document.getElementById('loginState'));
+    var emailVerifyChart = echarts.init(document.getElementById('emailVerify'));
+    var option = {
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        title: {
+            text: '用户统计',
+            subtext: '按身份分类',
+            x: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            type: 'scroll',
+            orient: 'vertical',
+            right: 10,
+            top: 20,
+            bottom: 20,
+            data: ['教师', '学生']
+        },
+        series: [
+            {
+                name: '类别',
+                type: 'pie',
+                radius: '70%',
+                center: ['50%', '60%'],
+                data: [{name: '教师', value: 50}, {name: '学生', value: 68}],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+    /**
+     * 获取问题统计数据
+     */
+    function getData(requestData) {
+        var requestUrl = "/admin/dataAnalysis/getUserCount";
+        var data;
+        $.ajax({
+            type: "post",
+            url: requestUrl,
+            data: requestData,
+            dataType: 'json',
+            async: false,
+            success: function (res) {
+                data = res.data;
+            }
+        });
+        return data;
+    }
+
+    /**
+     * 更新数据
+     */
+    function refreshData() {
+        var sexOption = option
+            , loginStateOption = option
+            , emailVerifyOption = option;
+
+        option.series[0].data = getData({userType: 1});
+        myChart.setOption(option);
+
+        sexOption.title.subtext = '按性别分类';
+        sexOption.legend.data = ['男', '女'];
+        sexOption.series[0].data = getData({sex: 1});
+        sexChart.setOption(sexOption);
+
+        loginStateOption.title.subtext = '按启用状态分类';
+        loginStateOption.legend.data = ['启用', '禁用'];
+        loginStateOption.series[0].data = getData({loginState: true});
+        loginStateChart.setOption(loginStateOption);
+
+        emailVerifyOption.title.subtext = '按激活状态分类';
+        emailVerifyOption.legend.data = ['已激活', '待激活'];
+        emailVerifyOption.series[0].data = getData({emailVerify: true});
+        emailVerifyChart.setOption(emailVerifyOption);
+    }
+
+    window.onload = function (ev) {
+        refreshData();
+    }
+</script>
+</html>

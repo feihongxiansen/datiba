@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/public/head::head(~{::title},~{},~{})">
+    <title>问答统计-答题吧后台管理系统</title>
+</head>
+
+<body>
+<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">统计分析</a>
+        <a>
+          <cite>问答统计</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#xe666;</i></a>
+</div>
+<div class="weadmin-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 we-search">
+            <div class="layui-input-inline">
+                统计粒度
+            </div>
+            <div class="layui-input-inline">
+                <select name="groupType" lay-filter="groupType">
+                    <option value="MONTH" selected>按月统计</option>
+                    <option value="DAY">按天统计</option>
+                </select>
+            </div>
+            <div class="layui-inline">
+                <input type="text" placeholder="开始日期" name="startDate" class="layui-input" id="startDate">
+            </div>
+            <div class="layui-inline">
+                <input type="text" placeholder="截止日期" name="endDate" class="layui-input" id="endDate">
+            </div>
+            <button class="layui-btn" lay-submit lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <div id="main" style="width: 100%;height:600px;"></div>
+</div>
+</body>
+<script type="text/javascript" src="/static/common/plugs/echarts/echarts.js"></script>
+<script type="text/javascript">
+    layui.extend({
+        admin: '/static/admin/js/admin'
+    });
+    layui.use(['admin', 'laydate', 'form'], function () {
+        var laydate = layui.laydate
+            , form = layui.form;
+
+        var startDate = laydate.render({
+            elem: '#startDate',
+            type: 'datetime'
+        });
+        var endDate = laydate.render({
+            elem: '#endDate',
+            type: 'datetime'
+        });
+
+        /**
+         * 监听统计粒度变化
+         */
+        form.on("select(groupType)", function (data) {
+            console.log(data);
+            return false;
+        });
+
+        /**
+         * 监听搜索按钮
+         */
+        form.on("submit(sreach)", function (data) {
+            requestData = data.field;
+            refreshData();
+            return false;
+        });
+    });
+    //搜索条件
+    var requestData = {
+        startTime: null,
+        endTime: null,
+        groupType: null,
+        questionState: null,
+        solveState: null,
+        adoptionState: null
+    };
+    var day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+    var month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    var option = {
+        title: {
+            text: '问答统计'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+            }
+        },
+        legend: {
+            data: ['已解决-问题', '未解决-问题', '已关闭-问题', '开启中-问题', '已采纳-答案', '未采纳-答案']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: [
+            {
+                name: '日期',
+                type: 'category',
+                data: []
+            }
+        ],
+        yAxis: [
+            {
+                name: '数量',
+                type: 'value'
+            }
+        ],
+        toolbox: {
+            show: true,                                 //是否显示工具栏组件
+            orient: "horizontal",                        //工具栏 icon 的布局朝向'horizontal' 'vertical'
+            itemSize: 15,                                 //工具栏 icon 的大小
+            itemGap: 10,                                  //工具栏 icon 每项之间的间隔
+            showTitle: true,                             //是否在鼠标 hover 的时候显示每个工具 icon 的标题
+            feature: {
+                mark: {                                 // '辅助线开关'
+                    show: true
+                },
+                dataView: {                            //数据视图工具，可以展现当前图表所用的数据，编辑后可以动态更新
+                    show: true,                         //是否显示该工具。
+                    title: "数据视图",
+                    readOnly: false,                    //是否不可编辑（只读）
+                    lang: ['数据视图', '关闭', '刷新'],  //数据视图上有三个话术，默认是['数据视图', '关闭', '刷新']
+                    backgroundColor: "#fff",             //数据视图浮层背景色。
+                    textareaColor: "#fff",               //数据视图浮层文本输入区背景色
+                    textareaBorderColor: "#333",         //数据视图浮层文本输入区边框颜色
+                    textColor: "#000",                    //文本颜色。
+                    buttonColor: "#c23531",              //按钮颜色。
+                    buttonTextColor: "#fff"            //按钮文本颜色。
+                },
+                magicType: {                            //动态类型切换
+                    show: true,
+                    title: "切换",                       //各个类型的标题文本，可以分别配置。
+                    type: ['line', 'bar']              //启用的动态类型，包括'line'（切换为折线图）, 'bar'（切换为柱状图）, 'stack'（切换为堆叠模式）, 'tiled'（切换为平铺模式）
+                },
+                restore: {                             //配置项还原。
+                    show: true,                         //是否显示该工具。
+                    title: "还原"
+                },
+                saveAsImage: {                         //保存为图片。
+                    show: true,                         //是否显示该工具。
+                    type: "png",                         //保存的图片格式。支持 'png' 和 'jpeg'。
+                    name: "pic1",                        //保存的文件名称，默认使用 title.text 作为名称
+                    backgroundColor: "#ffffff",        //保存的图片背景色，默认使用 backgroundColor，如果backgroundColor不存在的话会取白色
+                    title: "保存为图片",
+                    pixelRatio: 1                        //保存图片的分辨率比例，默认跟容器相同大小，如果需要保存更高分辨率的，可以设置为大于 1 的值，例如 2
+                }
+            },
+            zlevel: 0,                                   //所属图形的Canvas分层，zlevel 大的 Canvas 会放在 zlevel 小的 Canvas 的上面
+            z: 2,                                         //所属组件的z分层，z值小的图形会被z值大的图形覆盖
+            left: "right"                              //组件离容器左侧的距离,'left', 'center', 'right','20%'
+        },
+        series: [
+            {
+                name: '已解决-问题',
+                type: 'bar',
+                stack: '解决状态',
+                data: []
+            },
+            {
+                name: '未解决-问题',
+                type: 'bar',
+                stack: '解决状态',
+                data: []
+            },
+            {
+                name: '开启中-问题',
+                type: 'bar',
+                stack: '开启状态',
+                data: []
+            },
+            {
+                name: '已关闭-问题',
+                type: 'bar',
+                stack: '开启状态',
+                data: []
+            }
+            ,
+            {
+                name: '已采纳-答案',
+                type: 'bar',
+                stack: '采纳状态',
+                data: []
+            }
+            ,
+            {
+                name: '未采纳-答案',
+                type: 'bar',
+                stack: '采纳状态',
+                data: []
+            }
+        ]
+    };
+
+    /**
+     * 获取问题统计数据
+     */
+    function getData(tp) {
+        var requestUrl = "/admin/dataAnalysis/getQuestionCount";
+        if (tp == 'answer') {
+            requestUrl = "/admin/dataAnalysis/getAnswerCount";
+        }
+        var data;
+        var allData;
+        $.ajax({
+            type: "post",
+            url: requestUrl,
+            data: requestData,
+            dataType: 'json',
+            async: false,
+            success: function (res) {
+                data = res.data;
+            }
+        });
+        switch (requestData.groupType) {
+            case 'DAY':
+                allData = new Array(31);
+                var j = allData.length;
+                while (--j >= 0) {
+                    allData[j] = 0;
+                }
+                //查询全部问题
+                for (var i = 0; i < data.length; i++) {
+                    allData[data[i].date - 1] = data[i].count;
+                }
+                break;
+
+            case 'MONTH':
+                allData = new Array(12);
+                var j = allData.length;
+                while (--j >= 0) {
+                    allData[j] = 0;
+                }
+                //查询全部问题
+                for (var i = 0; i < data.length; i++) {
+                    allData[data[i].date - 1] = data[i].count;
+                }
+                break;
+            default:
+                allData = new Array(12);
+                var j = allData.length;
+                while (--j >= 0) {
+                    allData[j] = 0;
+                }
+                //查询全部问题
+                for (var i = 0; i < data.length; i++) {
+                    allData[data[i].date - 1] = data[i].count;
+                }
+        }
+        console.log(allData);
+        return allData;
+    }
+
+    /**
+     * 更新数据
+     */
+    function refreshData() {
+        switch (requestData.groupType) {
+            case 'DAY':
+                option.xAxis[0].data = day;
+                break;
+
+            case 'MONTH':
+                option.xAxis[0].data = month;
+                break;
+
+            default:
+                option.xAxis[0].data = month;
+        }
+        //已解决问题统计
+        requestData.solveState = 1;
+        requestData.questionState = null;
+        option.series[0].data = getData('question');
+        //未解决问题统计
+        requestData.solveState = 0;
+        requestData.questionState = null;
+        option.series[1].data = getData('question');
+        //开启中问题
+        requestData.questionState = true;
+        requestData.solveState = null;
+        option.series[2].data = getData('question');
+        //已关闭问题
+        requestData.questionState = false;
+        requestData.solveState = null;
+        option.series[3].data = getData('question');
+        //已采纳答案
+        requestData.adoptionState = true;
+        option.series[4].data = getData('answer');
+        //未采纳答案
+        requestData.adoptionState = false;
+        option.series[5].data = getData('answer');
+        myChart.setOption(option);
+    }
+
+    window.onload = function (ev) {
+        refreshData();
+    }
+</script>
+</html>

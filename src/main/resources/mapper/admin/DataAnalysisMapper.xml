@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.DataAnalysisMapper">
+    <sql id="selectByToDay">
+        AND DAY(create_time) = DAY(NOW())
+        AND delete_time IS NULL
+    </sql>
+
+    <sql id="selectByYesterdayDay">
+        AND DAY(create_time) = DAY(NOW())-1
+        AND delete_time IS NULL
+    </sql>
+
+    <sql id="selectByThisWeek">
+        AND WEEK(create_time) = WEEK(NOW())
+        AND delete_time IS NULL
+    </sql>
+
+    <sql id="selectByThisMonth">
+        AND MONTH(create_time) = MONTH(NOW())
+        AND delete_time IS NULL
+    </sql>
+
+    <sql id="groupType">
+        <choose>
+            <when test="groupType=='DAY'">DAYOFMONTH (create_time) `date`</when>
+            <when test="groupType=='WEEK'">WEEK (create_time) `date`</when>
+            <when test="groupType=='MONTH'">MONTH (create_time) `date`</when>
+            <when test="groupType=='QUARTER'">QUARTER (create_time) `date`</when>
+            <when test="groupType=='YEAR'">YEAR (create_time) `date`</when>
+            <otherwise>DAYOFMONTH (create_time) `date`</otherwise>
+        </choose>
+    </sql>
+
+    <sql id="userGroupType">
+        <choose>
+            <when test="user.userType != null">IF(user_type=1,'学生','教师') `name`</when>
+            <when test="user.sex != null">IF(sex=1,'男','女') `name`</when>
+            <when test="user.loginState != null">IF(login_state=true ,'启用','禁用') `name`</when>
+            <when test="user.emailVerify != null">IF(email_verify=true,'已激活','待激活') `name`</when>
+            <otherwise>IF(user_type=1,'学生','教师') `name`</otherwise>
+        </choose>
+    </sql>
+
+    <select id="overallStatistics" resultType="java.util.Map">
+        SELECT
+        (select count(*) from as_questions
+        <where>
+            <if test="groupType == 'ALL' || groupType == '' || groupType==null">
+                delete_time IS NULL
+            </if>
+            <if test="groupType == 'TODAY'">
+                <include refid="selectByToDay"/>
+            </if>
+            <if test="groupType == 'YESTERDAY'">
+                <include refid="selectByYesterdayDay"/>
+            </if>
+            <if test="groupType == 'THISWEEK'">
+                <include refid="selectByThisWeek"/>
+            </if>
+            <if test="groupType == 'THISMONTH'">
+                <include refid="selectByThisMonth"/>
+            </if>
+        </where>
+        ) questionAll,
+        (select count(*) from as_answers
+        <where>
+            <if test="groupType == 'ALL' || groupType == '' || groupType==null">
+                delete_time IS NULL
+            </if>
+            <if test="groupType == 'TODAY'">
+                <include refid="selectByToDay"/>
+            </if>
+            <if test="groupType == 'YESTERDAY'">
+                <include refid="selectByYesterdayDay"/>
+            </if>
+            <if test="groupType == 'THISWEEK'">
+                <include refid="selectByThisWeek"/>
+            </if>
+            <if test="groupType == 'THISMONTH'">
+                <include refid="selectByThisMonth"/>
+            </if>
+        </where>
+        ) answerAll,
+        (select count(*) from as_answers
+        <where>
+            <if test="groupType == 'ALL' || groupType == '' || groupType==null">
+                delete_time IS NULL
+            </if>
+            <if test="groupType == 'TODAY'">
+                <include refid="selectByToDay"/>
+            </if>
+            <if test="groupType == 'YESTERDAY'">
+                <include refid="selectByYesterdayDay"/>
+            </if>
+            <if test="groupType == 'THISWEEK'">
+                <include refid="selectByThisWeek"/>
+            </if>
+            <if test="groupType == 'THISMONTH'">
+                <include refid="selectByThisMonth"/>
+            </if>
+            and adoption_state = true
+        </where>
+        ) adoptionAll,
+        (select count(*) from as_user
+        <where>
+            <if test="groupType == 'ALL' || groupType == '' || groupType==null">
+                delete_time IS NULL
+            </if>
+            <if test="groupType == 'TODAY'">
+                <include refid="selectByToDay"/>
+            </if>
+            <if test="groupType == 'YESTERDAY'">
+                <include refid="selectByYesterdayDay"/>
+            </if>
+            <if test="groupType == 'THISWEEK'">
+                <include refid="selectByThisWeek"/>
+            </if>
+            <if test="groupType == 'THISMONTH'">
+                <include refid="selectByThisMonth"/>
+            </if>
+        </where>
+        ) userAll,
+        (select count(*) from as_documents
+        <where>
+            <if test="groupType == 'ALL' || groupType == '' || groupType==null">
+                delete_time IS NULL
+            </if>
+            <if test="groupType == 'TODAY'">
+                <include refid="selectByToDay"/>
+            </if>
+            <if test="groupType == 'YESTERDAY'">
+                <include refid="selectByYesterdayDay"/>
+            </if>
+            <if test="groupType == 'THISWEEK'">
+                <include refid="selectByThisWeek"/>
+            </if>
+            <if test="groupType == 'THISMONTH'">
+                <include refid="selectByThisMonth"/>
+            </if>
+        </where>
+        ) documentAll,
+        (select count(*) from as_user
+        <where>
+            <if test="groupType == 'ALL' || groupType == '' || groupType==null">
+                delete_time IS NULL
+            </if>
+            <if test="groupType == 'TODAY'">
+                <include refid="selectByToDay"/>
+            </if>
+            <if test="groupType == 'YESTERDAY'">
+                <include refid="selectByYesterdayDay"/>
+            </if>
+            <if test="groupType == 'THISWEEK'">
+                <include refid="selectByThisWeek"/>
+            </if>
+            <if test="groupType == 'THISMONTH'">
+                <include refid="selectByThisMonth"/>
+            </if>
+            AND user_type = 2
+        </where>
+        ) teacherAll,
+        (select count(*) from as_teacher
+        <where>
+            <if test="groupType == 'ALL' || groupType == '' || groupType==null">
+                delete_time IS NULL
+            </if>
+            <if test="groupType == 'TODAY'">
+                <include refid="selectByToDay"/>
+            </if>
+            <if test="groupType == 'YESTERDAY'">
+                <include refid="selectByYesterdayDay"/>
+            </if>
+            <if test="groupType == 'THISWEEK'">
+                <include refid="selectByThisWeek"/>
+            </if>
+            <if test="groupType == 'THISMONTH'">
+                <include refid="selectByThisMonth"/>
+            </if>
+            AND auth_state = 1
+        </where>
+        ) authTeacherAll,
+        (select count(*) from as_user
+        <where>
+            <if test="groupType == 'ALL' || groupType == '' || groupType==null">
+                delete_time IS NULL
+            </if>
+            <if test="groupType == 'TODAY'">
+                <include refid="selectByToDay"/>
+            </if>
+            <if test="groupType == 'YESTERDAY'">
+                <include refid="selectByYesterdayDay"/>
+            </if>
+            <if test="groupType == 'THISWEEK'">
+                <include refid="selectByThisWeek"/>
+            </if>
+            <if test="groupType == 'THISMONTH'">
+                <include refid="selectByThisMonth"/>
+            </if>
+            AND user_type = 1
+        </where>
+        ) studentAll
+    </select>
+
+    <select id="selectQuestionByStateCount" resultType="java.util.Map">
+        SELECT COUNT(*) `count`,
+        <include refid="groupType"/>
+        FROM
+        as_questions
+        <where>
+            <if test="startDate != null">
+                AND create_time >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND create_time &lt;= #{endDate}
+            </if>
+            <if test="param.solveState !=null ">
+                AND IF(#{param.solveState}=0,solve_state = 0,solve_state != 0)
+            </if>
+            <if test="param.questionState!=null">
+                AND question_state = #{param.questionState}
+            </if>
+            AND delete_time IS NULL
+        </where>
+        GROUP BY
+        `date`
+        ORDER BY
+        `date` ASC
+    </select>
+
+    <select id="selectAnswerByStateCount" resultType="java.util.Map">
+        SELECT COUNT(*) `count`,
+        <include refid="groupType"/>
+        FROM
+        as_answers
+        <where>
+            <if test="startDate != null">
+                AND create_time >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND create_time &lt;= #{endDate}
+            </if>
+            <if test="param.adoptionState !=null ">
+                AND IF(#{param.adoptionState}=false,adoption_state = false,adoption_state = true)
+            </if>
+            AND delete_time IS NULL
+        </where>
+        GROUP BY
+        `date`
+        ORDER BY
+        `date` ASC
+    </select>
+
+    <select id="selectUserCount" resultType="java.util.Map">
+        select count(*) `value`,
+        <include refid="userGroupType"/>
+        from as_user
+        where delete_time IS NULL
+        Group by `name`
+    </select>
+</mapper>

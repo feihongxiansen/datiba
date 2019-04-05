@@ -40,7 +40,8 @@
                 AND user_phone LIKE CONCAT('%',#{queryParam.userPhone},'%')
             </if>
             <if test="queryParam.trackNumber != null">
-                AND track_number LIKE CONCAT('%',#{queryParam.trackNumber},'%')
+                AND (track_number LIKE CONCAT('%',#{queryParam.trackNumber},'%') OR
+                track_number LIKE CONCAT('%',#{vagueParam},'%'))
             </if>
             <if test="vagueParam != null &amp;&amp; vagueParam != ''">
                 OR gift_id IN (
