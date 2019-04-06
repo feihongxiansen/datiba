@@ -3,6 +3,8 @@ package com.dtb.admin.controller;
 import com.dtb.admin.service.ExchangeService;
 import com.dtb.entity.Exchange;
 import com.dtb.entity.ExchangeAssociation;
+import com.dtb.entity.User;
+import com.dtb.utils.email.EmailUtil;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
 import com.github.pagehelper.Page;
@@ -29,6 +31,8 @@ public class ExchangeController {
 
     @Autowired
     private ExchangeService exchangeService;
+    @Autowired
+    private EmailUtil emailUtil;
 
     /**
      * 兑换订单列表页面渲染
@@ -90,6 +94,17 @@ public class ExchangeController {
     public ResponseBean updateBatchByIds(@RequestParam List<Integer> idList,
                                          Exchange param) {
         int result = exchangeService.updateBatchByIds(idList, param);
+        if (param.getTrackNumber() == null || "".equals(param.getTrackNumber())) {
+            return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
+        }
+
+        //快递已发货，发送邮件告知
+        List<User> userList = exchangeService.selectUserByExchangeIds(idList);
+        for (User item : userList) {
+            Map<String, Object> infoMap = new HashMap<>();
+            infoMap.put("userName", item.getUserName());
+            emailUtil.sendTemplateMailAsync(item.getEmail(), "【答题吧-物流信息】", infoMap, "email/exchange_ship");
+        }
         return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
     }
 }

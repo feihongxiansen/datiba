@@ -28,4 +28,14 @@ public class AddressServiceImpl implements AddressService {
     public Address findAddressById(Integer id) {
         return addressMapper.selectByPrimaryKey(id);
     }
+
+    @Override
+    public Integer updateById(Address param) {
+        return addressMapper.updateById(param);
+    }
+
+    @Override
+    public Integer add(Address param) {
+        return addressMapper.insert(param);
+    }
 }

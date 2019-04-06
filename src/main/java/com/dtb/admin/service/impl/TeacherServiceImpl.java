@@ -4,6 +4,7 @@ import com.dtb.admin.dao.TeacherMapper;
 import com.dtb.admin.service.TeacherService;
 import com.dtb.entity.Teacher;
 import com.dtb.entity.TeacherAssociation;
+import com.dtb.entity.User;
 import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,4 +47,8 @@ public class TeacherServiceImpl implements TeacherService {
         return teacher;
     }
 
+    @Override
+    public List<User> selectUserByTeacherIds(List<Integer> idList) {
+        return teacherMapper.selectUserByTeacherIds(idList);
+    }
 }

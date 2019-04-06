@@ -1,0 +1,179 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{::style},~{})">
+    <title>编辑个人信息-答题吧</title>
+    <style>
+        .img-rounded {
+            max-height: 150px;
+            max-width: 180px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--顶部导航栏导入-->
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+
+<div class="container" style="margin-bottom: 5%;">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2" style="margin-top: 30px;">
+            <form class="layui-form layui-form-pane" id="form" enctype="multipart/form-data" action="">
+                <input type="hidden" name="id" th:value="${info.id}">
+                <input type="hidden" name="userPhoto" th:value="${info.userPhoto}">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="userName" th:value="${info.userName}" required lay-verify="required"
+                               maxlength="15"
+                               placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">昵称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="nickName" th:value="${info.nickName}" required lay-verify="required"
+                               maxlength="20"
+                               placeholder="请输入昵称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" name="password" maxlength="16"
+                               placeholder="不填写则不修改" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">身份</label>
+                    <div class="layui-input-block">
+                        <input type="radio" lay-verify="required" th:checked="${info.userType}==1" disabled
+                               class="layui-disabled" value="1" title="学生">
+                        <input type="radio" lay-verify="required" th:checked="${info.userType}==2" disabled
+                               class="layui-disabled" value="2" title="教师">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">性别</label>
+                    <div class="layui-input-block">
+                        <input type="radio" lay-verify="required" th:checked="${info.sex}==1" name="sex" value="1"
+                               title="男">
+                        <input type="radio" lay-verify="required" th:checked="${info.sex}==2" name="sex" value="2"
+                               title="女">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">头像</label>
+                    <div class="layui-input-inline">
+                        <button type="button" onclick="clearImg();" class="layui-btn" id="uploadimg">
+                            <i class="layui-icon">&#xe67c;</i>选择图片
+                        </button>
+                    </div>
+                    <div class="layui-input-inline" id="imgBox">
+                        <img th:src="${info.userPhoto}" alt='' class='img-rounded'>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱</label>
+                    <div class="layui-input-inline">
+                        <input type="text" disabled th:value="${info.email}" autocomplete="off"
+                               class="layui-disabled layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">手机</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" th:value="${info.phone}" required lay-verify="required|phone"
+                               placeholder="请输入手机号码"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">简介</label>
+                    <div class="layui-input-block">
+                        <textarea name="userSummary" placeholder="请输入内容" th:value="${info.userSummary}"
+                                  th:text="${info.userSummary}" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formRegister">立即提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- 底部导航栏 start-->
+<footer th:replace="home/public/footer::footer"></footer>
+<!-- 底部导航栏end -->
+
+<script th:inline="javascript">
+
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form
+            , upload = layui.upload;
+
+        //图片上传
+        var uploadInst = upload.render({
+            elem: '#uploadimg'
+            , multiple: false//多图上传，不支持IE8/9
+            , field: 'file'//后台接收字段名
+            , auto: false//不自动上传
+            , acceptMime: 'image/*'//（只显示图片文件）
+            , choose: function (obj) { //选择图片后执行
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                $("#imgBox").empty();
+                obj.preview(function (index, file, result) {
+                    var img = "<img src='" + result + "'alt='' class='img-rounded'>";
+                    $("#imgBox").append(img);
+                });
+            }
+        });
+
+        //监听提交
+        form.on('submit(formRegister)', function (data) {
+            console.log(data.field);
+            var formData = new FormData($("#form")[0]);
+            //提交表单，登录验证
+            $.ajax({
+                url: "/home/user/edit",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success == true) {
+                        layer.msg("修改成功！", {icon: 1, time: 1500});
+                        setTimeout(goInfo, 1500);
+                    } else {
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
+                    }
+
+                    console.log(res);
+                },
+                error: function (res) {
+                    layer.msg(res, {icon: 2, time: 1500});
+                }
+            });
+            return false;
+        });
+    });
+
+    function goInfo() {
+        location.href = "/home/user/personalCenter/" + [[${session.user.id}]];
+    }
+
+    /*清除回显图片*/
+    function clearImg() {
+        $("#imgBox").empty();
+    }
+</script>
+</body>
+</html>

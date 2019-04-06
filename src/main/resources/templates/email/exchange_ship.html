@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>物流更新</title>
+</head>
+<body>
+<h2>答题吧</h2>
+亲爱的用户【<span th:text="${userName}"></span>】您好，
+您兑换的物品已发货，请登录系统查看物流单号！
+<br>
+<a th:href="@{'http://www.datiba.com/home/index/login?pagePath=/home/gift/myGift'}">查看详情</a>
+</body>
+</html>

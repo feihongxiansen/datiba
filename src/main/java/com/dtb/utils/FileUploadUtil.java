@@ -72,6 +72,7 @@ public class FileUploadUtil {
     @RequestMapping("delete")
     @ResponseBody
     public static String delFile(@RequestParam("path") String path) {
+        System.out.println("待删除文件地址：" + path);
         String resultInfo = null;
         File file = new File(path);
         if (file.exists()) {
@@ -83,7 +84,6 @@ public class FileUploadUtil {
         } else {
             resultInfo = "文件不存在！";
         }
-
         return resultInfo;
     }
 

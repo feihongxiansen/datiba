@@ -1,0 +1,109 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{},~{})">
+    <title>新增地址-答题吧</title>
+</head>
+
+<body>
+<div class="container" style="margin-bottom: 5%;margin-top: 5%;">
+    <div class="row">
+        <div class="col-md-12">
+            <form class="layui-form layui-form-pane" id="form" action="">
+                <input name="userId" type="hidden" th:value="${session.user.id}">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">收货人姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="userName" required lay-verify="required" maxlength="15"
+                               placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">收货人手机</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" required lay-verify="required|phone" placeholder="请输入手机号码"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">地址</label>
+                    <div class="layui-input-inline">
+                        <select name="province" id="province" lay-filter="province">
+                            <option value="">请选择省</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <select name="city" id="city" lay-filter="city">
+                            <option value="">请选择市</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <select name="area" id="area" lay-filter="area">
+                            <option value="">请选择县/区</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">详细地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="detial" required lay-verify="required"
+                               placeholder="请输入详细地址" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formRegister">立即提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/static/common/plugs/address/data.js}"></script>
+<script th:src="@{/static/common/plugs/address/province.js}"></script>
+
+<script th:inline="javascript">
+
+    //省市区参数初始化
+    var defaults = {
+        s1: 'province',
+        s2: 'city',
+        s3: 'area',
+        v1: null,
+        v2: null,
+        v3: null
+    };
+    layui.use(['form'], function () {
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formRegister)', function (data) {
+            console.log(data.field);
+            var formData = new FormData($("#form")[0]);
+            //提交表单，登录验证
+            $.ajax({
+                url: "/home/address/add",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success == true) {
+                        layer.msg(res.errMsg, {icon: 1, time: 1500});
+                        setTimeout(refreshParent, 1500);
+                    } else {
+                        layer.msg(res.errMsg, {icon: 2, time: 1500});
+                    }
+
+                    console.log(res);
+                },
+                error: function (res) {
+                    layer.msg(res, {icon: 2, time: 1500});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

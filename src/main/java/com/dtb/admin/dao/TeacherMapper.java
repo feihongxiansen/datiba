@@ -2,6 +2,7 @@ package com.dtb.admin.dao;
 
 import com.dtb.entity.Teacher;
 import com.dtb.entity.TeacherAssociation;
+import com.dtb.entity.User;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -47,4 +48,14 @@ public interface TeacherMapper {
      * @date 2019/4/1 20:15
      */
     TeacherAssociation selectById(@Param("id") Integer id);
+
+    /**
+     * 根据审核申请查询id数组查询用户
+     *
+     * @param idList 主键
+     * @return java.util.List<com.dtb.entity.User>
+     * @author lmx
+     * @date 2019/4/6 14:43
+     */
+    List<User> selectUserByTeacherIds(@Param("idList") List<Integer> idList);
 }

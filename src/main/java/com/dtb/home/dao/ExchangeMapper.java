@@ -1,6 +1,8 @@
 package com.dtb.home.dao;
 
 import com.dtb.entity.Exchange;
+import com.dtb.entity.ExchangeAssociation;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
 
 public interface ExchangeMapper {
@@ -28,5 +30,23 @@ public interface ExchangeMapper {
      */
     Exchange selectByPrimaryKey(@Param("id") Integer id);
 
-    int updateByPrimaryKeySelective(Exchange record);
+    /**
+     * 根据id查询兑换记录
+     *
+     * @param userId 用户id
+     * @return com.dtb.entity.ExchangeAssociation
+     * @author lmx
+     * @date 2019/4/6 18:13
+     */
+    Page<ExchangeAssociation> selectListByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 根据id修改
+     *
+     * @param param 参数
+     * @return java.lang.Integer
+     * @author lmx
+     * @date 2019/4/6 18:43
+     */
+    Integer updateById(@Param("param") Exchange param);
 }

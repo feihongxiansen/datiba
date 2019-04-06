@@ -27,7 +27,13 @@
                 <dd><a href="/home/document/myDocumentList">我的记录</a></dd>
             </dl>
         </li>
-        <li class="layui-nav-item"><a href="/home/index/gift/list">积分兑换</a></li>
+        <li class="layui-nav-item">
+            <a href="/home/index/gift/list">积分兑换</a>
+            <dl class="layui-nav-child">
+                <dd><a href="/home/index/gift/list">兑换专区</a></dd>
+                <dd><a href="/home/exchange/exchangePage">我的兑换</a></dd>
+            </dl>
+        </li>
         <li class="layui-nav-item"><a href="/home/feedback/add">意见反馈</a></li>
         <li class="layui-nav-item"><a href="/home/index/about">联系我们</a></li>
 
@@ -35,9 +41,13 @@
         <li class="layui-nav-item" th:if="${session.user} == null"><a href="/home/index/register">注册</a></li>
 
         <li class="layui-nav-item" th:if="${session.user} != null">
-            <a href="javascript:;"><img th:src="@{${session.user.userPhoto}==null?'/static/home/images/user-head/1.jpg':${session.user.userPhoto}}" class="layui-nav-img" th:text="${session.user.userName}"></a>
+            <a th:href="'/home/user/personalCenter/'+${session.user.id}"><img
+                    th:src="@{${session.user.userPhoto}==null?'/static/home/images/user-head/1.jpg':${session.user.userPhoto}}"
+                    class="layui-nav-img" th:text="${session.user.userName}"></a>
             <dl class="layui-nav-child">
-                <dd><a href="/home/user/personalCenter">个人中心</a></dd>
+                <dd><a th:href="'/home/user/personalCenter/'+${session.user.id}">个人中心</a></dd>
+                <dd><a href="/home/exchange/exchangePage">我的兑换</a></dd>
+                <dd><a href="/home/address/myaddress">我的地址</a></dd>
                 <dd><a href="javascript:void(0);" id="JsSignOut">退了</a></dd>
             </dl>
         </li>

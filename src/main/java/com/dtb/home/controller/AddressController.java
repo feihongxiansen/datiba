@@ -65,4 +65,58 @@ public class AddressController {
         Address address = addressService.findAddressById(id);
         return new ResponseBean<Address>(true, address, CommonErrorEnum.SUCCESS_REQUEST);
     }
+
+    /**
+     * 我的地址页面渲染
+     *
+     * @return java.lang.String
+     * @author lmx
+     * @date 2019/4/6 15:31
+     */
+    @RequestMapping("/myaddress")
+    public String myaddress() {
+        return "/home/myaddress";
+    }
+
+    /**
+     * 根id修改
+     *
+     * @param param 参数
+     * @return com.dtb.utils.resulthandler.ResponseBean
+     * @author lmx
+     * @date 2019/4/6 16:10
+     */
+    @RequestMapping("/updateById")
+    @ResponseBody
+    public ResponseBean updateById(Address param) {
+        addressService.updateById(param);
+        return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
+    }
+
+    /**
+     * 添加
+     *
+     * @param param 参数
+     * @return com.dtb.utils.resulthandler.ResponseBean
+     * @author lmx
+     * @date 2019/4/6 16:52
+     */
+    @RequestMapping("/add")
+    @ResponseBody
+    public ResponseBean add(Address param) {
+        addressService.add(param);
+        return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
+    }
+
+    /**
+     * 添加地址页面渲染
+     *
+     * @return java.lang.String
+     * @author lmx
+     * @date 2019/4/6 17:08
+     */
+    @RequestMapping("/addPage")
+    public String addPage() {
+        return "/home/add-address";
+    }
 }

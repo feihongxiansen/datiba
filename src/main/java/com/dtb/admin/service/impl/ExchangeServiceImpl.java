@@ -4,6 +4,7 @@ import com.dtb.admin.dao.ExchangeMapper;
 import com.dtb.admin.service.ExchangeService;
 import com.dtb.entity.Exchange;
 import com.dtb.entity.ExchangeAssociation;
+import com.dtb.entity.User;
 import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,5 +31,10 @@ public class ExchangeServiceImpl implements ExchangeService {
     @Override
     public Integer updateBatchByIds(List<Integer> idList, Exchange param) {
         return exchangeMapper.updateBatchByIds(idList, param);
+    }
+
+    @Override
+    public List<User> selectUserByExchangeIds(List<Integer> idList) {
+        return exchangeMapper.selectUserByExchangeIds(idList);
     }
 }

@@ -2,6 +2,7 @@ package com.dtb.admin.service;
 
 import com.dtb.entity.Teacher;
 import com.dtb.entity.TeacherAssociation;
+import com.dtb.entity.User;
 import com.github.pagehelper.Page;
 
 import java.util.List;
@@ -44,4 +45,14 @@ public interface TeacherService {
      * @date 2019/4/1 20:15
      */
     TeacherAssociation selectById(Integer id);
+
+    /**
+     * 根据审核申请查询id数组用户
+     *
+     * @param idList 主键
+     * @return java.util.List<com.dtb.entity.User>
+     * @author lmx
+     * @date 2019/4/6 14:43
+     */
+    List<User> selectUserByTeacherIds(List<Integer> idList);
 }

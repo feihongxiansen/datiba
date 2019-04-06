@@ -12,7 +12,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,22 +38,22 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
-    private Environment environment;
-    @Autowired
     private EmailUtil emailUtil;
     @Value("${com.dtb.file.baseFilePath}")
     private String baseFilePath;
+    @Value("com.dtb.security.md5.key")
+    private String md5Key;
 
 
     /**
+     * @param password   登录密码
+     * @param verifyCode 验证码
+     * @param pagePath   登录后页面跳转路径
+     * @param session    会话session
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @author lmx
      * @date 2019/3/1 15:35
      * @descript 用户登录验证
-     * @param password 登录密码
-     * @param verifyCode 验证码
-     * @param pagePath 登录后页面跳转路径
-     * @param session 会话session
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/checkLogin")
     @ResponseBody
@@ -83,7 +82,7 @@ public class UserController {
         }
 
         //判断密码是否正确
-        if (!MD5Util.md5Verify(password, environment.getProperty("com.dtb.security.md5.key"), user.getPassword())) {
+        if (!MD5Util.md5Verify(password, this.md5Key, user.getPassword())) {
             return new ResponseBean(false, CommonErrorEnum.INVALID_PASSWORD);
         }
 
@@ -106,11 +105,11 @@ public class UserController {
     }
 
     /**
+     * @param session 会话session
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @author lmx
      * @date 2019/3/1 16:12
      * @descript 退出登录
-     * @param session 会话session
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/logOut")
     @ResponseBody
@@ -121,11 +120,11 @@ public class UserController {
 
 
     /**
+     * @param email 邮箱地址
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @author lmx
      * @date 2019/3/1 18:40
      * @descript 检测邮箱地址是否可用
-     * @param email 邮箱地址
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/checkEmailExist")
     @ResponseBody
@@ -163,7 +162,7 @@ public class UserController {
         //重新生成邮箱验证码
         user.setEmailCode((String) VerifyUtil.createImage()[0]);
         //对用户密码加密
-        user.setPassword(MD5Util.md5(user.getPassword(), environment.getProperty("com.dtb.security.md5.key")));
+        user.setPassword(MD5Util.md5(user.getPassword(), this.md5Key));
         //用户信息插入数据库
         userService.createUser(user);
 
@@ -183,12 +182,12 @@ public class UserController {
     }
 
     /**
+     * @param id        用户id
+     * @param emailCode 邮箱验证码
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @author lmx
      * @date 2019/3/2 17:49
      * @descript 验证用户邮箱，激活账号
-     * @param id 用户id
-     * @param emailCode 邮箱验证码
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/activation/{id}/{emailCode}")
     public String activation(@PathVariable Integer id, @PathVariable String emailCode, Model model) {
@@ -228,11 +227,11 @@ public class UserController {
     }
 
     /**
+     * @param id 用户id
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      * @author lmx
      * @date 2019/3/3 0:11
      * @descript 重新发送激活邮件
-     * @param id 用户id
-     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/resetEmailCode/{id}")
     @ResponseBody
@@ -322,7 +321,7 @@ public class UserController {
      */
     @RequestMapping("/uploadUserPhoto")
     @ResponseBody
-    public ResponseBean uploadUserPhoto(@RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseBean<String> uploadUserPhoto(@RequestParam("file") MultipartFile file) throws Exception {
         String uploadPath = "/upload/images/avatar";
         String rootPath = this.baseFilePath + uploadPath;
         String imgPath = FileUploadUtil.upload(file, rootPath, "avatar_");
@@ -337,9 +336,56 @@ public class UserController {
      * @author lmx
      * @date 2019/3/29 23:58
      */
-    @RequestMapping("/personalCenter")
-    @ResponseBody
-    public String personalCenter() {
+    @RequestMapping("/personalCenter/{userId}")
+    public String personalCenter(@PathVariable Integer userId, Model model) {
+        Map<String, Object> userInfoMap = userService.findUserInfoById(userId);
+        model.addAttribute("userInfo", userInfoMap);
         return "/home/personal-center";
+    }
+
+    /**
+     * 编辑信息页面渲染
+     *
+     * @param session 会话session
+     * @param model   model
+     * @return java.lang.String
+     * @author lmx
+     * @date 2019/4/6 20:13
+     */
+    @RequestMapping("/editPage")
+    public String editPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("info", userService.findById(user.getId()));
+        return "/home/edit-userinfo";
+    }
+
+    /**
+     * 根据id修改个人信息
+     *
+     * @param user 参数
+     * @param file 头像文件
+     * @return com.dtb.utils.resulthandler.ResponseBean
+     * @author lmx
+     * @date 2019/4/6 20:17
+     */
+    @RequestMapping("/edit")
+    @ResponseBody
+    public ResponseBean edit(User user,
+                             @RequestParam(value = "file", required = false) MultipartFile file,
+                             HttpSession session) throws Exception {
+        if (user.getPassword() != null && !"".equals(user.getPassword().trim())) {
+            user.setPassword(MD5Util.md5(user.getPassword(), this.md5Key));
+        }
+        if (file == null || file.isEmpty()) {
+            userService.updateByIdSelective(user);
+            session.setAttribute("user", userService.findById(user.getId()));
+            return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
+        }
+        String userPhoto = this.uploadUserPhoto(file).getData();
+        System.out.println(FileUploadUtil.delFile(this.baseFilePath + user.getUserPhoto().substring(5)));
+        user.setUserPhoto(userPhoto);
+        userService.updateByIdSelective(user);
+        session.setAttribute("user", userService.findById(user.getId()));
+        return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
     }
 }

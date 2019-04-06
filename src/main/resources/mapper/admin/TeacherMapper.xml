@@ -91,6 +91,19 @@
         WHERE id = #{id}
     </select>
 
+    <select id="selectUserByTeacherIds" resultType="com.dtb.entity.User">
+        SELECT *
+        FROM as_user u
+        INNER JOIN as_teacher t
+        ON u.id = t.user_id
+        WHERE u.delete_time IS NULL
+        AND t.id IN
+        <foreach collection="idList" open="(" separator="," close=")" item="itemId">
+            #{itemId}
+        </foreach>
+    </select>
+
+
     <update id="updateBatchByIds">
         UPDATE as_teacher
         <set>

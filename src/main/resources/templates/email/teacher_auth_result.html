@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>教师认证审核结果</title>
+</head>
+<body>
+<h2>答题吧</h2>
+亲爱的用户【<span th:text="${userName}"></span>】您好，
+您申请的教师认证审核结果已更新，请登录查看审核结果！
+<br>
+<a th:href="@{'http://www.datiba.com/home/index/login?pagePath=/home/teacher/auth'}">查看详情</a>
+</body>
+</html>

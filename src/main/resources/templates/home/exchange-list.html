@@ -1,0 +1,196 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/public/head::head(~{::title},~{},~{})">
+    <title>我的兑换记录-答题吧</title>
+</head>
+<body>
+
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<div class="layui-container" v-cloak id="container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>我的兑换记录</legend>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="layui-row">
+        <table class="layui-table">
+            <colgroup>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>物品名称</th>
+                <th>收货人姓名</th>
+                <th>收货人电话</th>
+                <th>收货地址</th>
+                <th>快递单号</th>
+                <th>创建时间</th>
+                <th>编辑</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="item in list">
+                <td>{{item.id}}</td>
+                <td><a @click="showImg(item.gift.photos)" href="javascript:void(0);">{{item.gift.giftName}}</a></td>
+                <td>{{item.userName}}</td>
+                <td>{{item.userPhone}}</td>
+                <td>{{item.addressProvince| getAddressByCode(item.addressCity,item.addressDistrict)}}
+                    {{item.addressDetial}}
+                </td>
+                <th>{{item.trackNumber==null?'还未发货':item.trackNumber}}</th>
+                <td>{{item.createTime}}</td>
+                <td><a href="javascript:void(0)" @click="del(item.id)">删除</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="page text-right">
+            <div id="laypage"></div>
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/static/common/plugs/address/data.js}"></script>
+<script th:src="@{/static/common/plugs/vue/vue.js}"></script>
+<script th:inline="javascript">
+
+
+    function initLayui() {
+        layui.use(['form', 'laypage'], function () {
+            var laypage = layui.laypage
+                , form = layui.form;
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
+                , count: app.$data.total //数据总数，从服务端得到
+                , limits: [10, 20, 40, 60, 80, 100] //每页条数的选择项。如果 layout 参数开启了 limit，则会出现每页条数的select选择框
+                , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+                , jump: function (obj, first) {
+                    app.$data.pageSize = obj.limit;
+                    app.$data.pageNum = obj.curr;
+                    //首次不执行
+                    if (!first) {
+                        getExchangeList();
+                    }
+                }
+            });
+        });
+    }
+
+    /*软删除*/
+    window.softDel = function (id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            $.post("/home/exchange/updateById", {id: id, deleteTime: getNowTimeStr()}, function (res) {
+                console.log(res);
+                if (res.success) {
+                    layer.msg('已删除!', {
+                        icon: 1,
+                        time: 1000
+                    });
+                    setTimeout(refresh, 1000);
+                } else {
+                    layer.msg(res.errMsg, {
+                        icon: 2,
+                        time: 1000
+                    });
+                }
+            });
+        });
+    };
+
+
+    /**
+     * 服务器获取管理员列表
+     * @param pageNum 当前页码
+     * @param paeSize 页面大小
+     */
+    function getExchangeList() {
+        var requestUrl = "/home/exchange/queryExchangeListByUserId/" +
+            app.$data.pageNum + "/" + app.$data.pageSize + "/" + [[${session.user.id}]];
+        $.post(requestUrl, function (res) {
+            console.log(res);
+            if (res.success) {
+                app.$data.total = res.data.pageInfo.total;
+                app.$data.list = res.data.list;
+                app.$data.initLayui = true;
+            }
+        })
+    }
+
+    var that = this;
+    var app = new Vue({
+        el: "#container",
+        data: {
+            list: null //管理员列表
+            , total: 0 //数据总数
+            , initLayui: false //是否可以初始化layui
+            , pageSize: 10
+            , pageNum: 1
+        },
+        watch: {
+            'initLayui': function (newVal) {
+                console.log("change initLayui value:", newVal);
+                if (newVal)
+                    that.initLayui();
+            }
+        },
+        //过滤器
+        filters: {
+            /**
+             * 根据地区代码查询地名
+             */
+            getAddressByCode: function (provinceCode, cityCode, areaCode) {
+                var address = "";
+                $.each(that.threeSelectData, function (k1, v1) {
+                    if (v1.val === provinceCode) {
+                        $.each(v1.items, function (k2, v2) {
+                            if (v2.val === cityCode) {
+                                $.each(v2.items, function (k3, v3) {
+                                    if (v3 === areaCode) {
+                                        address = k1 + ' ' + k2 + ' ' + k3;
+                                    }
+                                })
+                            }
+                        })
+                    }
+                });
+                return address;
+            }
+        },
+        methods: {
+            /**
+             * 软删除数据
+             */
+            del: function (id) {
+                softDel(id);
+            },
+            /**
+             * 查看用户头像
+             * @param imgSrc
+             */
+            showImg: function (imgSrc) {
+                layer.open({
+                    title: "物品图片",
+                    type: 1,
+                    area: ['auto', '45%'], //宽高
+                    shadeClose: true,//点击遮罩关闭
+                    content: "<img style='height: 100%;' src='" + imgSrc + "'/>"
+                });
+            }
+        }
+    });
+    getExchangeList();
+
+</script>
+
+
+</body>
+</html>

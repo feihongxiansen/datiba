@@ -1,8 +1,10 @@
 package com.dtb.home.service.impl;
 
 import com.dtb.entity.Exchange;
+import com.dtb.entity.ExchangeAssociation;
 import com.dtb.home.dao.ExchangeMapper;
 import com.dtb.home.service.ExchangeService;
+import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +22,15 @@ public class ExchangeServiceImpl implements ExchangeService {
     @Override
     public Integer addExchange(Exchange exchange) {
         return exchangeMapper.insertSelective(exchange);
+    }
+
+    @Override
+    public Page<ExchangeAssociation> findListByUserId(Integer userId) {
+        return exchangeMapper.selectListByUserId(userId);
+    }
+
+    @Override
+    public Integer updateById(Exchange param) {
+        return exchangeMapper.updateById(param);
     }
 }

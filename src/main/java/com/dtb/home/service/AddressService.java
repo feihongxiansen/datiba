@@ -29,4 +29,24 @@ public interface AddressService {
      * @date 2019/3/24 16:02
      */
     Address findAddressById(Integer id);
+
+    /**
+     * 根据id修改
+     *
+     * @param param 参数
+     * @return java.lang.Integer
+     * @author lmx
+     * @date 2019/4/6 16:02
+     */
+    Integer updateById(Address param);
+
+    /**
+     * 添加
+     *
+     * @param param 参数
+     * @return java.lang.Integer
+     * @author lmx
+     * @date 2019/4/6 16:37
+     */
+    Integer add(Address param);
 }

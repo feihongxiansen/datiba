@@ -2,6 +2,7 @@ package com.dtb.admin.service;
 
 import com.dtb.entity.Exchange;
 import com.dtb.entity.ExchangeAssociation;
+import com.dtb.entity.User;
 import com.github.pagehelper.Page;
 
 import java.util.List;
@@ -34,4 +35,14 @@ public interface ExchangeService {
      * @date 2019/4/4 23:45
      */
     Integer updateBatchByIds(List<Integer> idList, Exchange param);
+
+    /**
+     * 根据订单id数组查询用户
+     *
+     * @param idList 主键
+     * @return java.util.List<com.dtb.entity.User>
+     * @author lmx
+     * @date 2019/4/6 14:43
+     */
+    List<User> selectUserByExchangeIds(List<Integer> idList);
 }

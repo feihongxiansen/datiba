@@ -55,6 +55,17 @@
     SELECT
     	nick_name AS nickName,
     	user_photo AS userPhoto,
+    	user_name AS userName,
+    	login_state AS loginState,
+    	comment_state AS commentState,
+    	question_state AS questionState,
+    	answer_state AS answerState,
+    	sex,
+    	email,
+    	phone,
+    	integral,
+    	login_time AS loginTime,
+    	create_time AS createTime,
         IF(user_summary IS NULL,'这家伙很懒，没留下简介！',user_summary) AS userSummary,
     	(
     		CASE
@@ -77,8 +88,6 @@
     			)
     		END
     	) AS userType,
-    	create_time AS createTime,
-    	login_time AS loginTime,
     	(
     		SELECT
     			COUNT(*)
@@ -128,6 +137,7 @@
     from as_user
     where id = #{id,jdbcType=INTEGER}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from as_user
     where id = #{id,jdbcType=INTEGER}
@@ -285,16 +295,16 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.User">
     update as_user
     <set>
-      <if test="userName != null">
+        <if test="userName != null &amp;&amp; userName != ''">
         user_name = #{userName,jdbcType=VARCHAR},
       </if>
-      <if test="nickName != null">
+        <if test="nickName != null &amp;&amp; nickName != ''">
         nick_name = #{nickName,jdbcType=VARCHAR},
       </if>
       <if test="loginState != null">
         login_state = #{loginState,jdbcType=BIT},
       </if>
-      <if test="password != null">
+        <if test="password != null  &amp;&amp; password != ''">
         password = #{password,jdbcType=VARCHAR},
       </if>
       <if test="commentState != null">
@@ -312,28 +322,28 @@
       <if test="sex != null">
         sex = #{sex,jdbcType=TINYINT},
       </if>
-      <if test="province != null">
+        <if test="province != null  &amp;&amp; province !=''">
         province = #{province,jdbcType=VARCHAR},
       </if>
-      <if test="city != null">
+        <if test="city != null  &amp;&amp; city != ''">
         city = #{city,jdbcType=VARCHAR},
       </if>
-      <if test="area != null">
+        <if test="area != null  &amp;&amp; area != ''">
         area = #{area,jdbcType=VARCHAR},
       </if>
-      <if test="email != null">
+        <if test="email != null  &amp;&amp; email != ''">
         email = #{email,jdbcType=VARCHAR},
       </if>
-      <if test="phone != null">
+        <if test="phone != null  &amp;&amp; phone != ''">
         phone = #{phone,jdbcType=VARCHAR},
       </if>
-      <if test="userPhoto != null">
+        <if test="userPhoto != null  &amp;&amp; userPhoto != ''">
         user_photo = #{userPhoto,jdbcType=VARCHAR},
       </if>
       <if test="integral != null">
         integral = #{integral,jdbcType=INTEGER},
       </if>
-      <if test="emailCode != null">
+        <if test="emailCode != null  &amp;&amp; emailCode != ''">
         email_code = #{emailCode,jdbcType=CHAR},
       </if>
       <if test="phoneVerify != null">
@@ -345,14 +355,11 @@
       <if test="loginTime != null">
         login_time = #{loginTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
         update_time = CURRENT_TIMESTAMP,
       <if test="deleteTime != null">
         delete_time = #{deleteTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="userSummary != null">
+        <if test="userSummary != null  &amp;&amp;  userSummary != ''">
         user_summary = #{userSummary,jdbcType=LONGVARCHAR},
       </if>
     </set>

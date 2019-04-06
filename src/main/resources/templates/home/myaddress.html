@@ -1,12 +1,23 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="home/public/head::head(~{::title},~{},~{})">
-    <title>收货地址-答题吧</title>
+    <title>我的收货地址-答题吧</title>
 </head>
-<body style="padding: 20px 20px;">
-<div id="addressListApp" v-cloak>
+<body>
+
+<div th:replace="home/public/top-menu::top-menu"></div>
+
+<div class="layui-container" v-cloak id="container">
     <div class="layui-row">
-        <table class="layui-table layui-form">
+        <div class="layui-col-md12">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>我的收货地址</legend>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="layui-row">
+        <table class="layui-table">
             <colgroup>
                 <col>
                 <col>
@@ -19,7 +30,7 @@
                 <th>收货人电话</th>
                 <th>收货地址</th>
                 <th>创建时间</th>
-                <th>选择</th>
+                <th>编辑</th>
             </tr>
             </thead>
             <tbody>
@@ -29,18 +40,19 @@
                 <td>{{item.phone}}</td>
                 <td>{{item.province| getAddressByCode(item.city,item.area)}} {{item.detial}}</td>
                 <td>{{item.createTime}}</td>
-                <td><input type="radio" name="addressId" :value="item.id" class="layui-table-link"/></td>
+                <td><a href="javascript:void(0)" @click="del(item.id)">删除</a></td>
             </tr>
             </tbody>
         </table>
     </div>
     <div class="layui-row">
         <div class="layui-col-md12 text-right">
-            <button id="chooseBtn" class="layui-btn">确定</button>
-            <button id="cancelBtn" class="layui-btn layui-btn-normal">取消</button>
+            <button type="button" id="addBtn" class="layui-btn">新增地址</button>
         </div>
     </div>
 </div>
+
+
 <script th:src="@{/static/common/plugs/address/data.js}"></script>
 <script th:src="@{/static/common/plugs/vue/vue.js}"></script>
 <script th:inline="javascript">
@@ -52,7 +64,7 @@
 
     var that = this;
     var app = new Vue({
-        el: "#addressListApp",
+        el: "#container",
         data: {
             addressList: null
         },
@@ -78,32 +90,43 @@
                 });
                 return address;
             }
+        },
+        methods: {
+            del: function (id) {
+                layer.confirm('确认要删除吗？', function (index) {
+                    //发异步删除数据
+                    $.post("/home/address/updateById", {
+                        id: id,
+                        deleteTime: getNowTimeStr()
+                    }, function (res) {
+                        console.log(res);
+                        if (res.success) {
+                            layer.msg('已删除!', {
+                                icon: 1,
+                                time: 1000
+                            });
+                            setTimeout(refresh, 1000);
+                        } else {
+                            layer.msg(res.errMsg, {
+                                icon: 2,
+                                time: 1000
+                            });
+                        }
+                    });
+                });
+            }
         }
     });
 
-    //注意：parent 是 JS 自带的全局对象，可用于操作父页面
-    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-    //给父页面传值
-    $('#chooseBtn').on('click', function () {
-        var addressId = $("input[name='addressId']:checked").val();
-        if (addressId == null || addressId === '') {
-            parent.layer.msg('请选择地址！', {time: 1500});
-            return;
-        }
-        $.get("/home/address/queryAddressById/" + addressId, function (res) {
-            var address = res.data;
-            //根据地址代码获取地址的名称和code对象
-            var addressItem = getAddressNameByCode(address.province, address.city, address.area);
-            address.province = addressItem.province;
-            address.city = addressItem.city;
-            address.area = addressItem.area;
-            //将选择的地址赋值给父页面的变量
-            parent.address = address;
-            //调用父页面的方法刷新收货地址的显示
-            parent.changeAddressSelect(address);
+    $("#addBtn").on('click', function () {
+        layer.open({
+            type: 2,
+            title: '新增地址',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['60%', '60%'],
+            content: '/home/address/addPage' //iframe的url
         });
-        //关闭当前页面
-        parent.layer.close(index);
     });
 
     /**
@@ -116,38 +139,9 @@
         })
     }
 
-    /**
-     * 根据地区代码查询地名
-     */
-    function getAddressNameByCode(provinceCode, cityCode, areaCode) {
-        var address = {};
-        $.each(threeSelectData, function (k1, v1) {
-            if (v1.val === provinceCode) {
-                $.each(v1.items, function (k2, v2) {
-                    if (v2.val === cityCode) {
-                        $.each(v2.items, function (k3, v3) {
-                            if (v3 === areaCode) {
-                                address = {
-                                    province: {name: k1, code: v1.val},
-                                    city: {name: k2, code: v2.val},
-                                    area: {name: k3, code: v3}
-                                };
-                            }
-                        })
-                    }
-                })
-            }
-        });
-        return address;
-    }
-
     getMyAddressList();
-
-    /*取消按钮*/
-    $('#cancelBtn').on('click', function () {
-        parent.layer.close(index);
-    });
 </script>
+
 
 </body>
 </html>

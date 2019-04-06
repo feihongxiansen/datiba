@@ -3,6 +3,8 @@ package com.dtb.admin.controller;
 import com.dtb.admin.service.TeacherService;
 import com.dtb.entity.Teacher;
 import com.dtb.entity.TeacherAssociation;
+import com.dtb.entity.User;
+import com.dtb.utils.email.EmailUtil;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
 import com.github.pagehelper.Page;
@@ -30,6 +32,8 @@ public class TeacherController {
 
     @Autowired
     private TeacherService teacherService;
+    @Autowired
+    private EmailUtil emailUtil;
 
     /**
      * 教师认证申请列表页面渲染
@@ -90,6 +94,16 @@ public class TeacherController {
     public ResponseBean updateBatchByIds(@RequestParam List<Integer> idList,
                                          Teacher param) {
         int result = teacherService.updateBatchByIds(idList, param);
+        if (param.getAuthState() == null) {
+            return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
+        }
+        //审核状态改变，发送邮件告知
+        List<User> userList = teacherService.selectUserByTeacherIds(idList);
+        for (User item : userList) {
+            Map<String, Object> infoMap = new HashMap<>();
+            infoMap.put("userName", item.getUserName());
+            emailUtil.sendTemplateMailAsync(item.getEmail(), "【答题吧-教师认证】", infoMap, "email/teacher_auth_result");
+        }
         return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
     }
 

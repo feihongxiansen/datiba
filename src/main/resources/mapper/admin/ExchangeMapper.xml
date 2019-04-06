@@ -67,6 +67,18 @@
         </where>
     </select>
 
+    <select id="selectUserByExchangeIds" resultType="com.dtb.entity.User">
+        SELECT *
+        FROM as_user u
+        INNER JOIN as_exchange e
+        ON u.id = e.user_id
+        WHERE u.delete_time IS NULL
+        AND e.id IN
+        <foreach collection="idList" open="(" separator="," close=")" item="itemId">
+            #{itemId}
+        </foreach>
+    </select>
+
     <update id="updateBatchByIds" parameterType="com.dtb.entity.Exchange">
         update as_exchange
         <set>

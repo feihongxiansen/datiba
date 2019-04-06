@@ -111,10 +111,11 @@ public class DocumentController {
      */
     @RequestMapping("/searchListToLimit")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> searchDocumentList(Documents documents,
-                                                            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-                                                            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        byte checkStatus = 1;//查询条件，通过审核的文件
+    public ResponseBean searchDocumentList(Documents documents,
+                                           @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                                           @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+        //查询条件，如果用户id为空说明不是查询自己的文件
+        Byte checkStatus = documents.getUserId() == null ? (byte) 1 : null;
         PageHelper.startPage(pageNum, pageSize);
         documents.setCheckState(checkStatus);
         Page<DocumentsAssociation> pageList = documentService.findDocumentListToLimit(documents);
@@ -129,7 +130,7 @@ public class DocumentController {
         resultMap.put("documentList", pageList);
         resultMap.put("pageInfo", pageInfo);
 
-        return new ResponseBean(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean<>(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
     /**
@@ -162,19 +163,19 @@ public class DocumentController {
      */
     @RequestMapping("/downloadCheck/{documentId}")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> downloadCheck(@PathVariable("documentId") Integer documentId,
-                                                       HttpSession session) {
+    public ResponseBean downloadCheck(@PathVariable("documentId") Integer documentId,
+                                      HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return new ResponseBean(false, CommonErrorEnum.FAILED_AUTH);
+            return new ResponseBean<>(false, CommonErrorEnum.FAILED_AUTH);
         }
         DocumentComments documentComments = documentService.findByUserIdAndDocumentId(user.getId(), documentId);
         if (documentComments == null) {
-            return new ResponseBean(true, "FIRST", CommonErrorEnum.FIRST_DOWNLOAD);
+            return new ResponseBean<>(true, "FIRST", CommonErrorEnum.FIRST_DOWNLOAD);
         } else {
             //下载次数自加一
             documentService.downloadCountAdd(documentId);
-            return new ResponseBean(true, "DOWNLOADED", CommonErrorEnum.SUCCESS_REQUEST);
+            return new ResponseBean<>(true, "DOWNLOADED", CommonErrorEnum.SUCCESS_REQUEST);
         }
     }
 

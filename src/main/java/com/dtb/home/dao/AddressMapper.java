@@ -30,5 +30,23 @@ public interface AddressMapper {
      */
     Address selectByPrimaryKey(@Param("id") Integer id);
 
-    int updateByPrimaryKeySelective(Address record);
+    /**
+     * 根据id修改
+     *
+     * @param param 参数
+     * @return java.lang.Integer
+     * @author lmx
+     * @date 2019/4/6 16:08
+     */
+    Integer updateById(@Param("param") Address param);
+
+    /**
+     * 添加
+     *
+     * @param param 参数
+     * @return java.lang.Integer
+     * @author lmx
+     * @date 2019/4/6 16:37
+     */
+    Integer insert(@Param("param") Address param);
 }

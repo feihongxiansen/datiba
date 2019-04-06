@@ -17,3 +17,25 @@ function refreshParent() {
     var index = parent.layer.getFrameIndex(window.name);
     parent.layer.close(index);//关闭弹出层
 }
+
+/**
+ * 获取当前日期时间字符串
+ * @returns {string}
+ */
+function getNowTimeStr() {
+    var date = new Date();
+    var nowTime = date.getFullYear() + '-'
+        + (date.getMonth() + 1) + '-'
+        + date.getDate() + ' '
+        + date.getHours() + ':'
+        + date.getMinutes() + ':'
+        + date.getSeconds();
+    return nowTime;
+}
+
+/**
+ * 页面跳转
+ */
+function goTo(href) {
+    window.location.href = href;
+}

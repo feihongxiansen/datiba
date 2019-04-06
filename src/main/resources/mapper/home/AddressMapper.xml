@@ -38,107 +38,105 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
 
-  <insert id="insertSelective" parameterType="com.dtb.entity.Address">
+  <insert id="insert" parameterType="com.dtb.entity.Address">
     insert into as_address
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
+      <if test="param.id != null">
         id,
       </if>
-      <if test="userId != null">
+      <if test="param.userId != null">
         user_id,
       </if>
-      <if test="userName != null">
+      <if test="param.userName != null">
         user_name,
       </if>
-      <if test="phone != null">
+      <if test="param.phone != null">
         phone,
       </if>
-      <if test="province != null">
+      <if test="param.province != null">
         province,
       </if>
-      <if test="city != null">
+      <if test="param.city != null">
         city,
       </if>
-      <if test="area != null">
+      <if test="param.area != null">
         area,
       </if>
-      <if test="detial != null">
+      <if test="param.detial != null">
         detial,
       </if>
         create_time,
-      <if test="updateTime != null">
+      <if test="param.updateTime != null">
         update_time,
       </if>
-      <if test="deleteTime != null">
+      <if test="param.deleteTime != null">
         delete_time,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
+      <if test="param.id != null">
+        #{param.id,jdbcType=INTEGER},
       </if>
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
+      <if test="param.userId != null">
+        #{param.userId,jdbcType=INTEGER},
       </if>
-      <if test="userName != null">
-        #{userName,jdbcType=VARCHAR},
+      <if test="param.userName != null">
+        #{param.userName,jdbcType=VARCHAR},
       </if>
-      <if test="phone != null">
-        #{phone,jdbcType=VARCHAR},
+      <if test="param.phone != null">
+        #{param.phone,jdbcType=VARCHAR},
       </if>
-      <if test="province != null">
-        #{province,jdbcType=VARCHAR},
+      <if test="param.province != null">
+        #{param.province,jdbcType=VARCHAR},
       </if>
-      <if test="city != null">
-        #{city,jdbcType=VARCHAR},
+      <if test="param.city != null">
+        #{param.city,jdbcType=VARCHAR},
       </if>
-      <if test="area != null">
-        #{area,jdbcType=VARCHAR},
+      <if test="param.area != null">
+        #{param.area,jdbcType=VARCHAR},
       </if>
-      <if test="detial != null">
-        #{detial,jdbcType=VARCHAR},
+      <if test="param.detial != null">
+        #{param.detial,jdbcType=VARCHAR},
       </if>
       CURRENT_TIMESTAMP,
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
+      <if test="param.updateTime != null">
+        #{param.updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="deleteTime != null">
-        #{deleteTime,jdbcType=TIMESTAMP},
+      <if test="param.deleteTime != null">
+        #{param.deleteTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.dtb.entity.Address">
+
+  <update id="updateById" parameterType="com.dtb.entity.Address">
     update as_address
     <set>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=INTEGER},
+      <if test="param.userId != null">
+        user_id = #{param.userId,jdbcType=INTEGER},
       </if>
-      <if test="userName != null">
-        user_name = #{userName,jdbcType=VARCHAR},
+      <if test="param.userName != null">
+        user_name = #{param.userName,jdbcType=VARCHAR},
       </if>
-      <if test="phone != null">
-        phone = #{phone,jdbcType=VARCHAR},
+      <if test="param.phone != null">
+        phone = #{param.phone,jdbcType=VARCHAR},
       </if>
-      <if test="province != null">
-        province = #{province,jdbcType=VARCHAR},
+      <if test="param.province != null">
+        province = #{param.province,jdbcType=VARCHAR},
       </if>
-      <if test="city != null">
-        city = #{city,jdbcType=VARCHAR},
+      <if test="param.city != null">
+        city = #{param.city,jdbcType=VARCHAR},
       </if>
-      <if test="area != null">
-        area = #{area,jdbcType=VARCHAR},
+      <if test="param.area != null">
+        area = #{param.area,jdbcType=VARCHAR},
       </if>
-      <if test="detial != null">
-        detial = #{detial,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
+      <if test="param.detial != null">
+        detial = #{param.detial,jdbcType=VARCHAR},
       </if>
       update_time = CURRENT_TIMESTAMP,
-      <if test="deleteTime != null">
-        delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      <if test="param.deleteTime != null">
+        delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{param.id,jdbcType=INTEGER}
   </update>
 </mapper>
