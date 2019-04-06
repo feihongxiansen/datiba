@@ -9,7 +9,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,8 +32,6 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
-    @Autowired
-    private Environment environment;
     @Value("${com.dtb.security.md5.key}")
     private String md5Key;
 

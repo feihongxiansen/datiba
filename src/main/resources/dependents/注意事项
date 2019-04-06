@@ -9,3 +9,4 @@
 2.使用本系统，需要在application.properties中配置资源路径，这样上传的资源都会被保存在此文件夹中
     移动项目的时候也要复制该文件夹，不然会出现资源的404错误
     默认：com.dtb.file.baseFilePath=D://dtb//file/
+3.将dependents/dtb.zip文件夹解压后放至D盘根目录即可，数据库中的数据就能直接使用了

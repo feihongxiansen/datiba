@@ -35,8 +35,8 @@ public class GiftController {
      */
     @RequestMapping("/queryGiftList/{pageNum}/{pageSize}")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> queryGiftList(@PathVariable("pageNum") Integer pageNum,
-                                                       @PathVariable("pageSize") Integer pageSize) {
+    public ResponseBean queryGiftList(@PathVariable("pageNum") Integer pageNum,
+                                      @PathVariable("pageSize") Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         Page<GiftWithBLOBs> pageList = giftService.findPageGiftList();
         Map<String, Object> reslutMap = new HashMap<>();
@@ -48,7 +48,7 @@ public class GiftController {
         pageInfoMap.put("pageSize", pageList.getPageSize());
         pageInfoMap.put("pages", pageList.getPages());
         reslutMap.put("pageInfo", pageInfoMap);
-        return new ResponseBean(true, reslutMap, CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean<>(true, reslutMap, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
     /**

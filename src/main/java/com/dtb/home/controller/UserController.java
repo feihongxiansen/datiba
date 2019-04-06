@@ -100,8 +100,7 @@ public class UserController {
         session.setAttribute("user", user);
         Map<String, Object> resultMap = new HashMap<String, Object>();
         resultMap.put("pagePath", pagePath);
-        ResponseBean responseBean = new ResponseBean<>(true, resultMap, CommonErrorEnum.LOGIN_SUCCESS);
-        return responseBean;
+        return new ResponseBean<>(true, resultMap, CommonErrorEnum.LOGIN_SUCCESS);
     }
 
     /**
@@ -147,7 +146,7 @@ public class UserController {
      */
     @RequestMapping("/register")
     @ResponseBody
-    public ResponseBean<String> register(User user, @RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseBean<String> register(User user, @RequestParam(value = "file", required = false) MultipartFile file) throws Exception {
 
         //判断邮箱地址是否可用
         if (this.checkEmailExist(user.getEmail()).isSuccess()) {
@@ -156,8 +155,10 @@ public class UserController {
             return checkRes;
         }
 
-        ResponseBean uploadResult = this.uploadUserPhoto(file);
-        user.setUserPhoto((String) uploadResult.getData());
+        if (file != null) {
+            ResponseBean uploadResult = this.uploadUserPhoto(file);
+            user.setUserPhoto((String) uploadResult.getData());
+        }
 
         //重新生成邮箱验证码
         user.setEmailCode((String) VerifyUtil.createImage()[0]);
@@ -176,7 +177,7 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         map.put("id", user.getId());
         map.put("emailCode", user.getEmailCode());
-        emailUtil.sendTemplateMail(user.getEmail(), "【答题吧-账号激活】", map, "/email/account_activation");
+        emailUtil.sendTemplateMailAsync(user.getEmail(), "【答题吧-账号激活】", map, "/email/account_activation");
 
         return new ResponseBean<>(true, "/home/user/login", CommonErrorEnum.WAIT_VERIFY_EMAIL);
     }

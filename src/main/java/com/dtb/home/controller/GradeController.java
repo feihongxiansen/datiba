@@ -33,9 +33,9 @@ public class GradeController {
      */
     @RequestMapping("/getGradeList")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> getGradeList(){
+    public ResponseBean getGradeList() {
 
         List<Grade> gradeList = gradeService.findAll();
-        return new ResponseBean(true,gradeList,CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean<>(true, gradeList, CommonErrorEnum.SUCCESS_REQUEST);
     }
 }

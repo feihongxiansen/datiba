@@ -85,8 +85,8 @@ public class DocumentController {
      */
     @RequestMapping("/upload")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> upload(Documents document,
-                                                @RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseBean upload(Documents document,
+                               @RequestParam("file") MultipartFile file) throws Exception {
         String uploadPath = "/upload/document/user-upload";
         String rootPath = this.baseFilePath + uploadPath;
         String filePath = FileUploadUtil.upload(file, rootPath, "document_" + document.getDocumentType() + "_");
@@ -95,9 +95,9 @@ public class DocumentController {
 
         int affectLine = documentService.addDocument(document);
         if (affectLine > 0) {
-            return new ResponseBean(true, CommonErrorEnum.FILEUPLOAD_SUCCESS);
+            return new ResponseBean<>(true, CommonErrorEnum.FILEUPLOAD_SUCCESS);
         }
-        return new ResponseBean(false, CommonErrorEnum.FAILED_QUESTION);
+        return new ResponseBean<>(false, CommonErrorEnum.FAILED_QUESTION);
     }
 
     /**
@@ -145,9 +145,9 @@ public class DocumentController {
     public String documentDetial(@PathVariable("documentId") Integer documentId, Model model) {
         Documents documents = new Documents();
         documents.setId(documentId);
-        byte checkStatus = 1;//查询条件，通过审核的文件
+        //byte checkStatus = 1;//查询条件，通过审核的文件
+        // documents.setCheckState(checkStatus);
         PageHelper.startPage(1, 1);
-        documents.setCheckState(checkStatus);
         Page<DocumentsAssociation> page = documentService.findDocumentListToLimit(documents);
         model.addAttribute("document", page);
         return "home/document-detial";
@@ -192,14 +192,14 @@ public class DocumentController {
      */
     @RequestMapping("/changeIntegral")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> changeIntegral(@RequestParam("addId") Integer addId,
-                                                        @RequestParam("lessId") Integer lessId,
-                                                        @RequestParam("integral") Integer integral,
-                                                        @RequestParam("documentId") Integer documentId,
-                                                        HttpSession session) {
+    public ResponseBean changeIntegral(@RequestParam("addId") Integer addId,
+                                       @RequestParam("lessId") Integer lessId,
+                                       @RequestParam("integral") Integer integral,
+                                       @RequestParam("documentId") Integer documentId,
+                                       HttpSession session) {
         User oldUser = (User) session.getAttribute("user");
         if (oldUser.getId() != lessId) {
-            return new ResponseBean(false, "-1", "不能操作别人的积分");
+            return new ResponseBean<>(false, "-1", "不能操作别人的积分");
         }
         userService.updateIntegralById(-integral, lessId);
         userService.updateIntegralById(integral, addId);
@@ -208,7 +208,7 @@ public class DocumentController {
 
         //如果不为空就是用户之前下载过此文档
         if (documentService.findByUserIdAndDocumentId(lessId, documentId) != null) {
-            return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
+            return new ResponseBean<>(true, CommonErrorEnum.SUCCESS_OPTION);
         }
         //否则就是首次下载
         DocumentComments documentComment = new DocumentComments();

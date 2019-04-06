@@ -33,11 +33,11 @@ public class SubjectController {
      */
     @RequestMapping("/getSubjectList")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> getSubjectList(){
+    public ResponseBean getSubjectList() {
 
         List<Subject> subjectList = subjectService.findAll();
 
-        return new ResponseBean(true,subjectList,CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean<>(true, subjectList, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
 }

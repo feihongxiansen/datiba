@@ -83,10 +83,10 @@ public class TeacherController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> add(Teacher teacher,
-                                             @RequestParam("idCardImg1") MultipartFile idCardImg1,
-                                             @RequestParam("idCardImg2") MultipartFile idCardImg2,
-                                             @RequestParam("certificateImg") MultipartFile certificateImg) throws Exception {
+    public ResponseBean add(Teacher teacher,
+                            @RequestParam("idCardImg1") MultipartFile idCardImg1,
+                            @RequestParam("idCardImg2") MultipartFile idCardImg2,
+                            @RequestParam("certificateImg") MultipartFile certificateImg) throws Exception {
 
         String uploadPath = "/upload/images/teacher";
         String rootPath = this.baseFilePath + uploadPath;

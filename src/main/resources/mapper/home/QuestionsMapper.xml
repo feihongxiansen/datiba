@@ -76,6 +76,7 @@
             </if>
             AND delete_time IS NULL
         </where>
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapAssociation">
