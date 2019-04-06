@@ -52,7 +52,7 @@ public interface QuestionsMapper {
      * @param record
      * @return int
      */
-    int insertSelective(QuestionsWithBLOBs record);
+    Integer insertSelective(QuestionsWithBLOBs record);
 
     QuestionsWithBLOBs selectByPrimaryKey(Integer id);
 

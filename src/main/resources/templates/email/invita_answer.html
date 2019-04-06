@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>邀约解答</title>
+</head>
+<body>
+<h2>答题吧</h2>
+亲爱的用户【<span th:text="${invitaUserName}"></span>】您好，
+答题吧的小伙伴【<span th:text="${nickName}"></span>】
+正在邀请您解答一道【<span th:text="${gradeName}+${subjectName}"></span>】题目，
+问题描述如下：<span th:text="${questionSummary}"></span>
+此题目悬赏积分：<span th:text="${integral}==null?'0':${integral}"></span>分，
+快去帮助TA解答吧。
+<br>
+<a th:href="@{'http://www.datiba.com/home/index/userinfo/'+${userId}}">邀约人信息</a>
+<a th:href="@{'http://www.datiba.com/home/index/answer/'+${questionId}}">题目详情</a>
+</body>
+</html>

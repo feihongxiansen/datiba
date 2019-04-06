@@ -4,9 +4,12 @@ import com.dtb.entity.AnswersWithBLOBs;
 import com.dtb.entity.QuestionsAssociation;
 import com.dtb.entity.QuestionsWithBLOBs;
 import com.dtb.entity.User;
+import com.dtb.home.service.GradeService;
 import com.dtb.home.service.QAService;
+import com.dtb.home.service.SubjectService;
 import com.dtb.home.service.UserService;
 import com.dtb.utils.FileUploadUtil;
+import com.dtb.utils.email.EmailUtil;
 import com.dtb.utils.resulthandler.CommonErrorEnum;
 import com.dtb.utils.resulthandler.ResponseBean;
 import com.github.pagehelper.Page;
@@ -39,24 +42,30 @@ public class QAController {
     private QAService qaService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private GradeService gradeService;
+    @Autowired
+    private SubjectService subjectService;
+    @Autowired
+    private EmailUtil emailUtil;
     @Value("${com.dtb.file.baseFilePath}")
     private String baseFilePath;
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/3 18:26
-     * @descript: 获取问题列表
-     * @param: pageNum 分页参数，当前页码
-     * @param: pageSize 分页参数，每页显示数量
-     * @param: gradeId 年级查询条件，没有则查询全部年级
-     * @param: subjectId 学科查询条件，没有则查询全部学科
-     * @param: questionSummary 题目搜索内容
-     * @param: needIntegral 是否需要积分
-     * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @param pageNum         分页参数，当前页码
+     * @param pageSize        分页参数，每页显示数量
+     * @param gradeId         年级查询条件，没有则查询全部年级
+     * @param subjectId       学科查询条件，没有则查询全部学科
+     * @param questionSummary 题目搜索内容
+     * @param needIntegral    是否需要积分
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @author lmx
+     * @date 2019/3/3 18:26
+     * @descript 获取问题列表
      */
     @RequestMapping("/getQuestionList")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum>
+    public ResponseBean
     getQuestionList(@RequestParam(value = "pageNum", required = false, defaultValue = "0") Integer pageNum,
                     @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                     @RequestParam(value = "gradeId", required = false) Integer gradeId,
@@ -76,39 +85,37 @@ public class QAController {
         pageMap.put("pageSize", page.getPageSize());
         pageMap.put("pages", page.getPages());
         resultMap.put("pageInfo", pageMap);
-        return new ResponseBean(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean<>(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/6 23:32
-     * @descript: 根据问题id获取答案列表
-     * @param: questionId
-     * @param: pageNum
-     * @param: pageSize
-     * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @param questionId 问题id
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @author lmx
+     * @date 2019/3/6 23:32
+     * @descript 根据问题id获取答案列表
      */
     @RequestMapping("/getAnswerList/{questionId}")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> getAnswerList(@PathVariable("questionId") Integer questionId) {
+    public ResponseBean getAnswerList(@PathVariable("questionId") Integer questionId) {
         QuestionsAssociation questionAndAnswers = qaService.findAnswerList(questionId);
-        return new ResponseBean(true, questionAndAnswers, CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean<>(true, questionAndAnswers, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
     /**
-     * @param files
+     * @param files 文件数组
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/16 11:37
      * @descript 上传问题图片
      */
     @RequestMapping("/uploadQuestionImages")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> uploadQuestionImages(@RequestParam("files") MultipartFile[] files) throws IOException {
+    public ResponseBean uploadQuestionImages(@RequestParam("files") MultipartFile[] files) throws IOException {
         String uploadPath = "/upload/images/question";
         String res = this.uploadImages(files, uploadPath, "question_");
-        return new ResponseBean(true, res, CommonErrorEnum.FILEUPLOAD_SUCCESS);
+        return new ResponseBean<>(true, res, CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 
     /**
@@ -116,11 +123,11 @@ public class QAController {
      * @param uploadPath  保存路径
      * @param fileNamePre 图片名称前缀
      * @return java.lang.String 返回使用逗号分隔的图片地址字符串
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/16 11:42
      * @descript 上传图片方法
      */
-    public String uploadImages(MultipartFile[] files, String uploadPath, String fileNamePre) throws IOException {
+    private String uploadImages(MultipartFile[] files, String uploadPath, String fileNamePre) throws IOException {
 
         String rootPath = this.baseFilePath + uploadPath;
         String res = FileUploadUtil.uploadFiles(files, rootPath, fileNamePre);
@@ -131,13 +138,13 @@ public class QAController {
 
     /**
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/11 23:56
      * @descript 用户提问
      */
     @RequestMapping("/addQuestion")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> addQuestion(QuestionsWithBLOBs question, HttpSession session) {
+    public ResponseBean addQuestion(QuestionsWithBLOBs question, HttpSession session) {
         if (question.getQuestionPhotos() == null || question.getQuestionPhotos().trim() == "") {
             question.setQuestionPhotos(null);
         } else {
@@ -151,40 +158,59 @@ public class QAController {
             session.setAttribute("user", userService.findById(question.getUserId()));
         }
 
-        int affectedLine = qaService.addQuestion(question);
+        // 插入成功，返回主键
+        Integer affectedLine = qaService.addQuestion(question);
+
         if (affectedLine >= 1) {
-            return new ResponseBean(true, question, CommonErrorEnum.SUCCESS_OPTION);
+            // 如果有邀约解答，就给被邀约人发提醒邮件
+            if (question.getInvitaId() != null) {
+                User invita = userService.findById(question.getInvitaId());
+                User user = userService.findById(question.getUserId());
+                String gradeName = gradeService.findById(question.getGradeId()).getGradeName();
+                String subjectName = subjectService.findById(question.getSubjectId()).getSubjectName();
+                Map<String, Object> infoMap = new HashMap<>();
+                infoMap.put("nickName", user.getNickName());
+                infoMap.put("userId", user.getId());
+                infoMap.put("invitaUserName", invita.getUserName());
+                infoMap.put("gradeName", gradeName);
+                infoMap.put("subjectName", subjectName);
+                infoMap.put("questionId", question.getId());
+                infoMap.put("integral", question.getIntegral());
+                infoMap.put("questionSummary", question.getQuestionSummary());
+                emailUtil.sendTemplateMailAsync(invita.getEmail(), "【答题吧-邀约解答】", infoMap, "email/invita_answer");
+            }
+            return new ResponseBean<>(true, question, CommonErrorEnum.SUCCESS_OPTION);
         } else {
-            return new ResponseBean(false, question, CommonErrorEnum.FAILED_QUESTION);
+            return new ResponseBean<>(false, question, CommonErrorEnum.FAILED_QUESTION);
         }
     }
 
     /**
      * @param files 图片数组
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/16 11:47
      * @descript 上传答案图片
      */
     @RequestMapping("/uploadAnswerImages")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> uploadAnswerImages(@RequestParam("files") MultipartFile[] files) throws IOException {
+    public ResponseBean uploadAnswerImages(@RequestParam("files") MultipartFile[] files) throws IOException {
         String uploadPath = "/upload/images/answer";
         String res = this.uploadImages(files, uploadPath, "answer_");
-        return new ResponseBean(true, res, CommonErrorEnum.FILEUPLOAD_SUCCESS);
+        return new ResponseBean<>(true, res, CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 
 
     /**
      * @param answer 问题对象
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/16 11:47
      * @descript 添加答案
      */
     @RequestMapping("/addAnswer")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> addAnswer(AnswersWithBLOBs answer) {
+    public ResponseBean addAnswer(AnswersWithBLOBs answer) {
         if (answer.getAnswerPhotos() == null || answer.getAnswerPhotos().trim() == "") {
             answer.setAnswerPhotos(null);
         } else {
@@ -196,6 +222,22 @@ public class QAController {
         //插入数据库
         int affectedLine = qaService.addAnswer(answer);
         if (affectedLine >= 1) {
+            QuestionsWithBLOBs question = qaService.findById(answer.getQuestionId());
+            // 如果问题未被关闭，发送邮件给提问者，有人解答了问题
+            if (question.getQuestionState()) {
+                User solveUser = userService.findById(answer.getUserId());
+                User questionUser = userService.findById(question.getUserId());
+                Map<String, Object> infoMap = new HashMap<>();
+                infoMap.put("solveUserId", solveUser.getId());
+                infoMap.put("solveNickName", solveUser.getNickName());
+                infoMap.put("userName", questionUser.getUserName());
+                infoMap.put("questionId", answer.getQuestionId());
+                infoMap.put("questionSummary", question.getQuestionSummary());
+                infoMap.put("answerSummary", answer.getAnswerSummary());
+                infoMap.put("gradeName", gradeService.findById(question.getGradeId()).getGradeName());
+                infoMap.put("subjectName", subjectService.findById(question.getSubjectId()).getSubjectName());
+                emailUtil.sendTemplateMailAsync(questionUser.getEmail(), "【答题吧-解答提醒】", infoMap, "email/new_answer");
+            }
             return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
         } else {
             return new ResponseBean(false, CommonErrorEnum.FAILED_QUESTION);
@@ -318,6 +360,17 @@ public class QAController {
         question.setQuestionState(false);
         int result = qaService.updateQuestionSelectiveById(question);
         if (result > 0) {
+            User answerUser = userService.findById(answer.getUserId());
+            Map<String, Object> infoMap = new HashMap<>();
+            infoMap.put("answerUserName", answerUser.getUserName());
+            infoMap.put("questionId", questionId);
+            infoMap.put("questionNickName", user.getNickName());
+            infoMap.put("questionSummary", question.getQuestionSummary());
+            infoMap.put("answerSummary", answer.getAnswerSummary());
+            infoMap.put("integral", question.getIntegral());
+            infoMap.put("gradeName", gradeService.findById(question.getGradeId()).getGradeName());
+            infoMap.put("subjectName", subjectService.findById(question.getSubjectId()).getSubjectName());
+            emailUtil.sendTemplateMailAsync(answerUser.getEmail(), "【答题吧-答案采纳】", infoMap, "email/adoption_answer");
             return new ResponseBean<>(true, "采纳成功！", CommonErrorEnum.SUCCESS_OPTION);
         }
         return new ResponseBean<>(false, "采纳失败！", CommonErrorEnum.SUCCESS_OPTION);

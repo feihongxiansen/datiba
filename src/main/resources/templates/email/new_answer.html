@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增解答</title>
+</head>
+<body>
+<h2>答题吧</h2>
+亲爱的用户【<span th:text="${userName}"></span>】您好，
+答题吧的小伙伴【<span th:text="${solveNickName}"></span>】
+给你解答了一道【<span th:text="${gradeName}+${subjectName}"></span>】题目，
+问题描述如下：<span th:text="${questionSummary}"></span><br>
+解答描述如下：<span th:text="${answerSummary}"></span>
+快去查看详细信息，满意的话采纳答案吧。
+<br>
+<a th:href="@{'http://www.datiba.com/home/index/userinfo/'+${solveUserId}}">答题人信息</a>
+<a th:href="@{'http://www.datiba.com/home/index/answer/'+${questionId}}">查看详情</a>
+</body>
+</html>

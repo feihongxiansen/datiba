@@ -55,7 +55,7 @@ public interface QAService {
      * @date 2019/3/11 23:52
      * @descript 添加问题
      */
-    int addQuestion(QuestionsWithBLOBs question);
+    Integer addQuestion(QuestionsWithBLOBs question);
 
     /**
      * @param answer

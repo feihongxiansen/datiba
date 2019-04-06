@@ -28,8 +28,9 @@
                                     <dd class="pos-left clearfix">
                                         <div class="circ"></div>
                                         <div class="time">
-                                            第三步<span th:if="${applyInfo.admin}==null" class="layui-badge layui-bg-gray">进行中</span>
-                                            <span th:if="${applyInfo.admin}!=null" class="layui-badge layui-bg-green">已完成</span>
+                                            第三步<span th:if="${applyInfo.authState}==0"
+                                                     class="layui-badge layui-bg-gray">进行中</span>
+                                            <span th:if="${applyInfo.authState}!=0" class="layui-badge layui-bg-green">已完成</span>
                                         </div>
                                         <div class="events">
                                             <div class="events-header">查看审核结果</div>

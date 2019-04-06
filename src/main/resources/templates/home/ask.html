@@ -118,7 +118,12 @@
                                 <button type="button" class="layui-btn" id="uploadimg">
                                     <i class="layui-icon">&#xe67c;</i>选择图片
                                 </button>
-                                <button type="button" id="subBtn" @click="clearImg()" class="layui-btn layui-btn-normal">提问</button>
+                                <button type="button" th:if="${session.user.questionState}" id="subBtn"
+                                        @click="clearImg()" class="layui-btn layui-btn-normal">提问
+                                </button>
+                                <button type="button" th:if="!${session.user.questionState}"
+                                        onclick="msg('您当前已被禁止提问，如有疑问请咨询管理员！')" class="layui-btn layui-btn-disabled">提问
+                                </button>
                             </div>
                             <div class="col-md-12 text-right" th:if="${session.user}==null">
                                 <a class="layui-btn layui-btn-normal" th:href="@{/home/index/login?pagePath=/home/index/ask}">登录提问</a>
@@ -206,6 +211,14 @@
         })
     });
     /*layui插件模块加载结束*/
+
+    /**
+     * 通用提示消息
+     * @param content
+     */
+    function msg(content) {
+        layer.msg(content);
+    }
 
     /*vue实例化开始*/
     var app = new Vue({

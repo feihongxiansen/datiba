@@ -234,7 +234,13 @@
                                 </div>
                                 <div class="layui-col-md2" id="score"></div>
                                 <div class="layui-col-md1" v-if="item.score==null||item.commentContent==null">
-                                    <button class="layui-btn layui-btn-sm" @click="openComment(item.id)">立即评价</button>
+                                    <button th:if="${session.user.commentState}" class="layui-btn layui-btn-sm"
+                                            @click="openComment(item.id)">立即评价
+                                    </button>
+                                    <button class="layui-btn-disabled layui-btn-sm"
+                                            th:if="!${session.user.commentState}"
+                                            onclick="msg('您当前已被禁止评论，如有疑问请联系管理员！')">立即评价
+                                    </button>
                                 </div>
                             </div>
                             <div class="layui-card layui-anim layui-anim-scale"
@@ -270,9 +276,10 @@
     var formData={userId:[[${session.user.id}]]};
     var rate;
     function initLayui() {
-        layui.use(['form', 'laypage', 'rate'], function () {
+        layui.use(['form', 'laypage', 'rate', 'layer'], function () {
             var form = layui.form
-                , laypage = layui.laypage;
+                , laypage = layui.laypage
+                , layer = layui.layer;
             rate = layui.rate;
 
             //执行一个laypage实例
@@ -397,6 +404,10 @@
         $.get("/home/document/myUploadAndDownload/" + tableApp.$data.userId, function (res) {
             tableApp.$data.commentList = res.data;
         });
+    }
+
+    function msg(content) {
+        layer.msg(content);
     }
 
     /**

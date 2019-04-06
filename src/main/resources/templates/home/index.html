@@ -41,7 +41,8 @@
     <!--主页轮播图-->
     <div class="layui-carousel" id="test3" lay-filter="test4">
         <div carousel-item>
-            <div th:each="item : ${carouselList}"><img th:src="${item.photoUrl}"></div>
+            <div th:each="item : ${carouselList}"><img th:src="${item.photoUrl}" th:data-url="${item.detailUrl}"
+                                                       onclick="javascript:goPage(this)"/></div>
         </div>
     </div>
 
@@ -168,7 +169,6 @@
             //,anim: 'updown' //切换动画方式
         });
     });
-
     var indexApp = new Vue({
         el: "#indexApp",
         data:{
@@ -215,6 +215,14 @@
             }
         }
     });
+
+    function goPage(ele) {
+        var url = ele.getAttribute("data-url");
+        console.log("轮播图详情地址：", url);
+        if (url != null && url.trim() != '') {
+            location.href = url;
+        }
+    }
 
     /*获取认证名师*/
     indexApp.getUserListToLimit("teacher");

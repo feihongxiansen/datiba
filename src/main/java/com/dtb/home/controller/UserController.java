@@ -47,23 +47,22 @@ public class UserController {
 
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/1 15:35
-     * @descript: 用户登录验证
-     * @param: phone 手机号码
-     * @param: password 登录密码
-     * @param: verifyCode 验证码
-     * @param: pagePath 登录后页面跳转路径
-     * @param: session 会话session
-     * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @author lmx
+     * @date 2019/3/1 15:35
+     * @descript 用户登录验证
+     * @param password 登录密码
+     * @param verifyCode 验证码
+     * @param pagePath 登录后页面跳转路径
+     * @param session 会话session
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/checkLogin")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> checkLogin(@RequestParam(value = "email", required = true) String email,
-                                                    @RequestParam(value = "password", required = true) String password,
-                                                    @RequestParam(value = "verifyCode", required = true) String verifyCode,
-                                                    @RequestParam(value = "pagePath", required = false, defaultValue = "/home/index/index") String pagePath,
-                                                    HttpSession session) {
+    public ResponseBean checkLogin(@RequestParam(value = "email", required = true) String email,
+                                   @RequestParam(value = "password", required = true) String password,
+                                   @RequestParam(value = "verifyCode", required = true) String verifyCode,
+                                   @RequestParam(value = "pagePath", required = false, defaultValue = "/home/index/index") String pagePath,
+                                   HttpSession session) {
 
         //首先验证验证码是否存在
         String trueVerifyCode = (String) session.getAttribute("verifyCode");
@@ -102,31 +101,31 @@ public class UserController {
         session.setAttribute("user", user);
         Map<String, Object> resultMap = new HashMap<String, Object>();
         resultMap.put("pagePath", pagePath);
-        ResponseBean responseBean = new ResponseBean(true, resultMap, CommonErrorEnum.LOGIN_SUCCESS);
+        ResponseBean responseBean = new ResponseBean<>(true, resultMap, CommonErrorEnum.LOGIN_SUCCESS);
         return responseBean;
     }
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/1 16:12
-     * @descript: 退出登录
-     * @param: session 会话session
-     * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @author lmx
+     * @date 2019/3/1 16:12
+     * @descript 退出登录
+     * @param session 会话session
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/logOut")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> logOut(HttpSession session) {
+    public ResponseBean logOut(HttpSession session) {
         session.removeAttribute("user");
-        return new ResponseBean(true, "/home/index/index", CommonErrorEnum.LOGOUT_SUCCESS);
+        return new ResponseBean<>(true, "/home/index/index", CommonErrorEnum.LOGOUT_SUCCESS);
     }
 
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/1 18:40
-     * @descript: 检测邮箱地址是否可用
-     * @param: email 邮箱地址
-     * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @author lmx
+     * @date 2019/3/1 18:40
+     * @descript 检测邮箱地址是否可用
+     * @param email 邮箱地址
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/checkEmailExist")
     @ResponseBody
@@ -178,18 +177,18 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         map.put("id", user.getId());
         map.put("emailCode", user.getEmailCode());
-        emailUtil.sendTemplateMail(user.getEmail(), "【答题吧-账号激活】", map, "email/account_activation");
+        emailUtil.sendTemplateMail(user.getEmail(), "【答题吧-账号激活】", map, "/email/account_activation");
 
         return new ResponseBean<>(true, "/home/user/login", CommonErrorEnum.WAIT_VERIFY_EMAIL);
     }
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/2 17:49
-     * @descript: 验证用户邮箱，激活账号
-     * @param: id 用户id
-     * @param: emailCode 邮箱验证码
-     * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @author lmx
+     * @date 2019/3/2 17:49
+     * @descript 验证用户邮箱，激活账号
+     * @param id 用户id
+     * @param emailCode 邮箱验证码
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/activation/{id}/{emailCode}")
     public String activation(@PathVariable Integer id, @PathVariable String emailCode, Model model) {
@@ -229,15 +228,15 @@ public class UserController {
     }
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/3 0:11
-     * @descript: 重新发送激活邮件
-     * @param: id 用户id
-     * @return: com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
+     * @author lmx
+     * @date 2019/3/3 0:11
+     * @descript 重新发送激活邮件
+     * @param id 用户id
+     * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
      */
     @RequestMapping("/resetEmailCode/{id}")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> resetEmailCode(@PathVariable Integer id) {
+    public ResponseBean resetEmailCode(@PathVariable Integer id) {
         User user = userService.findById(id);
 
         //检测用户是否存在
@@ -260,11 +259,11 @@ public class UserController {
             return new ResponseBean(false, CommonErrorEnum.FAILED_SENDEMAIL);
         }
 
-        //发送邮件，让用户激活账户
+        //异步发送邮件，让用户激活账户
         Map<String, Object> map = new HashMap<>();
         map.put("id", user.getId());
         map.put("emailCode", user.getEmailCode());
-        emailUtil.sendTemplateMail(user.getEmail(), "【答题吧-账号激活】", map, "email/account_activation");
+        emailUtil.sendTemplateMailAsync(user.getEmail(), "【答题吧-账号激活】", map, "email/account_activation");
 
         return new ResponseBean(true, CommonErrorEnum.SENDEMAIL_SUCCESS);
     }
@@ -272,15 +271,15 @@ public class UserController {
     /**
      * @param
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/10 17:43
      * @descript 获取用户列表，返回字段仅有用户id，用户名和昵称
      */
     @RequestMapping("/getUserList")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> getUserList() {
+    public ResponseBean getUserList() {
         List<User> userList = userService.findUserList();
-        return new ResponseBean(true, userList, CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean<>(true, userList, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
     /**
@@ -288,15 +287,15 @@ public class UserController {
      * @param pageSize
      * @param userType
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/10 23:02
      * @descript 根据用户类型获取用户列表
      */
     @RequestMapping("/getUserListToLimit/{pageNum}/{pageSize}/{userType}")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> getUserListToLimit(@PathVariable Integer pageNum,
-                                                            @PathVariable Integer pageSize,
-                                                            @PathVariable Byte userType) {
+    public ResponseBean getUserListToLimit(@PathVariable Integer pageNum,
+                                           @PathVariable Integer pageSize,
+                                           @PathVariable Byte userType) {
         PageHelper.startPage(pageNum, pageSize);
 
         Page<User> userPage = userService.findUserListToLimit(userType);
@@ -311,24 +310,24 @@ public class UserController {
         resultMap.put("userList", userPage);
         resultMap.put("pageInfo", pageInfo);
 
-        return new ResponseBean(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
+        return new ResponseBean<>(true, resultMap, CommonErrorEnum.SUCCESS_REQUEST);
     }
 
     /**
      * @param file 图片文件
      * @return com.dtb.utils.resulthandler.ResponseBean<com.dtb.utils.resulthandler.CommonErrorEnum>
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/17 1:37
      * @descript 上传用户头像
      */
     @RequestMapping("/uploadUserPhoto")
     @ResponseBody
-    public ResponseBean<CommonErrorEnum> uploadUserPhoto(@RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseBean uploadUserPhoto(@RequestParam("file") MultipartFile file) throws Exception {
         String uploadPath = "/upload/images/avatar";
         String rootPath = this.baseFilePath + uploadPath;
         String imgPath = FileUploadUtil.upload(file, rootPath, "avatar_");
         imgPath = "/file" + uploadPath + "/" + imgPath;
-        return new ResponseBean(true, imgPath, CommonErrorEnum.FILEUPLOAD_SUCCESS);
+        return new ResponseBean<>(true, imgPath, CommonErrorEnum.FILEUPLOAD_SUCCESS);
     }
 
     /**

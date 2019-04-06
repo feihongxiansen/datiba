@@ -12,34 +12,34 @@ import java.util.Map;
 public interface UserMapper {
 
     /**
-     * @auther: lmx
-     * @descript: 根据手机号和密码登录
-     * @date: 2019/2/28 22:52
-     * @param: [phone]
-     * @return: com.dtb.entity.User
+     * @author lmx
+     * @descript 根据手机号和密码登录
+     * @date 2019/2/28 22:52
+     * @param phone 手机号码
+     * @return com.dtb.entity.User
      */
     User selectByPhone(@Param("phone") String phone);
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/1 18:33
-     * @descript: 根据邮箱查询用户
-     * @param: email 邮箱地址
-     * @return: com.dtb.entity.User
+     * @author lmx
+     * @date 2019/3/1 18:33
+     * @descript 根据邮箱查询用户
+     * @param email 邮箱地址
+     * @return com.dtb.entity.User
      */
     User selectByEmail(@Param("email") String email);
 
     /**
-     * @auther: lmx
-     * @date: 2019/3/2 17:32
-     * @descript: 根据id查询用户信息
-     * @param: id 用户主键
-     * @return: int
+     * @author lmx
+     * @date 2019/3/2 17:32
+     * @descript 根据id查询用户信息
+     * @param id 用户主键
+     * @return int
      */
     int deleteByPrimaryKey(@Param("id") Integer id);
 
     /**
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/10 1:46
      * @descript 获取用户列表
      * @param
@@ -49,7 +49,7 @@ public interface UserMapper {
     List<User> selectUserList();
 
     /**
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/10 22:51
      * @descript 根据用户类别分页查询用户列表
      * @param userType
@@ -64,7 +64,7 @@ public interface UserMapper {
     Page<User> selectUserListToLimit(@Param("userType") Byte userType);
 
     /**
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/15 1:10
      * @descript 根据用户id修改积分值
      * @param integral 调整的积分（增加/减少）
@@ -75,7 +75,7 @@ public interface UserMapper {
     int updateIntegralById(@Param("integral")Integer integral,@Param("userId")Integer userId);
 
     /**
-     * @auther lmx
+     * @author lmx
      * @date 2019/3/16 17:07
      * @descript 查询用户基本信息及其答题统计信息
      * @param userId

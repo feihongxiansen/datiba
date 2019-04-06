@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -145,5 +144,34 @@ public class EmailUtilImpl implements EmailUtil {
         context.setVariables(paramsMap);
         String emailContent = templateEngine.process(templateName, context);
         this.sendHtmlMail(to,subject,emailContent);
+    }
+
+    @Override
+    public void sendTemplateMailAsync(String to, String subject, Map<String, Object> paramsMap, String templateName) {
+        logger.info("准备发送模板邮件：{}", subject);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //创建邮件正文
+                    Context context = new Context();
+                    context.setVariables(paramsMap);
+                    String emailContent = templateEngine.process(templateName, context);
+                    MimeMessage message = mailSender.createMimeMessage();
+                    //true表示需要创建一个multipart message
+                    MimeMessageHelper helper = new MimeMessageHelper(message, true);
+                    helper.setFrom(getFrom());
+                    helper.setSubject(subject);
+                    helper.setTo(to);
+                    //有第二个参数true表示发送HTML邮件，否则HTML代码不会被编译
+                    helper.setText(emailContent, true);
+                    //helper.setCc("xxx@163.com");//抄送
+                    mailSender.send(message);
+                    logger.info("html邮件已经发送。");
+                } catch (Exception e) {
+                    logger.warn("模板邮件发送失败：{}", e);
+                }
+            }
+        }).start();
     }
 }

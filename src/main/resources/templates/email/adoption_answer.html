@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>答案被采纳</title>
+</head>
+<body>
+<h2>答题吧</h2>
+亲爱的用户【<span th:text="${answerUserName}"></span>】您好，
+答题吧的小伙伴【<span th:text="${questionNickName}"></span>】
+采纳了您解答的一道【<span th:text="${gradeName}+${subjectName}"></span>】题目，
+问题描述如下：<span th:text="${questionSummary}"></span><br>
+解答描述如下：<span th:text="${answerSummary}"></span>
+悬赏积分：<span th:text="${integral}==null?'0':${integral}"></span>分
+已到达您的账户，感谢您的解答。
+<br>
+<a th:href="@{'http://www.datiba.com/home/index/answer/'+${questionId}}">查看详情</a>
+</body>
+</html>

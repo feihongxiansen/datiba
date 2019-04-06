@@ -67,6 +67,18 @@ public interface EmailUtil {
      * @param: templateName 模板地址名称
      * @return: void
      */
-    public void sendTemplateMail(String to,String subject, Map<String,Object> paramsMap,String templateName);
+    public void sendTemplateMail(String to, String subject, Map<String, Object> paramsMap, String templateName);
+
+    /**
+     * 异步发送邮件
+     *
+     * @param to           接收者
+     * @param subject      主题
+     * @param paramsMap    参数
+     * @param templateName 模板名
+     * @author lmx
+     * @date 2019/4/6 12:21
+     */
+    public void sendTemplateMailAsync(final String to, final String subject, final Map<String, Object> paramsMap, final String templateName);
 
 }

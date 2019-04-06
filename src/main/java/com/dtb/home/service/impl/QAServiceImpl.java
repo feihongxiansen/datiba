@@ -121,7 +121,7 @@ public class QAServiceImpl implements QAService {
     }
 
     @Override
-    public int addQuestion(QuestionsWithBLOBs question) {
+    public Integer addQuestion(QuestionsWithBLOBs question) {
         return questionsMapper.insertSelective(question);
     }
 

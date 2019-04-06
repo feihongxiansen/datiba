@@ -104,8 +104,13 @@
                                         <button type="button" class="layui-btn" id="uploadimg">
                                             <i class="layui-icon">&#xe67c;</i>上传图片
                                         </button>
-                                        <button type="button" id="subBtn" @click="clearImg()"
+                                        <button th:if="${session.user.answerState}" type="button" id="subBtn"
+                                                @click="clearImg()"
                                                 class="layui-btn layui-btn-normal">回答
+                                        </button>
+                                        <button th:if="!${session.user.answerState}" type="button"
+                                                onclick="msg('您当前已被禁止答题，如有疑问请咨询管理员！')"
+                                                class="layui-btn layui-btn-disabled">回答
                                         </button>
                                     </div>
                                     <div class="col-md-12 text-right" th:if="${session.user}==null">
@@ -201,9 +206,12 @@
         }
     }
 
-    /*更新成功提示*/
-    function refresh() {
-        window.location.reload();//刷新当前界面
+    /**
+     * 通用提示消息
+     * @param content
+     */
+    function msg(content) {
+        layer.msg(content);
     }
 
     //图片上传接口地址
