@@ -45,9 +45,9 @@ public class QAServiceImpl implements QAService {
             } else {
                 keySummary += "*" + questionSummary + "*";
             }
-            return this.photosStrToStrArr(questionsMapper.selectQuestionList(gradeId, subjectId, questionSummary, needIntegral));
+            return this.photosStrToStrArr(questionsMapper.selectQuestionList(gradeId, subjectId, keySummary, questionSummary.trim(), needIntegral));
         }
-        return this.photosStrToStrArr(questionsMapper.selectQuestionList(gradeId, subjectId, questionSummary, needIntegral));
+        return this.photosStrToStrArr(questionsMapper.selectQuestionList(gradeId, subjectId, null, questionSummary, needIntegral));
     }
 
     @Override

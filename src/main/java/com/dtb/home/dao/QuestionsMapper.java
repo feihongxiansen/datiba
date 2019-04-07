@@ -18,9 +18,10 @@ public interface QuestionsMapper {
      * @return: com.github.pagehelper.Page<com.dtb.entity.Questions>
      */
     Page<QuestionsWithBLOBs> selectQuestionList(@Param("gradeId")Integer gradeId,
-                                     @Param("subjectId")Integer subjectId,
-                                     @Param("questionSummary")String questionSummary,
-                                     @Param("needIntegral")Boolean needIntegral);
+                                                @Param("subjectId")Integer subjectId,
+                                                @Param("keySummary") String keySummary,
+                                                @Param("questionSummary")String questionSummary,
+                                                @Param("needIntegral")Boolean needIntegral);
 
     /**
      * 分页查询问题列表
