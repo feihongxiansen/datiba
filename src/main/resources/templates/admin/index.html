@@ -13,13 +13,13 @@
     <div class="left_open">
         <i title="展开左侧栏" class="iconfont">&#xe699;</i>
     </div>
-    <ul class="layui-nav left fast-add" lay-filter="">
+    <ul class="layui-nav left fast-add" th:if="${session.admin.adminType}==0">
         <li class="layui-nav-item">
             <a href="javascript:;">+新增</a>
             <dl class="layui-nav-child">
                 <!-- 二级菜单 -->
                 <dd>
-                    <a onclick="WeAdminShow('管理员','https://www.youfa365.com/')"><i class="iconfont">&#xe6b8;</i>管理员</a>
+                    <a onclick="WeAdminShow('管理员','/admin/admin/addPage')"><i class="iconfont">&#xe6b8;</i>管理员</a>
                 </dd>
             </dl>
         </li>
@@ -29,9 +29,9 @@
             <a href="javascript:;" th:text="${session.admin.adminName}"></a>
             <dl class="layui-nav-child">
                 <!-- 二级菜单 -->
-                <dd>
-                    <a onclick="WeAdminShow('个人信息','http://www.baidu.com')">个人信息</a>
-                </dd>
+                <!--<dd>-->
+                <!--<a onclick="WeAdminShow('个人信息','http://www.baidu.com')">个人信息</a>-->
+                <!--</dd>-->
                 <dd>
                     <a class="loginout" href="javascript:void(0);" id="logOut">退出</a>
                 </dd>

@@ -93,7 +93,8 @@
                                     <div class="form-group">
                                         <!--multiple="multiple"属性可多选-->
                                         <select class="selectpicker show-tick" v-model="invitaId" title="——邀约答题人——" data-live-search="true">
-                                            <option th:each="item:${userList}" th:value="${item.id}" th:text="${item.userName}"></option>
+                                            <option th:each="item:${userList}" th:value="${item.id}"
+                                                    th:text="${item.nickName}"></option>
                                         </select>
                                     </div>
                                     <div class="form-group">
