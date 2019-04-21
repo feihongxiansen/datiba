@@ -149,4 +149,9 @@ public class QAServiceImpl implements QAService {
     public Integer updateAnswerSelectiveById(AnswersWithBLOBs answer) {
         return answersMapper.updateByPrimaryKeySelective(answer);
     }
+
+    @Override
+    public Integer approvalOROppose(String tp, Integer answerId) {
+        return answersMapper.approvalOROppose(tp, answerId);
+    }
 }

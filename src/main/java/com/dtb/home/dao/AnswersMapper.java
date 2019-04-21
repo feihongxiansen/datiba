@@ -38,6 +38,17 @@ public interface AnswersMapper {
      */
     int insertSelective(AnswersWithBLOBs record);
 
+    /**
+     * 给答案点赞OR踩
+     *
+     * @param tp       种类，LIKE为赞，OPPOSE为踩
+     * @param answerId 答案ID
+     * @return java.lang.Integer
+     * @author lmx
+     * @date 2019/4/21 21:32
+     */
+    Integer approvalOROppose(@Param("tp") String tp, @Param("answerId") Integer answerId);
+
     AnswersWithBLOBs selectByPrimaryKey(@Param("id") Integer id);
 
     int updateByPrimaryKeySelective(AnswersWithBLOBs record);

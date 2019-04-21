@@ -375,4 +375,20 @@ public class QAController {
         }
         return new ResponseBean<>(false, "采纳失败！", CommonErrorEnum.SUCCESS_OPTION);
     }
+
+    /**
+     * 给答案点赞OR踩
+     *
+     * @param tp       种类，LIKE为赞，OPPOSE为踩
+     * @param answerId 答案id
+     * @return com.dtb.utils.resulthandler.ResponseBean
+     * @author lmx
+     * @date 2019/4/21 21:30
+     */
+    @RequestMapping("/attitude")
+    @ResponseBody
+    public ResponseBean attitude(@RequestParam String tp, @RequestParam Integer answerId) {
+        qaService.approvalOROppose(tp, answerId);
+        return new ResponseBean(true, CommonErrorEnum.SUCCESS_OPTION);
+    }
 }

@@ -168,4 +168,17 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="approvalOROppose">
+    UPDATE as_answers
+    <set>
+      <if test="tp == 'LIKE'">
+        approval_num = approval_num + 1,
+      </if>
+      <if test="tp == 'OPPOSE'">
+        oppose_num = oppose_num + 1,
+      </if>
+    </set>
+    WHERE id = #{answerId}
+  </update>
 </mapper>

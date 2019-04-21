@@ -13,12 +13,13 @@
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.Report">
     <result column="summary" jdbcType="LONGVARCHAR" property="summary" />
+    <result column="result" jdbcType="LONGVARCHAR" property="result"/>
   </resultMap>
   <sql id="Base_Column_List">
     id, user_id, report_type, be_id, admin_id, create_time, update_time, delete_time
   </sql>
   <sql id="Blob_Column_List">
-    summary
+    result, summary
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
     select 
@@ -28,20 +29,7 @@
     from as_report
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from as_report
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.dtb.entity.Report">
-    insert into as_report (id, user_id, report_type, 
-      be_id, admin_id, create_time, 
-      update_time, delete_time, summary
-      )
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{reportType,jdbcType=VARCHAR}, 
-      #{beId,jdbcType=INTEGER}, #{adminId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{deleteTime,jdbcType=TIMESTAMP}, #{summary,jdbcType=LONGVARCHAR}
-      )
-  </insert>
+
   <insert id="insertSelective" parameterType="com.dtb.entity.Report">
     insert into as_report
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -60,14 +48,13 @@
       <if test="adminId != null">
         admin_id,
       </if>
-      <if test="createTime != null">
         create_time,
-      </if>
-      <if test="updateTime != null">
         update_time,
-      </if>
       <if test="deleteTime != null">
         delete_time,
+      </if>
+      <if test="result != null">
+        result,
       </if>
       <if test="summary != null">
         summary,
@@ -89,14 +76,13 @@
       <if test="adminId != null">
         #{adminId,jdbcType=INTEGER},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP,
       <if test="deleteTime != null">
         #{deleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="result != null">
+        #{result,jdbcType=LONGVARCHAR},
       </if>
       <if test="summary != null">
         #{summary,jdbcType=LONGVARCHAR},
@@ -127,33 +113,13 @@
       <if test="deleteTime != null">
         delete_time = #{deleteTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="result != null">
+        result = #{result,jdbcType=LONGVARCHAR},
+      </if>
       <if test="summary != null">
         summary = #{summary,jdbcType=LONGVARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dtb.entity.Report">
-    update as_report
-    set user_id = #{userId,jdbcType=INTEGER},
-      report_type = #{reportType,jdbcType=VARCHAR},
-      be_id = #{beId,jdbcType=INTEGER},
-      admin_id = #{adminId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      summary = #{summary,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dtb.entity.Report">
-    update as_report
-    set user_id = #{userId,jdbcType=INTEGER},
-      report_type = #{reportType,jdbcType=VARCHAR},
-      be_id = #{beId,jdbcType=INTEGER},
-      admin_id = #{adminId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

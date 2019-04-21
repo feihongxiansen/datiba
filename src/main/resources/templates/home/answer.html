@@ -101,6 +101,9 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 text-right" th:if="${session.user}!=null">
+                                        <button th:onclick="'javascript:report('+'\'QUESTION\','+${questionInfo.id}+');'"
+                                                class="layui-btn layui-btn-danger">举报此提问
+                                        </button>
                                         <button type="button" class="layui-btn" id="uploadimg">
                                             <i class="layui-icon">&#xe67c;</i>上传图片
                                         </button>
@@ -114,6 +117,9 @@
                                         </button>
                                     </div>
                                     <div class="col-md-12 text-right" th:if="${session.user}==null">
+                                        <button th:onclick="'javascript:report('+'\'QUESTION\','+${questionInfo.id}+');'"
+                                                class="layui-btn layui-btn-danger">举报此提问
+                                        </button>
                                         <a th:href="@{'/home/index/login?pagePath=/home/index/answer/'+${questionInfo.id}}"
                                            class="layui-btn layui-btn-normal">登录答题</a>
                                     </div>
@@ -158,7 +164,17 @@
                                                                 class="layui-btn layui-btn-sm">采纳</button>
                                                     </span>
                                                 </span>
-
+                                                <button th:onclick="'javascript:report('+'\'ANSWER\','+${item.id}+');'"
+                                                        class="layui-btn layui-btn-danger layui-btn-sm">举报此解答
+                                                </button>
+                                                <button th:onclick="'javascript:attitude('+'\'LIKE\','+${item.id}+');'"
+                                                        th:id="'LIKE-'+${item.id}"
+                                                        class="layui-btn layui-btn-warm layui-btn-sm layui-icon layui-icon-praise"
+                                                        th:text="${item.approvalNum}"></button>
+                                                <button th:onclick="'javascript:attitude('+'\'OPPOSE\','+${item.id}+');'"
+                                                        th:id="'OPPOSE-'+${item.id}"
+                                                        class="layui-btn layui-btn-normal layui-btn-sm layui-icon layui-icon-tread"
+                                                        th:text="${item.opposeNum}"></button>
                                             </div>
                                         </div>
                                     </div>
@@ -188,6 +204,64 @@
         $("#" + id).viewer({
             url: "data-original"
         });
+    }
+
+    /**
+     * 举报
+     */
+    function report(tp, id) {
+        if ([[${session.user}]] == null) {
+            layer.confirm("请登录后举报！", {icon: 3, title: '提示'}, function (index) {
+                location.href = "/home/index/login?pagePath=/home/index/answer/" + [[${questionInfo}]].id;
+                layer.close(index);
+            });
+            return;
+        }
+
+        layer.prompt({title: '请输入举报详细描述', formType: 2}, function (text, index) {
+            if (text == null || text == '') {
+                layer.msg('请输入举报详细描述', {icon: 2, time: 1500});
+                return null;
+            }
+            var userId = [[${session.user}]].id;
+            var requestData = {
+                userId: userId,
+                reportType: tp,
+                summary: text,
+                beId: id
+            };
+            $.post("/home/report/addReport", requestData, function (res) {
+                if (res.success) {
+                    layer.msg("举报成功，感谢您的支持！", {time: 1500, icon: 1});
+                }
+            });
+            layer.close(index);
+        });
+    }
+
+    /**
+     * 点赞OR踩
+     */
+    function attitude(tp, id) {
+        if ([[${session.user}]] == null) {
+            layer.confirm("请登录后操作！", {icon: 3, title: '提示'}, function (index) {
+                location.href = "/home/index/login?pagePath=/home/index/answer/" + [[${questionInfo}]].id;
+                layer.close(index);
+            });
+            return;
+        }
+        $.post("/home/question/attitude", {tp: tp, answerId: id}, function (res) {
+            if (res.success) {
+                if (tp == 'LIKE') {
+                    $("#LIKE-" + id).text(Number($("#LIKE-" + id).text()) + 1);
+                    layer.msg("已赞", {time: 1000});
+                } else {
+                    $("#OPPOSE-" + id).text(Number($("#OPPOSE-" + id).text()) + 1);
+                    layer.msg("已踩", {time: 1000});
+                }
+
+            }
+        })
     }
 
     /*初始化答案列表的viewer*/

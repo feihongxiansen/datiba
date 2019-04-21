@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dtb.admin.dao.ReportMapper">
+    <resultMap id="BaseResultMap" type="com.dtb.entity.Report">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="report_type" jdbcType="VARCHAR" property="reportType"/>
+        <result column="be_id" jdbcType="INTEGER" property="beId"/>
+        <result column="admin_id" jdbcType="INTEGER" property="adminId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dtb.entity.Report">
+        <result column="summary" jdbcType="LONGVARCHAR" property="summary"/>
+        <result column="result" jdbcType="LONGVARCHAR" property="result"/>
+    </resultMap>
+    <resultMap id="AssociationMap" extends="ResultMapWithBLOBs" type="com.dtb.entity.ReportAssociation">
+        <association property="user" column="user_id" select="com.dtb.admin.dao.UserMapper.selectById"/>
+        <association property="admin" column="admin_id" select="com.dtb.admin.dao.AdminMapper.selectByPrimaryKey"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, user_id, report_type, be_id, admin_id, create_time, update_time, delete_time
+  </sql>
+    <sql id="Blob_Column_List">
+    result, summary
+  </sql>
+
+    <select id="selectPageByParam" resultMap="AssociationMap">
+        SELECT
+        <include refid="Base_Column_List"/>,
+        <include refid="Blob_Column_List"/>
+        FROM as_report
+        <where>
+            <if test="param.id != null">
+                AND id = #{param.id}
+            </if>
+            <if test="param.userId != null">
+                AND user_id = #{param.userId}
+            </if>
+            <if test="param.beId != null">
+                AND be_id = #{param.beId}
+            </if>
+            <if test="param.adminId != null">
+                AND admin_id = #{param.adminId}
+            </if>
+            <if test="param.reportType != null &amp;&amp; param.reportType != ''">
+                AND report_type = #{param.reportType}
+            </if>
+            <if test="param.result !=null &amp;&amp; param.result != ''">
+                AND result LIKE CONCAT('%',#{param.result},'%')
+            </if>
+            <if test="param.summary !=null &amp;&amp; param.summary != ''">
+                AND summary LIKE CONCAT('%',#{param.summary},'%')
+            </if>
+            AND delete_time IS NULL
+        </where>
+        ORDER BY result ASC,create_time DESC
+    </select>
+
+    <update id="updateById" parameterType="com.dtb.entity.Report">
+        update as_report
+        <set>
+            <if test="param.userId != null">
+                user_id = #{param.userId,jdbcType=INTEGER},
+            </if>
+            <if test="param.reportType != null &amp;&amp; param.reportType != ''">
+                report_type = #{param.reportType,jdbcType=VARCHAR},
+            </if>
+            <if test="param.beId != null">
+                be_id = #{param.beId,jdbcType=INTEGER},
+            </if>
+            <if test="param.adminId != null">
+                admin_id = #{param.adminId,jdbcType=INTEGER},
+            </if>
+            update_time = CURRENT_TIMESTAMP,
+            <if test="param.deleteTime != null">
+                delete_time = #{param.deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="param.result != null &amp;&amp; param.result != ''">
+                result = #{param.result,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="param.summary != null &amp;&amp; param.summary != ''">
+                summary = #{param.summary,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{param.id,jdbcType=INTEGER}
+    </update>
+</mapper>

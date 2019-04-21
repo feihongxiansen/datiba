@@ -143,10 +143,12 @@
                                     </div>
 
                                     <div class="col-md-6 text-right">
-                                        <span class="col-md-3 col-md-offset-5 label label-success"
+                                        <span class="col-md-3 col-md-offset-1 label label-success"
                                               style="color: white;">悬赏积分：{{item.integral}}分</span>
                                         <span class="col-md-3 col-md-offset-1 label label-info"><a
                                                 :href="'/home/index/answer/'+item.id" style="color: white;">回答：【{{item.count}}】</a></span>
+                                        <a @click="report('ANSWER',item.id)" style="color: white;"
+                                           class="col-md-3 col-md-offset-1 label label-danger">举报此提问</a>
                                     </div>
                                 </div>
                             </div>
@@ -215,6 +217,7 @@
         }
     }
 
+    var that = this;
     /*vue实例化开始*/
     var app = new Vue({
         el: "#question_container",
@@ -321,10 +324,46 @@
                     app.$data.pageNum = totalPage;
                     app.getQuestionList();
                 }
+            },
+            report: function (tp, id) {
+                that.report(tp, id);
             }
         }
     });
     /*vue实例化结束*/
+
+    /**
+     * 举报
+     */
+    function report(tp, id) {
+        if ([[${session.user}]] == null) {
+            layer.confirm("请登录后举报！", {icon: 3, title: '提示'}, function (index) {
+                location.href = "/home/index/login?pagePath=/home/index/question";
+                layer.close(index);
+            });
+            return;
+        }
+
+        layer.prompt({title: '请输入举报详细描述', formType: 2}, function (text, index) {
+            if (text == null || text == '') {
+                layer.msg('请输入举报详细描述', {icon: 2, time: 1500});
+                return null;
+            }
+            var userId = [[${session.user}]].id;
+            var requestData = {
+                userId: userId,
+                reportType: tp,
+                summary: text,
+                beId: id
+            };
+            $.post("/home/report/addReport", requestData, function (res) {
+                if (res.success) {
+                    layer.msg("举报成功，感谢您的支持！", {time: 1500, icon: 1});
+                }
+            });
+            layer.close(index);
+        });
+    }
 
     //首次加载获取数据
     app.getSubjectList();//获取学科列表

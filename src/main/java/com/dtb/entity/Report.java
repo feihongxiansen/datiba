@@ -19,6 +19,8 @@ public class Report {
 
     private Date deleteTime;
 
+    private String result;
+
     private String summary;
 
     public Integer getId() {
@@ -51,6 +53,14 @@ public class Report {
 
     public void setBeId(Integer beId) {
         this.beId = beId;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 
     public Integer getAdminId() {

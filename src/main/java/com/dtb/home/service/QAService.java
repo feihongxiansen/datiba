@@ -105,4 +105,15 @@ public interface QAService {
      * @date 2019/3/29 22:01
      */
     Integer updateAnswerSelectiveById(AnswersWithBLOBs answer);
+
+    /**
+     * 给答案点赞OR踩
+     *
+     * @param tp       种类，LIKE为赞，OPPOSE为踩
+     * @param answerId 答案ID
+     * @return java.lang.Integer
+     * @author lmx
+     * @date 2019/4/21 21:32
+     */
+    Integer approvalOROppose(String tp, Integer answerId);
 }
