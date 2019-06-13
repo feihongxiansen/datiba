@@ -29,5 +29,5 @@ HELP.md
 dtb_logs/
 *.gz
 *.log
-src/main/resources/application.properties
+### src/main/resources/application.properties
 src/main/resources/dependents/账号信息.txt
