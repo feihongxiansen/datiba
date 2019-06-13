@@ -129,3 +129,6 @@ spring.mail.password=你的授权码，并非邮箱登录密码
 
 ### 功能效果图
 功能效果图请在项目文件夹中的`系统效果图`目录中查看
+
+### 致谢
+这里感谢`WeAdmin`、百度`ECharts`、`Layui`、`Vue`、`Viewer`
