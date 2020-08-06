@@ -56,7 +56,7 @@ public class QuestionController {
         model.addAttribute("subjectList", subjectService.findAll());
         model.addAttribute("gradeList", gradeService.findAll());
         model.addAttribute("userList", userService.findUserList());
-        return "/admin/question/list";
+        return "admin/question/list";
     }
 
     /**
@@ -120,7 +120,7 @@ public class QuestionController {
     @RequestMapping("/detail/{id}")
     public String detail(@PathVariable Integer id, Model model) {
         model.addAttribute("question", this.findAnswerListById(id).getData());
-        return "/admin/question/detail";
+        return "admin/question/detail";
     }
 
     /**

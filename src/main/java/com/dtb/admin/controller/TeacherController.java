@@ -112,6 +112,6 @@ public class TeacherController {
                            Model model) {
         TeacherAssociation teacher = teacherService.selectById(id);
         model.addAttribute("teacher", teacher);
-        return "/admin/teacher/edit";
+        return "admin/teacher/edit";
     }
 }

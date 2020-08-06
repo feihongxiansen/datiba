@@ -48,7 +48,7 @@ public class DocumentController {
     public String listPage(Model model) {
         model.addAttribute("subjectList", subjectService.findAll());
         model.addAttribute("gradeList", gradeService.findAll());
-        return "/admin/document/list";
+        return "admin/document/list";
     }
 
     /**

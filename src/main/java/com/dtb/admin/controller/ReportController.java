@@ -36,7 +36,7 @@ public class ReportController {
      */
     @RequestMapping("/listPage")
     public String listPage() {
-        return "/admin/report/list";
+        return "admin/report/list";
     }
 
     /**

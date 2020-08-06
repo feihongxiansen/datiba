@@ -43,7 +43,7 @@ public class ExchangeController {
      */
     @RequestMapping("/listPage")
     public String listPage() {
-        return "/admin/order/list";
+        return "admin/order/list";
     }
 
     /**

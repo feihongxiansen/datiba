@@ -51,10 +51,10 @@ public class TeacherController {
         TeacherAssociation teacher = this.isApplyed(user.getId());
         //未申请跳转到申请页面，申请过到进度页面
         if (teacher == null) {
-            return "/home/teacher-auth";
+            return "home/teacher-auth";
         } else {
             model.addAttribute("applyInfo", teacher);
-            return "/home/teacher-schedule";
+            return "home/teacher-schedule";
         }
 
     }

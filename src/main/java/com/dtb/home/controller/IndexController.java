@@ -47,7 +47,7 @@ public class IndexController {
     public String index(Model model) {
         List<Carousel> resultList = carouselService.findCarouselList();
         model.addAttribute("carouselList", resultList);
-        return "/home/index";
+        return "home/index";
     }
 
     /**
@@ -59,7 +59,7 @@ public class IndexController {
      */
     @RequestMapping("/register")
     public String register() {
-        return "/home/register";
+        return "home/register";
     }
 
     /**
@@ -75,10 +75,10 @@ public class IndexController {
                         Model model,
                         HttpSession session) {
         if (session.getAttribute("user") != null) {
-            return "redirect:/home/index/index";
+            return "redirect:home/index/index";
         }
         model.addAttribute("pagePath", pagePath);
-        return "/home/login";
+        return "home/login";
     }
 
     /**
@@ -90,7 +90,7 @@ public class IndexController {
      */
     @RequestMapping("/about")
     public String about() {
-        return "/home/about";
+        return "home/about";
     }
 
     /**
@@ -102,7 +102,7 @@ public class IndexController {
      */
     @RequestMapping("/question")
     public String question() {
-        return "/home/question";
+        return "home/question";
     }
 
     /**
@@ -116,7 +116,7 @@ public class IndexController {
     public String answer(@PathVariable("questionId") Integer questionId, Model model) {
         QuestionsAssociation questionAndAnswers = qaService.findAnswerList(questionId);
         model.addAttribute("questionInfo", questionAndAnswers);
-        return "/home/answer";
+        return "home/answer";
     }
 
     /**
@@ -131,7 +131,7 @@ public class IndexController {
         model.addAttribute("invitaId", invitaId);
         List<User> userList = userService.findUserList();
         model.addAttribute("userList", userList);
-        return "/home/ask";
+        return "home/ask";
     }
 
     /**
@@ -146,7 +146,7 @@ public class IndexController {
     public String userInfo(@PathVariable("userId") Integer userId, Model model) {
         Map<String, Object> userInfoMap = userService.findUserInfoById(userId);
         model.addAttribute("userInfo", userInfoMap);
-        return "/home/userinfo";
+        return "home/userinfo";
     }
 
     /**
@@ -160,7 +160,7 @@ public class IndexController {
     @RequestMapping("/user/list/{userType}")
     public String userList(@PathVariable("userType") Byte userType, Model model) {
         model.addAttribute("userType", userType);
-        return "/home/user-list";
+        return "home/user-list";
     }
 
     /**
@@ -172,7 +172,7 @@ public class IndexController {
      */
     @RequestMapping("/gift/list")
     public String list() {
-        return "/home/gift-list";
+        return "home/gift-list";
     }
 
 }

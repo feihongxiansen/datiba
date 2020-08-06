@@ -68,7 +68,7 @@ public class UserController {
      */
     @RequestMapping("/userListPage")
     public String userListPage() {
-        return "/admin/user/list";
+        return "admin/user/list";
     }
 
     /**
@@ -133,7 +133,7 @@ public class UserController {
     @RequestMapping("/editPage/{id}")
     public String editPage(@PathVariable Integer id, Model model) {
         model.addAttribute("user", userService.findById(id));
-        return "/admin/user/edit";
+        return "admin/user/edit";
     }
 
     /**

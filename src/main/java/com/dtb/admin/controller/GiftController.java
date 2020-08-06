@@ -45,7 +45,7 @@ public class GiftController {
      */
     @RequestMapping("/listPage")
     public String listPage() {
-        return "/admin/gift/list";
+        return "admin/gift/list";
     }
 
     /**
@@ -104,7 +104,7 @@ public class GiftController {
      */
     @RequestMapping("/addPage")
     public String addPage() {
-        return "/admin/gift/add";
+        return "admin/gift/add";
     }
 
     /**
@@ -155,7 +155,7 @@ public class GiftController {
     @RequestMapping("/editPage/{id}")
     public String editPage(@PathVariable Integer id, Model model) {
         model.addAttribute("info", giftService.findById(id));
-        return "/admin/gift/edit";
+        return "admin/gift/edit";
     }
 
     /**

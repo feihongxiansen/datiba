@@ -76,7 +76,7 @@ public class ExchangeController {
      */
     @RequestMapping("/exchangePage")
     public String exchangePage() {
-        return "/home/exchange-list";
+        return "home/exchange-list";
     }
 
     /**

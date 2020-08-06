@@ -97,6 +97,6 @@ public class FeedbackController {
      */
     @RequestMapping("/add")
     public String feedback() {
-        return "/home/feedback";
+        return "home/feedback";
     }
 }

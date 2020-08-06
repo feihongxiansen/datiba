@@ -45,7 +45,7 @@ public class CarouselController {
      */
     @RequestMapping("/listPage")
     public String listPage() {
-        return "/admin/carousel/list";
+        return "admin/carousel/list";
     }
 
     /**
@@ -104,7 +104,7 @@ public class CarouselController {
      */
     @RequestMapping("/addPage")
     public String addPage() {
-        return "/admin/carousel/add";
+        return "admin/carousel/add";
     }
 
     /**
@@ -155,7 +155,7 @@ public class CarouselController {
     @RequestMapping("/editPage/{id}")
     public String editPage(@PathVariable Integer id, Model model) {
         model.addAttribute("info", carouselService.findById(id));
-        return "/admin/carousel/edit";
+        return "admin/carousel/edit";
     }
 
     /**

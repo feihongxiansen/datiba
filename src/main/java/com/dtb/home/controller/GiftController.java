@@ -63,7 +63,7 @@ public class GiftController {
     @RequestMapping("/detial/{giftId}")
     public String detial(@PathVariable("giftId") Integer giftId, Model model) {
         model.addAttribute("gift", giftService.findById(giftId));
-        return "/home/gift-detial";
+        return "home/gift-detial";
     }
 
 }

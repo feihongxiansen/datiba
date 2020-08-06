@@ -40,7 +40,7 @@ public class FeedbackController {
      */
     @RequestMapping("/listPage")
     public String listPage() {
-        return "/admin/feedback/list";
+        return "admin/feedback/list";
     }
 
     /**
@@ -106,7 +106,7 @@ public class FeedbackController {
     public String detail(@PathVariable Integer id, Model model) {
         FeedbackAssociation feedback = feedbackService.findAssociationById(id);
         model.addAttribute("feedback", feedback);
-        return "/admin/feedback/detail";
+        return "admin/feedback/detail";
     }
 
 }

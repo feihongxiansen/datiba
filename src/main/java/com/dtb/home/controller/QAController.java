@@ -253,7 +253,7 @@ public class QAController {
      */
     @RequestMapping("/myAsk")
     public String myAsk() {
-        return "/home/myask";
+        return "home/myask";
     }
 
     /**

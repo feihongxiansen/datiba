@@ -51,7 +51,7 @@ public class DataAnalysisController {
      */
     @RequestMapping("/questionPage")
     public String questionPage() {
-        return "/admin/echarts/question";
+        return "admin/echarts/question";
     }
 
     /**
@@ -63,7 +63,7 @@ public class DataAnalysisController {
      */
     @RequestMapping("/userPage")
     public String userPage() {
-        return "/admin/echarts/user";
+        return "admin/echarts/user";
     }
 
     /**

@@ -341,7 +341,7 @@ public class UserController {
     public String personalCenter(@PathVariable Integer userId, Model model) {
         Map<String, Object> userInfoMap = userService.findUserInfoById(userId);
         model.addAttribute("userInfo", userInfoMap);
-        return "/home/personal-center";
+        return "home/personal-center";
     }
 
     /**
@@ -357,7 +357,7 @@ public class UserController {
     public String editPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         model.addAttribute("info", userService.findById(user.getId()));
-        return "/home/edit-userinfo";
+        return "home/edit-userinfo";
     }
 
     /**

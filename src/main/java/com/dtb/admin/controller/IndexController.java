@@ -32,7 +32,7 @@ public class IndexController {
         if (session.getAttribute("admin") != null) {
             return "redirect:/admin/index/index";
         }
-        return "/admin/login";
+        return "admin/login";
     }
 
     /**
@@ -44,7 +44,7 @@ public class IndexController {
      */
     @RequestMapping("/index")
     public String index() {
-        return "/admin/index";
+        return "admin/index";
     }
 
     /**
@@ -61,7 +61,7 @@ public class IndexController {
         model.addAttribute("count2Yesterday", dataAnalysisService.overallStatistics("YESTERDAY"));
         model.addAttribute("count2ThisWeek", dataAnalysisService.overallStatistics("THISWEEK"));
         model.addAttribute("count2ThisMonth", dataAnalysisService.overallStatistics("THISMONTH"));
-        return "/admin/welcome";
+        return "admin/welcome";
     }
 
     /**
@@ -73,7 +73,7 @@ public class IndexController {
      */
     @RequestMapping("/notFound")
     public String notFound() {
-        return "/admin/404";
+        return "admin/404";
     }
 
     /**
@@ -85,6 +85,6 @@ public class IndexController {
      */
     @RequestMapping("/error")
     public String error() {
-        return "/admin/500";
+        return "admin/500";
     }
 }

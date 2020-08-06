@@ -109,7 +109,7 @@ public class AdminController {
      */
     @RequestMapping("/adminListPage")
     public String adminListPage() {
-        return "/admin/admin/list";
+        return "admin/admin/list";
     }
 
     /**
@@ -207,7 +207,7 @@ public class AdminController {
         Admin admin = new Admin();
         admin.setId(adminId);
         model.addAttribute("admin", adminService.findOne(admin));
-        return "/admin/admin/edit";
+        return "admin/admin/edit";
     }
 
     /**
@@ -274,7 +274,7 @@ public class AdminController {
      */
     @RequestMapping("/addPage")
     public String addPage() {
-        return "/admin/admin/add";
+        return "admin/admin/add";
     }
 
     /**
