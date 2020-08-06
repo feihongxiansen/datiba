@@ -58,7 +58,7 @@ public class DocumentController {
     public String list(Model model) {
         model.addAttribute("gradeList", gradeService.findAll());
         model.addAttribute("subjectList", subjectService.findAll());
-        return "/home/document-list";
+        return "home/document-list";
     }
 
     /**
@@ -72,7 +72,7 @@ public class DocumentController {
     public String add(Model model) {
         model.addAttribute("gradeList", gradeService.findAll());
         model.addAttribute("subjectList", subjectService.findAll());
-        return "/home/document-add";
+        return "home/document-add";
     }
 
     /**
@@ -231,7 +231,7 @@ public class DocumentController {
     public String myDocumentList(Model model) {
         model.addAttribute("gradeList", gradeService.findAll());
         model.addAttribute("subjectList", subjectService.findAll());
-        return "/home/mydocument-list";
+        return "home/mydocument-list";
     }
 
     /**
@@ -274,7 +274,7 @@ public class DocumentController {
     @RequestMapping("/comment/{commentId}")
     public String comment(@PathVariable("commentId") Integer commentId,Model model){
         model.addAttribute("commentId",commentId);
-        return "/home/comment";
+        return "home/comment";
     }
 
     /**

@@ -48,7 +48,7 @@ public class AddressController {
      */
     @RequestMapping("/addressList")
     public String addressList() {
-        return "/home/address-list";
+        return "home/address-list";
     }
 
     /**
@@ -75,7 +75,7 @@ public class AddressController {
      */
     @RequestMapping("/myaddress")
     public String myaddress() {
-        return "/home/myaddress";
+        return "home/myaddress";
     }
 
     /**
@@ -117,6 +117,6 @@ public class AddressController {
      */
     @RequestMapping("/addPage")
     public String addPage() {
-        return "/home/add-address";
+        return "home/add-address";
     }
 }
